@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown Studio — редактор с предпросмотром</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"
+        onload="window.__katexLoaded && window.__katexLoaded()"></script>
+<style>
+/* ============ THEMES ============ */
+:root{
+  --bg:#eef1f6; --panel:#fff; --panel-2:#f7f8fb; --text:#1c2230; --muted:#6b7488;
+  --border:#e2e6ee; --accent:#6366f1; --accent-soft:rgba(99,102,241,.12);
+  --preview-bg:#ffffff; --page-bg:#ffffff; --page-text:#1c2230;
+  --code-bg:#f2f4f9; --code-text:#c026a3;
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 14px 34px -10px rgba(16,24,40,.16);
+  --radius:14px;
+  --doc-font:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --doc-size:17px; --doc-lh:1.75; --doc-ls:0em; --doc-align:left;
+  --page-padding:48px; --page-width:820px; --editor-size:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0e1015; --panel:#161a22; --panel-2:#1b2029; --text:#e7eaf2; --muted:#8b93a7;
+  --border:#252b37; --accent:#818cf8; --accent-soft:rgba(129,140,248,.16);
+  --code-bg:#1e2431; --code-text:#f0a6d8;
+}
+:root[data-theme="sepia"]{
+  --bg:#e7dcc6; --panel:#faf5ea; --panel-2:#f3ece0; --text:#3b3226; --muted:#8a7c66;
+  --border:#e0d4bd; --accent:#b45309; --accent-soft:rgba(180,83,9,.12);
+}
+:root[data-theme="solarized-light"]{
+  --bg:#fdf6e3; --panel:#fffbf0; --panel-2:#f5efdc; --text:#586e75; --muted:#93a1a1;
+  --border:#eee8d5; --accent:#268bd2; --accent-soft:rgba(38,139,210,.12);
+}
+:root[data-theme="solarized-dark"]{
+  --bg:#002b36; --panel:#073642; --panel-2:#0a4250; --text:#93a1a1; --muted:#657b83;
+  --border:#0d4c5a; --accent:#2aa198; --accent-soft:rgba(42,161,152,.16);
+}
+:root[data-theme="nord"]{
+  --bg:#2e3440; --panel:#3b4252; --panel-2:#434c5e; --text:#d8dee9; --muted:#7b88a1;
+  --border:#4c566a; --accent:#88c0d0; --accent-soft:rgba(136,192,208,.16);
+}
+:root[data-theme="dracula"]{
+  --bg:#282a36; --panel:#2d303e; --panel-2:#343746; --text:#f8f8f2; --muted:#8b92a8;
+  --border:#3c3f52; --accent:#bd93f9; --accent-soft:rgba(189,147,249,.16);
+}
+:root[data-theme="gruvbox"]{
+  --bg:#282828; --panel:#3c3836; --panel-2:#504945; --text:#ebdbb2; --muted:#a89984;
+  --border:#504945; --accent:#fabd2f; --accent-soft:rgba(250,189,47,.16);
+}
+:root[data-theme="tokyo-night"]{
+  --bg:#1a1b26; --panel:#1f2335; --panel-2:#24283b; --text:#c0caf5; --muted:#565f89;
+  --border:#292e42; --accent:#7aa2f7; --accent-soft:rgba(122,162,247,.16);
+}
+:root[data-theme="rose"]{
+  --bg:#fff5f7; --panel:#ffffff; --panel-2:#ffe9ef; --text:#4a1d2c; --muted:#a3707e;
+  --border:#ffd3de; --accent:#e11d48; --accent-soft:rgba(225,29,72,.12);
+}
+:root[data-theme="forest"]{
+  --bg:#eef3ea; --panel:#f8fbf5; --panel-2:#e2ecdb; --text:#22301a; --muted:#6b7d5f;
+  --border:#d3e0c8; --accent:#3f8f29; --accent-soft:rgba(63,143,41,.12);
+}
+:root[data-theme="ocean"]{
+  --bg:#e6f1f8; --panel:#f5fafd; --panel-2:#dcecf5; --text:#0b2b40; --muted:#5a7f98;
+  --border:#c8ddec; --accent:#0284c7; --accent-soft:rgba(2,132,199,.12);
+}
+:root[data-theme="monokai"]{
+  --bg:#272822; --panel:#2e2f28; --panel-2:#3a3b32; --text:#f8f8f2; --muted:#9a9a8c;
+  --border:#44453a; --accent:#a6e22e; --accent-soft:rgba(166,226,46,.16);
+}
+:root[data-theme="catppuccin"]{
+  --bg:#1e1e2e; --panel:#252535; --panel-2:#2e2e42; --text:#cdd6f4; --muted:#7f849c;
+  --border:#313244; --accent:#cba6f7; --accent-soft:rgba(203,166,247,.16);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg); color:var(--text); overflow:hidden;
+  -webkit-font-smoothing:antialiased; transition:background .25s,color .25s}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,130,150,.35);border-radius:20px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(120,130,150,.6);background-clip:content-box}
+
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:38px;height:38px;flex-shrink:0;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent),#ec4899);
+  color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px -4px rgba(99,102,241,.5);letter-spacing:-.5px}
+.title{font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.2}
+.subtitle{font-size:11.5px;color:var(--muted);line-height:1.3}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+.seg{display:flex;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;
+  font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;transition:.18s;white-space:nowrap}
+.seg button:hover{color:var(--text)}
+.seg button.active{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);
+  background:var(--panel);color:var(--text);font:inherit;font-size:12.5px;font-weight:600;
+  padding:8px 13px;border-radius:10px;cursor:pointer;transition:.18s}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.icon{padding:8px 10px}
+
+/* TOOLBARS */
+.toolbar{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:7px 14px;
+  background:var(--panel-2);border-bottom:1px solid var(--border);flex-shrink:0}
+.math-toolbar{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:6px 14px;
+  background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;position:relative}
+.math-toolbar .mlabel{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-right:8px;user-select:none}
+.tbtn{display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  min-width:32px;height:32px;padding:0 7px;border:1px solid transparent;background:transparent;
+  color:var(--muted);border-radius:8px;cursor:pointer;font:inherit;font-size:12px;font-weight:700;transition:.15s}
+.math-toolbar .tbtn{min-width:30px;height:30px;font-size:14px;
+  font-family:ui-monospace,Consolas,Menlo,monospace;font-weight:600}
+.tbtn svg{width:16px;height:16px;display:block}
+.tbtn:hover{background:var(--panel-2);color:var(--accent);border-color:var(--border)}
+.math-toolbar .tbtn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.tbtn:active{transform:scale(.94)}
+.tsep{width:1px;height:20px;background:var(--border);margin:0 6px}
+
+.greek-panel{position:absolute;top:calc(100% - 2px);left:14px;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:8px;
+  display:none;grid-template-columns:repeat(11, 34px);gap:4px;
+  box-shadow:var(--shadow);z-index:60;
+  max-width:calc(100vw - 40px)}
+.greek-panel.open{display:grid}
+.greek-panel button{width:34px;height:34px;border:1px solid transparent;background:var(--panel-2);
+  color:var(--text);border-radius:8px;cursor:pointer;font-size:16px;
+  font-family:ui-monospace,Consolas,Menlo,monospace;transition:.15s}
+.greek-panel button:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+
+/* WORKSPACE */
+.workspace{flex:1;display:flex;min-height:0;position:relative}
+.pane{min-width:0;min-height:0;display:flex;flex-direction:column}
+.editor-pane{flex:1 1 50%;background:var(--panel)}
+.preview-pane{flex:1 1 50%;background:#ffffff;overflow:auto}
+.splitter{width:6px;flex:0 0 6px;cursor:col-resize;background:var(--border);transition:background .18s;position:relative}
+.splitter:hover,.splitter.dragging{background:var(--accent)}
+.splitter::after{content:"";position:absolute;inset:0 -6px}
+
+#editor{flex:1;width:100%;height:100%;border:0;outline:0;resize:none;
+  padding:26px 30px 80px;background:transparent;color:var(--text);
+  font-family:ui-monospace,"SF Mono",Consolas,Menlo,monospace;
+  font-size:var(--editor-size);line-height:1.75;tab-size:2;caret-color:var(--accent)}
+#editor::placeholder{color:var(--muted);opacity:.65}
+#editor::selection{background:var(--accent-soft)}
+
+/* PAGE (always white) */
+.page{
+  background:#ffffff; color:#1c2230;
+  font-family:var(--doc-font);font-size:var(--doc-size);line-height:var(--doc-lh);
+  letter-spacing:var(--doc-ls);text-align:var(--doc-align);
+  max-width:var(--page-width);padding:var(--page-padding);
+  margin:0 auto;min-height:100%;overflow-wrap:break-word;
+  transition:font-size .12s, padding .12s, max-width .12s;
+}
+.page > *:first-child{margin-top:0}
+.page > *:last-child{margin-bottom:0}
+.page h1,.page h2,.page h3,.page h4,.page h5,.page h6{
+  font-weight:750;line-height:1.25;margin:1.6em 0 .6em;letter-spacing:-.018em;text-align:start}
+.page h1{font-size:2em;padding-bottom:.35em;border-bottom:2px solid #e2e6ee}
+.page h2{font-size:1.5em;padding-bottom:.28em;border-bottom:1px solid #e2e6ee}
+.page h3{font-size:1.24em}
+.page h4{font-size:1.08em}
+.page h5,.page h6{font-size:1em;color:#6b7488}
+.page p{margin:0 0 1.05em}
+.page a{color:#6366f1;text-decoration:none;
+  border-bottom:1px solid rgba(99,102,241,.4);transition:.15s}
+.page a:hover{border-bottom-color:#6366f1;background:rgba(99,102,241,.12)}
+.page ul,.page ol{margin:0 0 1.05em;padding-inline-start:1.6em}
+.page li{margin:.32em 0}
+.page li > ul,.page li > ol{margin:.32em 0}
+.page blockquote{margin:1.2em 0;padding:.6em 1.1em;
+  border-inline-start:4px solid #6366f1;background:rgba(99,102,241,.12);
+  border-radius:0 10px 10px 0}
+.page blockquote p:last-child{margin-bottom:0}
+.page code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88em;
+  background:#f2f4f9;color:#c026a3;padding:.16em .42em;
+  border-radius:6px;border:1px solid #e2e6ee}
+.page pre{background:#f2f4f9;border:1px solid #e2e6ee;border-radius:12px;
+  padding:15px 18px;overflow:auto;margin:1.2em 0;line-height:1.6}
+.page pre code{background:none;border:0;padding:0;color:#1c2230;font-size:.85em}
+.page hr{border:0;height:1px;background:#e2e6ee;margin:2.2em 0}
+.table-wrap{overflow-x:auto;margin:1.3em 0;border-radius:12px;border:1px solid #e2e6ee}
+.page table{border-collapse:collapse;width:100%;font-size:.94em;text-align:start}
+.page th,.page td{border-bottom:1px solid #e2e6ee;border-inline-end:1px solid #e2e6ee;
+  padding:.62em .9em;vertical-align:top}
+.page th:last-child,.page td:last-child{border-inline-end:0}
+.page tbody tr:last-child td{border-bottom:0}
+.page thead th{background:#f7f8fb;font-weight:700;font-size:.9em;white-space:nowrap}
+.page img{max-width:100%;height:auto;border-radius:10px;display:block;margin:1.1em auto}
+.page mark{background:#fef08a;color:inherit;padding:.05em .25em;border-radius:3px}
+.page sup{font-size:.75em;vertical-align:super;line-height:0}
+.page sub{font-size:.75em;vertical-align:sub;line-height:0}
+.page u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}
+.page kbd{font-family:ui-monospace,Consolas,monospace;font-size:.85em;padding:.15em .4em;
+  border:1px solid #ccc;border-bottom-width:2px;border-radius:5px;background:#f5f5f5}
+.page small{font-size:.85em}
+.math-block{display:block;text-align:center;margin:1.4em 0;overflow-x:auto;padding:.3em 0}
+.math-inline{white-space:nowrap}
+.math-raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em;color:#6b7488}
+.katex{font-size:1.05em}
+
+/* STATUS */
+.statusbar{display:flex;align-items:center;gap:16px;padding:6px 18px;
+  background:var(--panel);border-top:1px solid var(--border);font-size:11.5px;
+  color:var(--muted);font-weight:500;flex-shrink:0}
+.statusbar .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 0 3px rgba(34,197,94,.16)}
+.statusbar .right{margin-left:auto;display:flex;gap:16px}
+
+/* SETTINGS */
+.backdrop{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;visibility:hidden;
+  transition:.25s;z-index:70;backdrop-filter:blur(2px)}
+.backdrop.show{opacity:1;visibility:visible}
+.settings{position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;
+  background:var(--panel);border-left:1px solid var(--border);
+  box-shadow:-20px 0 50px -20px rgba(16,24,40,.4);transform:translateX(105%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:80;display:flex;flex-direction:column}
+.settings.open{transform:translateX(0)}
+.settings-head{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.settings-head h2{margin:0;font-size:15px;font-weight:700}
+.icon-btn{width:30px;height:30px;border:0;border-radius:8px;background:transparent;
+  color:var(--muted);cursor:pointer;font-size:15px;display:flex;align-items:center;
+  justify-content:center;transition:.15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.settings-body{flex:1;overflow-y:auto;padding:8px 18px 30px}
+.group{padding:16px 0;border-bottom:1px solid var(--border)}
+.group:last-child{border-bottom:0}
+.group h3{margin:0 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--muted)}
+.field{display:block;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > .label{display:flex;align-items:center;justify-content:space-between;
+  font-size:12.5px;font-weight:600;margin-bottom:8px}
+.field .val{font-size:11.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);
+  padding:2px 7px;border-radius:6px;font-variant-numeric:tabular-nums}
+select{width:100%;padding:9px 11px;font:inherit;font-size:13px;background:var(--panel-2);
+  color:var(--text);border:1px solid var(--border);border-radius:9px;cursor:pointer;
+  outline:none;transition:.15s}
+select:hover{border-color:var(--accent)}
+select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;
+  background:transparent;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:20px;background:var(--border)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;margin-top:-5.5px;background:var(--accent);border:2.5px solid var(--panel);
+  box-shadow:0 1px 5px rgba(16,24,40,.28);transition:.15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.14)}
+input[type=range]::-moz-range-track{height:5px;border-radius:20px;background:var(--border)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;
+  background:var(--accent);border:2.5px solid var(--panel);box-shadow:0 1px 5px rgba(16,24,40,.28)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips.themes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{padding:8px 6px;border:1px solid var(--border);
+  background:var(--panel-2);color:var(--muted);border-radius:9px;cursor:pointer;
+  font:inherit;font-size:12px;font-weight:600;transition:.15s;text-align:center}
+.chips:not(.themes) .chip{flex:1;min-width:62px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 4px 12px -3px rgba(99,102,241,.6)}
+.color-row{display:flex;align-items:center;gap:10px}
+input[type=color]{-webkit-appearance:none;width:42px;height:32px;border:1px solid var(--border);
+  border-radius:9px;background:transparent;cursor:pointer;padding:3px}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:0;border-radius:6px}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.15s}
+.swatch:hover{transform:scale(1.1)}
+.swatch.active{border-color:var(--text)}
+
+.toast{position:fixed;left:50%;bottom:56px;transform:translate(-50%,18px);
+  background:var(--text);color:var(--panel);padding:10px 18px;border-radius:11px;
+  font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.28s;z-index:100;
+  box-shadow:0 12px 30px -8px rgba(16,24,40,.45)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+.app[data-view="editor"] .preview-pane,
+.app[data-view="editor"] .splitter{display:none}
+.app[data-view="preview"] .editor-pane,
+.app[data-view="preview"] .splitter{display:none}
+
+@media (max-width:880px){
+  .workspace{flex-direction:column}
+  .splitter{display:none}
+  .editor-pane{border-bottom:1px solid var(--border)}
+  .page{padding:calc(var(--page-padding) * .65)}
+  .subtitle{display:none}
+  .btn span{display:none}
+  .greek-panel{grid-template-columns:repeat(8, 34px)}
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app" data-view="split">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">M↓</div>
+      <div>
+        <div class="title">Markdown Studio</div>
+        <div class="subtitle">редактор с живым предпросмотром</div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="seg" id="viewMode">
+        <button data-view="split" class="active">Разделённый</button>
+        <button data-view="editor">Редактор</button>
+        <button data-view="preview">Просмотр</button>
+      </div>
+      <button class="btn" id="btnExportHtml" title="Скачать HTML">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>HTML</span>
+      </button>
+      <button class="btn" id="btnExportMd" title="Скачать .md">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>.md</span>
+      </button>
+      <button class="btn" id="btnPdfColor" title="Печать / Сохранить PDF — цветной">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span>PDF цвет</span>
+      </button>
+      <button class="btn" id="btnPdfBw" title="Печать / Сохранить PDF — для ч/б печати">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/><line x1="8.5" y1="17.5" x2="15.5" y2="17.5"/></svg>
+        <span>PDF Ч/Б</span>
+      </button>
+      <button class="btn icon" id="btnSettings" title="Настройки">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ TOOLBAR ============ -->
+  <div class="toolbar" id="toolbar">
+    <button class="tbtn" data-act="h1" title="Заголовок 1">H1</button>
+    <button class="tbtn" data-act="h2" title="Заголовок 2">H2</button>
+    <button class="tbtn" data-act="h3" title="Заголовок 3">H3</button>
+    <button class="tbtn" data-act="h4" title="Заголовок 4">H4</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-act="bold" title="Жирный (Ctrl+B)"><b>B</b></button>
+    <button class="tbtn" data-act="italic" title="Курсив (Ctrl+I)"><i>I</i></button>
+    <button class="tbtn" data-act="underline" title="Подчёркнутый (Ctrl+U)"><u>U</u></button>
+    <button class="tbtn" data-act="strike" title="Зачёркнутый"><s>S</s></button>
+    <button class="tbtn" data-act="highlight" title="Выделение (маркер)">==</button>
+    <button class="tbtn" data-act="sup" title="Верхний индекс (x²)">x²</button>
+    <button class="tbtn" data-act="sub" title="Нижний индекс (x₂)">x₂</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-act="quote" title="Цитата">❝</button>
+    <button class="tbtn" data-act="code" title="Блок кода">&lt;/&gt;</button>
+    <button class="tbtn" data-act="inlinecode" title="Строчный код">`…`</button>
+    <button class="tbtn" data-act="comment" title="Комментарий">&lt;!-- --&gt;</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-act="ul" title="Маркированный список">• ≡</button>
+    <button class="tbtn" data-act="ol" title="Нумерованный список">1. ≡</button>
+    <button class="tbtn" data-act="task" title="Список задач">☑</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-act="link" title="Ссылка (Ctrl+K)">🔗</button>
+    <button class="tbtn" data-act="image" title="Изображение">🖼</button>
+    <button class="tbtn" data-act="table" title="Таблица">⊞</button>
+    <button class="tbtn" data-act="tablemath" title="Таблица (математическая)">⊞∑</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-act="math" title="Формула в строке">$…$</button>
+    <button class="tbtn" data-act="mathblock" title="Формула блоком">$$…$$</button>
+    <button class="tbtn" data-act="hr" title="Разделитель">—</button>
+  </div>
+
+  <!-- ============ MATH TOOLBAR ============ -->
+  <div class="math-toolbar" id="mathToolbar">
+    <span class="mlabel">Математика (LaTeX):</span>
+    <button class="tbtn" data-math="frac" title="Дробь \frac{a}{b}">a/b</button>
+    <button class="tbtn" data-math="dfrac" title="Крупная дробь \dfrac{a}{b}">A/B</button>
+    <button class="tbtn" data-math="sqrt" title="Квадратный корень \sqrt{x}">√</button>
+    <button class="tbtn" data-math="nthroot" title="Корень n-й степени \sqrt[n]{x}">ⁿ√</button>
+    <button class="tbtn" data-math="pow" title="Степень x^{n}">xⁿ</button>
+    <button class="tbtn" data-math="sub" title="Индекс x_{n}">xₙ</button>
+    <button class="tbtn" data-math="binom" title="Биномиальный коэффициент \binom{n}{k}">Cⁿₖ</button>
+    <button class="tbtn" data-math="abs" title="Модуль |x|">|x|</button>
+    <button class="tbtn" data-math="floor" title="Целая часть ⌊x⌋">⌊x⌋</button>
+    <button class="tbtn" data-math="ceil" title="Потолок ⌈x⌉">⌈x⌉</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-math="sum" title="Сумма \sum">∑</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-math="vec" title="Вектор \vec{v}">v⃗</button>
+    <button class="tbtn" data-math="infty" title="Бесконечность ∞">∞</button>
+    <button class="tbtn" data-math="pi" title="Число π">π</button>
+    <button class="tbtn" data-math="angle" title="Угол ∠">∠</button>
+    <button class="tbtn" data-math="degree" title="Градус °">°</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-math="leq" title="≤">≤</button>
+    <button class="tbtn" data-math="geq" title="≥">≥</button>
+    <button class="tbtn" data-math="neq" title="≠">≠</button>
+    <button class="tbtn" data-math="approx" title="≈">≈</button>
+    <button class="tbtn" data-math="equiv" title="≡">≡</button>
+    <button class="tbtn" data-math="pm" title="±">±</button>
+    <button class="tbtn" data-math="times" title="×">×</button>
+    <button class="tbtn" data-math="cdot" title="·">·</button>
+    <button class="tbtn" data-math="div" title="÷">÷</button>
+    <button class="tbtn" data-math="to" title="→">→</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-math="forall" title="Для всех ∀">∀</button>
+    <button class="tbtn" data-math="exists" title="Существует ∃">∃</button>
+    <button class="tbtn" data-math="in_" title="Принадлежит ∈">∈</button>
+    <button class="tbtn" data-math="notin" title="Не принадлежит ∉">∉</button>
+    <button class="tbtn" data-math="subset" title="Подмножество ⊂">⊂</button>
+    <button class="tbtn" data-math="cup" title="Объединение ∪">∪</button>
+    <button class="tbtn" data-math="cap" title="Пересечение ∩">∩</button>
+    <button class="tbtn" data-math="emptyset" title="Пустое множество ∅">∅</button>
+    <div class="tsep"></div>
+    <button class="tbtn" data-math="log" title="Логарифм \log">log</button>
+    <button class="tbtn" data-math="ln" title="Натуральный логарифм \ln">ln</button>
+    <button class="tbtn" data-math="sin" title="Синус \sin">sin</button>
+    <button class="tbtn" data-math="cos" title="Косинус \cos">cos</button>
+    <button class="tbtn" data-math="tan" title="Тангенс \tan">tan</button>
+    <div class="tsep"></div>
+    <button class="tbtn" id="btnGreek" title="Греческие буквы">αβγ ▾</button>
+    <div class="greek-panel" id="greekPanel">
+      <button data-greek="\\alpha">α</button>
+      <button data-greek="\\beta">β</button>
+      <button data-greek="\\gamma">γ</button>
+      <button data-greek="\\delta">δ</button>
+      <button data-greek="\\varepsilon">ε</button>
+      <button data-greek="\\zeta">ζ</button>
+      <button data-greek="\\eta">η</button>
+      <button data-greek="\\theta">θ</button>
+      <button data-greek="\\iota">ι</button>
+      <button data-greek="\\kappa">κ</button>
+      <button data-greek="\\lambda">λ</button>
+      <button data-greek="\\mu">μ</button>
+      <button data-greek="\\nu">ν</button>
+      <button data-greek="\\xi">ξ</button>
+      <button data-greek="\\pi">π</button>
+      <button data-greek="\\rho">ρ</button>
+      <button data-greek="\\sigma">σ</button>
+      <button data-greek="\\tau">τ</button>
+      <button data-greek="\\upsilon">υ</button>
+      <button data-greek="\\varphi">φ</button>
+      <button data-greek="\\chi">χ</button>
+      <button data-greek="\\psi">ψ</button>
+      <button data-greek="\\omega">ω</button>
+      <button data-greek="\\Gamma">Γ</button>
+      <button data-greek="\\Delta">Δ</button>
+      <button data-greek="\\Theta">Θ</button>
+      <button data-greek="\\Lambda">Λ</button>
+      <button data-greek="\\Xi">Ξ</button>
+      <button data-greek="\\Pi">Π</button>
+      <button data-greek="\\Sigma">Σ</button>
+      <button data-greek="\\Phi">Φ</button>
+      <button data-greek="\\Psi">Ψ</button>
+      <button data-greek="\\Omega">Ω</button>
+    </div>
+  </div>
+
+  <main class="workspace" id="workspace">
+    <section class="pane editor-pane" id="editorPane">
+      <textarea id="editor" spellcheck="false" placeholder="Начните печатать в Markdown…"></textarea>
+    </section>
+    <div class="splitter" id="splitter"></div>
+    <section class="pane preview-pane" id="previewPane">
+      <article class="page" id="preview"></article>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span class="dot"></span>
+    <span id="statWords">0 слов</span>
+    <span id="statChars">0 символов</span>
+    <span id="statLines">0 строк</span>
+    <div class="right">
+      <span id="statRead">~0 мин</span>
+      <span id="statPos">Стр 1, Кол 1</span>
+    </div>
+  </footer>
+</div>
+
+<script type="text/markdown" id="defaultDoc"># Markdown Studio для учителя математики
+
+Добро пожаловать! Пишите слева — результат появляется справа мгновенно.
+
+## Оформление текста
+
+Поддерживается **жирный**, *курсив*, <u>подчёркнутый</u>, ~~зачёркнутый~~, ==выделение маркером==, верхний индекс x^2^, нижний индекс H~2~O и `моноширинный` текст.
+
+Комментарии в тексте не отображаются: <!-- это комментарий, его не видно в предпросмотре -->
+
+## Математика
+
+Панель **«Математика»** вставляет куски LaTeX без знаков доллара. Чтобы получить формулу, оберните их в `$...$` (строчная) или `$$...$$` (выключная). Кнопки `$…$` и `$$…$$` на главной панели делают это автоматически.
+
+Пример дроби: $\frac{a}{b}$, крупная дробь: $\dfrac{x+1}{x-1}$.
+
+Корень: $\sqrt{x^2 + y^2}$, корень n-й степени: $\sqrt[n]{a}$.
+
+Степень: $x^{n}$, индекс: $a_{n}$, биномиальный коэффициент: $\binom{n}{k}$.
+
+Сумма: $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
+
+Греческие буквы: $\alpha + \beta = \gamma$, $\theta$, $\lambda$, $\Sigma$, $\Omega$.
+
+Сравнения: $a \le b$, $x \ne 0$, $a \approx 3{,}14$, $\alpha \equiv \beta$.
+
+Логика и множества: $\forall x \in A$, $\exists y \notin B$, $A \subset B$, $A \cup B$, $A \cap B$, $\emptyset$.
+
+Тригонометрия и логарифмы: $\sin x$, $\cos x$, $\tan x$, $\log_{10} x$, $\ln x$.
+
+## Таблица
+
+| Тема | Формула | Класс |
+|:-----|:-------:|------:|
+| Квадрат суммы | $(a+b)^2 = a^2 + 2ab + b^2$ | 7 |
+| Теорема Пифагора | $c^2 = a^2 + b^2$ | 8 |
+| Формула Эйлера | $e^{i\pi} + 1 = 0$ | 10 |
+
+## Список задач
+
+- [x] Подготовить конспект
+- [ ] Разобрать примеры
+- [ ] Раздать домашнее задание
+
+---
+
+*Совет:* выделите текст и нажмите **Ctrl+B** — он станет жирным.
+</script>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="settings" id="settings">
+  <div class="settings-head">
+    <h2>Настройки документа</h2>
+    <button class="icon-btn" id="closeSettings" title="Закрыть">✕</button>
+  </div>
+  <div class="settings-body">
+
+    <section class="group">
+      <h3>Типографика</h3>
+      <label class="field">
+        <span class="label">Шрифт текста</span>
+        <select id="setFont">
+          <option value='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'>Системный (без засечек)</option>
+          <option value='"Segoe UI", Tahoma, Geneva, sans-serif'>Segoe UI</option>
+          <option value='Verdana, Geneva, sans-serif'>Verdana</option>
+          <option value='Georgia, "Times New Roman", serif'>Georgia (с засечками)</option>
+          <option value='"Times New Roman", Times, serif'>Times New Roman</option>
+          <option value='"Palatino Linotype", Palatino, Georgia, serif'>Palatino</option>
+          <option value='ui-monospace, "SF Mono", Consolas, Menlo, monospace'>Моноширинный</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="label">Размер шрифта <b class="val" id="valSize">17px</b></span>
+        <input type="range" id="setSize" min="12" max="30" step="1" value="17">
+      </label>
+      <label class="field">
+        <span class="label">Интерлиньяж <b class="val" id="valLh">1.75</b></span>
+        <input type="range" id="setLh" min="1.2" max="2.4" step="0.05" value="1.75">
+      </label>
+      <label class="field">
+        <span class="label">Межбуквенное <b class="val" id="valLs">0.000em</b></span>
+        <input type="range" id="setLs" min="-0.02" max="0.08" step="0.005" value="0">
+      </label>
+    </section>
+
+    <section class="group">
+      <h3>Поля и ширина</h3>
+      <label class="field">
+        <span class="label">Поля страницы <b class="val" id="valPad">48px</b></span>
+        <input type="range" id="setPad" min="0" max="140" step="2" value="48">
+      </label>
+      <label class="field">
+        <span class="label">Ширина страницы <b class="val" id="valWidth">820px</b></span>
+        <input type="range" id="setWidth" min="480" max="1400" step="10" value="820">
+      </label>
+      <div class="field">
+        <span class="label">Выравнивание</span>
+        <div class="chips" id="alignChips">
+          <button class="chip active" data-align="left">Слева</button>
+          <button class="chip" data-align="center">Центр</button>
+          <button class="chip" data-align="right">Справа</button>
+          <button class="chip" data-align="justify">По ширине</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="group">
+      <h3>Тема интерфейса</h3>
+      <div class="chips themes" id="themeChips">
+        <button class="chip active" data-theme="light">Светлая</button>
+        <button class="chip" data-theme="dark">Тёмная</button>
+        <button class="chip" data-theme="sepia">Сепия</button>
+        <button class="chip" data-theme="solarized-light">Solarized</button>
+        <button class="chip" data-theme="solarized-dark">Solar Dark</button>
+        <button class="chip" data-theme="nord">Nord</button>
+        <button class="chip" data-theme="dracula">Dracula</button>
+        <button class="chip" data-theme="gruvbox">Gruvbox</button>
+        <button class="chip" data-theme="tokyo-night">Tokyo</button>
+        <button class="chip" data-theme="catppuccin">Catppuccin</button>
+        <button class="chip" data-theme="monokai">Monokai</button>
+        <button class="chip" data-theme="rose">Розовая</button>
+        <button class="chip" data-theme="forest">Лес</button>
+        <button class="chip" data-theme="ocean">Океан</button>
+      </div>
+    </section>
+
+    <section class="group">
+      <h3>Акцентный цвет</h3>
+      <div class="color-row">
+        <input type="color" id="setAccent" value="#6366f1">
+        <div class="swatches" id="swatches">
+          <div class="swatch" data-color="#6366f1" style="background:#6366f1"></div>
+          <div class="swatch" data-color="#0ea5e9" style="background:#0ea5e9"></div>
+          <div class="swatch" data-color="#10b981" style="background:#10b981"></div>
+          <div class="swatch" data-color="#f59e0b" style="background:#f59e0b"></div>
+          <div class="swatch" data-color="#ef4444" style="background:#ef4444"></div>
+          <div class="swatch" data-color="#ec4899" style="background:#ec4899"></div>
+          <div class="swatch" data-color="#8b5cf6" style="background:#8b5cf6"></div>
+          <div class="swatch" data-color="#22c55e" style="background:#22c55e"></div>
+          <div class="swatch" data-color="#a3a3a3" style="background:#a3a3a3"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="group">
+      <h3>Редактор</h3>
+      <label class="field">
+        <span class="label">Размер шрифта <b class="val" id="valEditorSize">14px</b></span>
+        <input type="range" id="setEditorSize" min="11" max="22" step="1" value="14">
+      </label>
+    </section>
+
+    <section class="group">
+      <button class="btn" id="btnReset" style="width:100%;justify-content:center;">Сбросить настройки</button>
+    </section>
+
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ MARKDOWN PARSER ============ */
+(function(){
+function markdownToHtml(src){
+  var store = [], counter = 0;
+  function stash(html){ var id = counter++; store[id] = html; return '\u0000' + id + '\u0000'; }
+  function escapeHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function mathSpan(tex, display){
+    var t = String(tex).trim();
+    var fb = escapeHtml(display ? '$$' + t + '$$' : '$' + t + '$');
+    return '<span class="math ' + (display ? 'math-block' : 'math-inline') + '"'
+         + ' data-tex="' + encodeURIComponent(t) + '"'
+         + ' data-display="' + (display ? '1' : '0') + '">' + fb + '</span>';
+  }
+  function inline(s){
+    /* HTML-комментарии — удаляем */
+    s = s.replace(/<!--[\s\S]*?-->/g, '');
+    /* Разрешённые inline-HTML-теги — сохраняем (без обработчиков) */
+    s = s.replace(/<\/?(?:u|mark|sup|sub|kbd|small|br|abbr|cite|var|samp|ins|del)\b[^>]*>/gi,
+      function(m){
+        if (/(?:on\w+\s*=|javascript:)/i.test(m)) return '';
+        return stash(m);
+      });
+    s = escapeHtml(s);
+    /* изображения и ссылки */
+    s = s.replace(/!\[([^\]]*)\]\(\s*([^)\s]+)\s*\)/g,
+        function(m, alt, src){ return '<img src="' + src + '" alt="' + alt + '" loading="lazy">'; });
+    s = s.replace(/\[([^\]]+)\]\(\s*([^)\s]+)\s*\)/g,
+        function(m, txt, href){ return '<a href="' + href + '" target="_blank" rel="noopener">' + txt + '</a>'; });
+    /* жирный */
+    s = s.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/__([\s\S]+?)__/g, '<strong>$1</strong>');
+    /* зачёркнутый */
+    s = s.replace(/~~([\s\S]+?)~~/g, '<del>$1</del>');
+    /* выделение маркером */
+    s = s.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
+    /* верхний индекс ^x^ */
+    s = s.replace(/\^([^\^\n]+)\^/g, '<sup>$1</sup>');
+    /* нижний индекс ~x~ (одиночная тильда, после обработки ~~) */
+    s = s.replace(/(^|[^~])~([^~\n]+)~(?!~)/g, '$1<sub>$2</sub>');
+    /* курсив */
+    s = s.replace(/(^|[^*\w])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    s = s.replace(/(^|[^_\w])_([^_\n]+)_/g, '$1<em>$2</em>');
+    /* автоссылки */
+    s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
+        function(m, pre, url){ return pre + '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>'; });
+    return s;
+  }
+  function renderTable(rows){
+    function parseRow(r){
+      return r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function(c){ return c.trim(); });
+    }
+    var head = parseRow(rows[0]);
+    var sep  = parseRow(rows[1]);
+    var aligns = sep.map(function(c){
+      var l = c.charAt(0) === ':', r = c.charAt(c.length-1) === ':';
+      return (l && r) ? 'center' : (r ? 'right' : (l ? 'left' : ''));
+    });
+    var html = '<div class="table-wrap"><table><thead><tr>';
+    head.forEach(function(c, i){
+      html += '<th' + (aligns[i] ? ' style="text-align:' + aligns[i] + '"' : '') + '>' + inline(c) + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    for (var r = 2; r < rows.length; r++){
+      if (!rows[r].trim()) continue;
+      var cells = parseRow(rows[r]);
+      html += '<tr>';
+      for (var c = 0; c < head.length; c++){
+        html += '<td' + (aligns[c] ? ' style="text-align:' + aligns[c] + '"' : '') + '>'
+              + inline(cells[c] || '') + '</td>';
+      }
+      html += '</tr>';
+    }
+    return html + '</tbody></table></div>';
+  }
+  function listToHtml(items, baseIndent){
+    if (!items.length) return '';
+    var ordered = items[0].ordered;
+    var html = ordered ? '<ol>' : '<ul>';
+    var i = 0;
+    while (i < items.length){
+      var item = items[i];
+      var children = [], j = i + 1;
+      while (j < items.length && items[j].indent > baseIndent){ children.push(items[j]); j++; }
+      var text = inline(item.text);
+      if (item.task){
+        var checked = item.task === 'x';
+        text = '<input type="checkbox" disabled ' + (checked ? 'checked' : '') + '> ' + text;
+      }
+      html += '<li>' + text
+            + (children.length ? listToHtml(children, children[0].indent) : '')
+            + '</li>';
+      i = j;
+    }
+    return html + (ordered ? '</ol>' : '</ul>');
+  }
+  function renderBlocks(text){
+    text = text.replace(
+      /^[ \t]*```[ \t]*([\w+.\-]*)[ \t]*\n([\s\S]*?)^[ \t]*```[ \t]*$/gm,
+      function(m, lang, code){
+        return stash('<pre><code' + (lang ? ' class="language-' + escapeHtml(lang) + '"' : '') + '>'
+          + escapeHtml(code.replace(/\n$/, '')) + '</code></pre>');
+      });
+    text = text.replace(/`([^`\n]+)`/g, function(m, c){ return stash('<code>' + escapeHtml(c) + '</code>'); });
+    text = text.replace(/\$\$([\s\S]+?)\$\$/g, function(m, tex){ return stash(mathSpan(tex, true)); });
+    text = text.replace(/\\\[([\s\S]+?)\\\]/g, function(m, tex){ return stash(mathSpan(tex, true)); });
+    text = text.replace(/\\\(([\s\S]+?)\\\)/g, function(m, tex){ return stash(mathSpan(tex, false)); });
+    text = text.replace(/\$(?!\s)([^\$\n]+?)(?<!\s)\$/g, function(m, tex){ return stash(mathSpan(tex, false)); });
+
+    var lines = text.split('\n'), out = [], i = 0;
+    function isPlaceholder(l){ return /^\u0000\d+\u0000$/.test(l.trim()); }
+    function isHr(l){ return /^ {0,3}(?:(?:\*\s*){3,}|(?:-\s*){3,}|(?:_\s*){3,})$/.test(l.trim()); }
+    function isList(l){ return /^ {0,3}([-*+]|\d+[.)])\s+/.test(l); }
+    function isHeading(l){ return /^ {0,3}#{1,6}\s+/.test(l); }
+    function isQuote(l){ return /^ {0,3}>/.test(l); }
+    function isBlockStart(l){
+      return isPlaceholder(l) || isHr(l) || isList(l) || isHeading(l) || isQuote(l);
+    }
+    while (i < lines.length){
+      var raw = lines[i];
+      if (!raw.trim()){ i++; continue; }
+      if (isPlaceholder(raw)){ out.push(raw.trim()); i++; continue; }
+      if (isHr(raw)){ out.push('<hr>'); i++; continue; }
+      var m = raw.match(/^ {0,3}(#{1,6})\s+(.*?)\s*#*\s*$/);
+      if (m){
+        var lv = m[1].length;
+        out.push('<h' + lv + '>' + inline(m[2]) + '</h' + lv + '>');
+        i++; continue;
+      }
+      if (isQuote(raw)){
+        var qbuf = [];
+        while (i < lines.length && isQuote(lines[i])){
+          qbuf.push(lines[i].replace(/^ {0,3}>[ \t]?/, ''));
+          i++;
+        }
+        out.push('<blockquote>' + renderBlocks(qbuf.join('\n')) + '</blockquote>');
+        continue;
+      }
+      if (raw.indexOf('|') !== -1 && i + 1 < lines.length
+          && /^[\s|:\-]+$/.test(lines[i + 1])
+          && lines[i + 1].indexOf('-') !== -1
+          && lines[i + 1].indexOf('|') !== -1){
+        var rows = [lines[i], lines[i + 1]];
+        i += 2;
+        while (i < lines.length && lines[i].indexOf('|') !== -1 && lines[i].trim()){
+          rows.push(lines[i]); i++;
+        }
+        out.push(renderTable(rows));
+        continue;
+      }
+      if (isList(raw)){
+        var items = [];
+        while (i < lines.length){
+          var mm = lines[i].match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/);
+          if (mm){
+            var task = null, t = mm[3];
+            var taskM = t.match(/^\[([ xX])\]\s+(.*)$/);
+            if (taskM){ task = taskM[1].toLowerCase(); t = taskM[2]; }
+            items.push({
+              indent: mm[1].replace(/\t/g, '  ').length,
+              ordered: /^\d/.test(mm[2]),
+              text: t, task: task
+            });
+            i++;
+          } else if (lines[i].trim() && /^\s{2,}/.test(lines[i]) && items.length){
+            items[items.length - 1].text += ' ' + lines[i].trim();
+            i++;
+          } else break;
+        }
+        out.push(listToHtml(items, items[0].indent));
+        continue;
+      }
+      var pbuf = [lines[i]];
+      i++;
+      while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i])
+             && !(lines[i].indexOf('|') !== -1 && i + 1 < lines.length
+                  && /^[\s|:\-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') !== -1)){
+        pbuf.push(lines[i]); i++;
+      }
+      out.push('<p>' + inline(pbuf.join('\n')) + '</p>');
+    }
+    return out.join('\n');
+  }
+  var html = renderBlocks(String(src).replace(/\r\n?/g, '\n'));
+  return html.replace(/\u0000(\d+)\u0000/g, function(m, id){
+    return store[+id] !== undefined ? store[+id] : '';
+  });
+}
+window.markdownToHtml = markdownToHtml;
+})();
+
+/* ============ APP ============ */
+(function(){
+var $ = function(s){ return document.querySelector(s); };
+var editor = $('#editor'), preview = $('#preview');
+var previewPane = $('#previewPane'), editorPane = $('#editorPane');
+var app = $('#app'), toastEl = $('#toast');
+
+var DEFAULTS = {
+  font: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  size: 17, lh: 1.75, ls: 0, padding: 48, width: 820,
+  align: 'left', theme: 'light', accent: '#6366f1', editorSize: 14
+};
+var settings = Object.assign({}, DEFAULTS);
+var saveTimer = null;
+
+function hexToRgba(hex, a){
+  var h = hex.replace('#', '');
+  if (h.length === 3) h = h.charAt(0)+h.charAt(0)+h.charAt(1)+h.charAt(1)+h.charAt(2)+h.charAt(2);
+  var n = parseInt(h, 16);
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+
+function applySettings(){
+  var r = document.documentElement.style;
+  r.setProperty('--doc-font', settings.font);
+  r.setProperty('--doc-size', settings.size + 'px');
+  r.setProperty('--doc-lh', settings.lh);
+  r.setProperty('--doc-ls', settings.ls + 'em');
+  r.setProperty('--doc-align', settings.align);
+  r.setProperty('--page-padding', settings.padding + 'px');
+  r.setProperty('--page-width', settings.width + 'px');
+  r.setProperty('--editor-size', settings.editorSize + 'px');
+  r.setProperty('--accent', settings.accent);
+  r.setProperty('--accent-soft', hexToRgba(settings.accent, 0.13));
+  document.documentElement.setAttribute('data-theme', settings.theme);
+
+  var el;
+  el = $('#setFont');       if (el) el.value = settings.font;
+  el = $('#setSize');       if (el) el.value = settings.size;
+  el = $('#valSize');       if (el) el.textContent = settings.size + 'px';
+  el = $('#setLh');         if (el) el.value = settings.lh;
+  el = $('#valLh');         if (el) el.textContent = Number(settings.lh).toFixed(2);
+  el = $('#setLs');         if (el) el.value = settings.ls;
+  el = $('#valLs');         if (el) el.textContent = Number(settings.ls).toFixed(3) + 'em';
+  el = $('#setPad');        if (el) el.value = settings.padding;
+  el = $('#valPad');        if (el) el.textContent = settings.padding + 'px';
+  el = $('#setWidth');      if (el) el.value = settings.width;
+  el = $('#valWidth');      if (el) el.textContent = settings.width + 'px';
+  el = $('#setEditorSize'); if (el) el.value = settings.editorSize;
+  el = $('#valEditorSize'); if (el) el.textContent = settings.editorSize + 'px';
+  el = $('#setAccent');     if (el) el.value = settings.accent;
+
+  Array.prototype.forEach.call(document.querySelectorAll('#alignChips .chip'), function(c){
+    c.classList.toggle('active', c.dataset.align === settings.align);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#themeChips .chip'), function(c){
+    c.classList.toggle('active', c.dataset.theme === settings.theme);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#swatches .swatch'), function(s){
+    s.classList.toggle('active', s.dataset.color.toLowerCase() === String(settings.accent).toLowerCase());
+  });
+}
+
+var renderQueued = false;
+function render(){
+  if (renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(function(){
+    renderQueued = false;
+    var md = editor.value;
+    preview.innerHTML = window.markdownToHtml(md);
+    renderMath();
+    updateStats(md);
+    scheduleSave();
+  });
+}
+function renderMath(){
+  var nodes = preview.querySelectorAll('[data-tex]');
+  Array.prototype.forEach.call(nodes, function(el){
+    var tex = decodeURIComponent(el.dataset.tex);
+    var display = el.dataset.display === '1';
+    if (window.katex){
+      try{ window.katex.render(tex, el, { displayMode: display, throwOnError: false }); return; }catch(e){}
+    }
+    el.textContent = display ? '$$' + tex + '$$' : '$' + tex + '$';
+    el.classList.add('math-raw');
+  });
+}
+window.__katexLoaded = function(){ if (window.markdownToHtml) render(); };
+
+function plural(n, one, few, many){
+  var m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
+function updateStats(md){
+  var words = md.trim() ? md.trim().split(/\s+/).filter(Boolean).length : 0;
+  var wEl = $('#statWords'), cEl = $('#statChars'), lEl = $('#statLines'), rEl = $('#statRead');
+  if (wEl) wEl.textContent = words + ' ' + plural(words, 'слово', 'слова', 'слов');
+  if (cEl) cEl.textContent = md.length + ' ' + plural(md.length, 'символ', 'символа', 'символов');
+  var lines = md ? md.split('\n').length : 0;
+  if (lEl) lEl.textContent = lines + ' ' + plural(lines, 'строка', 'строки', 'строк');
+  if (rEl) rEl.textContent = '~' + Math.max(1, Math.round(words / 180)) + ' мин';
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    try{
+      localStorage.setItem('mdstudio.doc', editor.value);
+      localStorage.setItem('mdstudio.settings', JSON.stringify(settings));
+    }catch(e){}
+  }, 400);
+}
+function loadState(){
+  var hasDoc = false;
+  try{
+    var s = localStorage.getItem('mdstudio.settings');
+    if (s) settings = Object.assign({}, DEFAULTS, JSON.parse(s));
+    var d = localStorage.getItem('mdstudio.doc');
+    if (d !== null){ editor.value = d; hasDoc = true; }
+  }catch(e){}
+  if (!hasDoc){
+    var tpl = document.getElementById('defaultDoc');
+    editor.value = tpl ? tpl.textContent.replace(/^\n/, '') : '';
+  }
+}
+
+function replaceRange(start, end, text, selStart, selEnd){
+  editor.focus();
+  editor.setSelectionRange(start, end);
+  var ok = false;
+  try { ok = document.execCommand('insertText', false, text); } catch(e){ ok = false; }
+  if (!ok){ editor.setRangeText(text, start, end, 'end'); }
+  if (selStart != null) editor.setSelectionRange(selStart, selEnd);
+  render();
+}
+function wrapSel(before, after, placeholder){
+  var s = editor.selectionStart, e = editor.selectionEnd;
+  var sel = editor.value.slice(s, e);
+  var inner = sel || placeholder || '';
+  var text = before + inner + after;
+  replaceRange(s, e, text, s + before.length, s + before.length + inner.length);
+}
+function prefixLines(kind){
+  var s = editor.selectionStart, e = editor.selectionEnd;
+  var val = editor.value;
+  var ls = val.lastIndexOf('\n', s - 1) + 1;
+  var le = val.indexOf('\n', e);
+  if (le === -1) le = val.length;
+  var lines = val.slice(ls, le).split('\n');
+  var test = { h1:/^# /, h2:/^## /, h3:/^### /, h4:/^#### /,
+               ul:/^[-*+] /, ol:/^\d+[.)] /, quote:/^> /,
+               task:/^[-*+] \[[ xX]\] / }[kind];
+  var allHave = lines.every(function(l){ return test.test(l); });
+  var newLines = lines.map(function(l, idx){
+    if (allHave) return l.replace(test, '');
+    switch (kind){
+      case 'h1': return '# ' + l;
+      case 'h2': return '## ' + l;
+      case 'h3': return '### ' + l;
+      case 'h4': return '#### ' + l;
+      case 'ul': return '- ' + l;
+      case 'ol': return (idx + 1) + '. ' + l;
+      case 'quote': return '> ' + l;
+      case 'task': return '- [ ] ' + l;
+      default: return l;
+    }
+  });
+  var block = newLines.join('\n');
+  replaceRange(ls, le, block, ls, ls + block.length);
+}
+function insertBlock(text){
+  var s = editor.selectionStart, e = editor.selectionEnd;
+  var val = editor.value;
+  var needNl = s > 0 && val.charAt(s - 1) !== '\n' ? '\n' : '';
+  var full = needNl + text;
+  replaceRange(s, e, full, s + full.length, s + full.length);
+}
+var TABLE_TPL = '| Заголовок 1 | Заголовок 2 |\n|:------------|:-----------:|\n| Текст       | Текст       |\n';
+var TABLE_MATH_TPL = '| Формула | Описание |\n|:-------:|:---------|\n| $a^2 + b^2 = c^2$ | Теорема Пифагора |\n| $\\frac{a}{b}$ | Дробь |\n';
+
+function runAction(act){
+  switch (act){
+    case 'h1': case 'h2': case 'h3': case 'h4':
+    case 'ul': case 'ol': case 'quote': case 'task':
+      prefixLines(act); break;
+    case 'bold': wrapSel('**', '**', 'жирный текст'); break;
+    case 'italic': wrapSel('*', '*', 'курсив'); break;
+    case 'underline': wrapSel('<u>', '</u>', 'подчёркнутый'); break;
+    case 'strike': wrapSel('~~', '~~', 'зачёркнутый'); break;
+    case 'highlight': wrapSel('==', '==', 'выделенный'); break;
+    case 'sup': wrapSel('^', '^', 'верхний индекс'); break;
+    case 'sub': wrapSel('~', '~', 'нижний индекс'); break;
+    case 'inlinecode': wrapSel('`', '`', 'код'); break;
+    case 'comment': wrapSel('<!-- ', ' -->', 'комментарий'); break;
+    case 'code': {
+      var sel = editor.value.slice(editor.selectionStart, editor.selectionEnd) || 'код';
+      insertBlock('```\n' + sel + '\n```\n'); break;
+    }
+    case 'link': wrapSel('[', '](https://example.com)', 'текст ссылки'); break;
+    case 'image': wrapSel('![', '](https://picsum.photos/800/400)', 'описание'); break;
+    case 'table': insertBlock(TABLE_TPL); break;
+    case 'tablemath': insertBlock(TABLE_MATH_TPL); break;
+    case 'math': wrapSel('$', '$', 'E = mc^2'); break;
+    case 'mathblock': insertBlock('$$\n\\int_{0}^{\\infty} e^{-x}\\,dx = 1\n$$\n'); break;
+    case 'hr': insertBlock('---\n'); break;
+  }
+}
+
+document.getElementById('toolbar').addEventListener('click', function(e){
+  var btn = e.target.closest('.tbtn');
+  if (btn) runAction(btn.dataset.act);
+});
+
+/* ============ MATH TOOLBAR ============ */
+var MATH_INLINE = {
+  frac:'\\frac{}{}', dfrac:'\\dfrac{}{}', sqrt:'\\sqrt{}', nthroot:'\\sqrt[n]{}',
+  pow:'^{}', sub:'_{}', binom:'\\binom{n}{k}', abs:'\\left|{}\\right|',
+  floor:'\\lfloor{}\\rfloor', ceil:'\\lceil{}\\rceil', sum:'\\sum_{i=1}^{n}',
+  vec:'\\vec{}', infty:'\\infty', pi:'\\pi', angle:'\\angle', degree:'^{\\circ}',
+  leq:'\\le', geq:'\\ge', neq:'\\ne', approx:'\\approx', equiv:'\\equiv',
+  pm:'\\pm', times:'\\times', cdot:'\\cdot', div:'\\div', to:'\\to',
+  forall:'\\forall', exists:'\\exists', in_:'\\in', notin:'\\notin',
+  subset:'\\subset', cup:'\\cup', cap:'\\cap', emptyset:'\\emptyset',
+  log:'\\log_{}', ln:'\\ln', sin:'\\sin', cos:'\\cos', tan:'\\tan'
+};
+
+/* Вставка LaTeX без обрамляющих $ — как просил пользователь */
+function insertMath(tex){
+  var s = editor.selectionStart, e = editor.selectionEnd;
+  var sel = editor.value.slice(s, e);
+  var text = tex;
+  var cursorRel = text.length;
+  if (sel && text.indexOf('{}') !== -1){
+    text = text.replace('{}', '{' + sel + '}');
+    cursorRel = text.indexOf('{' + sel + '}') + 1 + sel.length + 1;
+  } else {
+    var idx = text.indexOf('{}');
+    if (idx !== -1) cursorRel = idx + 1;
+  }
+  replaceRange(s, e, text, s + cursorRel, s + cursorRel);
+}
+
+document.getElementById('mathToolbar').addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  if (btn.id === 'btnGreek'){
+    document.getElementById('greekPanel').classList.toggle('open');
+    e.stopPropagation();
+    return;
+  }
+  var key = btn.dataset.math;
+  if (!key || MATH_INLINE[key] === undefined) return;
+  insertMath(MATH_INLINE[key]);
+});
+
+document.getElementById('greekPanel').addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if (!btn || !btn.dataset.greek) return;
+  e.stopPropagation();
+  var tex = btn.dataset.greek;
+  var s = editor.selectionStart, e2 = editor.selectionEnd;
+  replaceRange(s, e2, tex, s + tex.length, s + tex.length);
+  document.getElementById('greekPanel').classList.remove('open');
+});
+
+document.addEventListener('click', function(e){
+  var panel = document.getElementById('greekPanel');
+  if (!panel || !panel.classList.contains('open')) return;
+  if (e.target.closest('#greekPanel') || e.target.closest('#btnGreek')) return;
+  panel.classList.remove('open');
+});
+
+/* ============ HOTKEYS ============ */
+editor.addEventListener('keydown', function(e){
+  if (e.ctrlKey || e.metaKey){
+    var k = e.key.toLowerCase();
+    if (k === 'b'){ e.preventDefault(); runAction('bold'); }
+    else if (k === 'i'){ e.preventDefault(); runAction('italic'); }
+    else if (k === 'u'){ e.preventDefault(); runAction('underline'); }
+    else if (k === 'k'){ e.preventDefault(); runAction('link'); }
+    else if (k === 'e'){ e.preventDefault(); runAction('inlinecode'); }
+    else if (k === 'm'){ e.preventDefault(); runAction('math'); }
+  }
+  if (e.key === 'Tab'){
+    e.preventDefault();
+    var s = editor.selectionStart, en = editor.selectionEnd;
+    replaceRange(s, en, '  ', s + 2, s + 2);
+  }
+});
+
+function updateCursor(){
+  var pos = editor.selectionStart;
+  var before = editor.value.slice(0, pos);
+  var line = before.split('\n').length;
+  var col = pos - before.lastIndexOf('\n');
+  var el = $('#statPos');
+  if (el) el.textContent = 'Стр ' + line + ', Кол ' + col;
+}
+['keyup','click','input','select'].forEach(function(ev){
+  editor.addEventListener(ev, updateCursor);
+});
+
+var syncing = false;
+editor.addEventListener('scroll', function(){
+  if (syncing) return;
+  syncing = true;
+  var ratio = editor.scrollTop / Math.max(1, editor.scrollHeight - editor.clientHeight);
+  previewPane.scrollTop = ratio * (previewPane.scrollHeight - previewPane.clientHeight);
+  requestAnimationFrame(function(){ syncing = false; });
+});
+previewPane.addEventListener('scroll', function(){
+  if (syncing) return;
+  syncing = true;
+  var ratio = previewPane.scrollTop / Math.max(1, previewPane.scrollHeight - previewPane.clientHeight);
+  editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
+  requestAnimationFrame(function(){ syncing = false; });
+});
+
+(function(){
+  var sp = document.getElementById('splitter');
+  var dragging = false;
+  sp.addEventListener('mousedown', function(e){
+    if (app.dataset.view !== 'split') return;
+    dragging = true;
+    sp.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function(e){
+    if (!dragging) return;
+    var ws = document.getElementById('workspace').getBoundingClientRect();
+    var pct = ((e.clientX - ws.left) / ws.width) * 100;
+    pct = Math.min(80, Math.max(20, pct));
+    editorPane.style.flex = '0 0 ' + pct + '%';
+    previewPane.style.flex = '1 1 auto';
+  });
+  window.addEventListener('mouseup', function(){
+    if (!dragging) return;
+    dragging = false;
+    sp.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
+
+document.getElementById('viewMode').addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  Array.prototype.forEach.call(document.querySelectorAll('#viewMode button'), function(b){
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  app.dataset.view = btn.dataset.view;
+  if (btn.dataset.view === 'split'){
+    editorPane.style.flex = '';
+    previewPane.style.flex = '';
+  }
+});
+
+var settingsPanel = document.getElementById('settings');
+var backdrop = document.getElementById('backdrop');
+function openSettings(){ settingsPanel.classList.add('open'); backdrop.classList.add('show'); }
+function closeSettings(){ settingsPanel.classList.remove('open'); backdrop.classList.remove('show'); }
+document.getElementById('btnSettings').addEventListener('click', openSettings);
+document.getElementById('closeSettings').addEventListener('click', closeSettings);
+backdrop.addEventListener('click', closeSettings);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeSettings(); });
+
+document.getElementById('setFont').addEventListener('change', function(e){ settings.font = e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setSize').addEventListener('input', function(e){ settings.size = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setLh').addEventListener('input', function(e){ settings.lh = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setLs').addEventListener('input', function(e){ settings.ls = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setPad').addEventListener('input', function(e){ settings.padding = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setWidth').addEventListener('input', function(e){ settings.width = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setEditorSize').addEventListener('input', function(e){ settings.editorSize = +e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('setAccent').addEventListener('input', function(e){ settings.accent = e.target.value; applySettings(); scheduleSave(); });
+document.getElementById('alignChips').addEventListener('click', function(e){
+  var chip = e.target.closest('.chip'); if (!chip) return;
+  settings.align = chip.dataset.align; applySettings(); scheduleSave();
+});
+document.getElementById('themeChips').addEventListener('click', function(e){
+  var chip = e.target.closest('.chip'); if (!chip) return;
+  settings.theme = chip.dataset.theme; applySettings(); scheduleSave();
+});
+document.getElementById('swatches').addEventListener('click', function(e){
+  var sw = e.target.closest('.swatch'); if (!sw) return;
+  settings.accent = sw.dataset.color; applySettings(); scheduleSave();
+});
+document.getElementById('btnReset').addEventListener('click', function(){
+  settings = Object.assign({}, DEFAULTS);
+  applySettings(); scheduleSave(); toast('Настройки сброшены');
+});
+
+function download(content, filename, mime){
+  var blob = new Blob([content], { type: mime });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+document.getElementById('btnExportMd').addEventListener('click', function(){
+  download(editor.value, 'document.md', 'text/markdown;charset=utf-8');
+  toast('Скачан .md');
+});
+document.getElementById('btnExportHtml').addEventListener('click', function(){
+  var css = ''
+    + 'body{font-family:' + settings.font + ';font-size:' + settings.size + 'px;'
+    + 'line-height:' + settings.lh + ';letter-spacing:' + settings.ls + 'em;'
+    + 'background:#fff;color:#1c2230;margin:0;padding:40px 20px}'
+    + '.page{max-width:' + settings.width + 'px;margin:0 auto;background:#fff;'
+    + 'padding:' + settings.padding + 'px;text-align:' + settings.align + '}'
+    + '.page pre{background:#f2f4f9;padding:15px 18px;border-radius:12px;overflow:auto}'
+    + '.page code{background:#f2f4f9;padding:.16em .42em;border-radius:6px;font-family:ui-monospace,Consolas,monospace}'
+    + '.page pre code{background:none;padding:0}'
+    + '.page blockquote{border-left:4px solid #6366f1;background:rgba(99,102,241,.12);'
+    + 'margin:1.2em 0;padding:.6em 1.1em;border-radius:0 10px 10px 0}'
+    + '.page table{border-collapse:collapse;width:100%}'
+    + '.page th,.page td{border:1px solid #e2e6ee;padding:.62em .9em}'
+    + '.page img{max-width:100%;border-radius:10px}'
+    + '.page a{color:#6366f1}'
+    + '.page mark{background:#fef08a;padding:.05em .25em;border-radius:3px}'
+    + '.page sup{font-size:.75em;vertical-align:super;line-height:0}'
+    + '.page sub{font-size:.75em;vertical-align:sub;line-height:0}'
+    + '.page u{text-decoration:underline}'
+    + '.math-block{display:block;text-align:center;margin:1.4em 0}';
+  var html = '<!DOCTYPE html>\n<html lang="ru">\n<head>\n<meta charset="UTF-8">\n'
+    + '<title>Markdown Export</title>\n'
+    + '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">\n'
+    + '<style>' + css + '</style>\n</head>\n<body>\n'
+    + '<article class="page">' + preview.innerHTML + '</article>\n</body>\n</html>';
+  download(html, 'document.html', 'text/html;charset=utf-8');
+  toast('Скачан HTML');
+});
+
+function buildPrintDoc(mode){
+  var isBw = mode === 'bw';
+  var content = preview.innerHTML;
+  var borderCol = isBw ? '#000' : '#e2e6ee';
+  var textCol   = isBw ? '#000' : '#1c2230';
+  var mutedCol  = isBw ? '#333' : '#6b7488';
+  var codeBg    = isBw ? '#fff' : '#f2f4f9';
+  var codeCol   = isBw ? '#000' : '#c026a3';
+  var codeTxt   = isBw ? '#000' : '#1c2230';
+  var linkCol   = isBw ? '#000' : settings.accent;
+  var linkBd    = isBw ? '#000' : hexToRgba(settings.accent, .4);
+  var quoteBd   = isBw ? '#000' : settings.accent;
+  var quoteBg   = isBw ? '#fff' : hexToRgba(settings.accent, .12);
+  var theadBg   = isBw ? '#fff' : '#f7f8fb';
+  var markBg    = isBw ? '#e5e5e5' : '#fef08a';
+
+  var css = ''
+    + '@page{size:A4;margin:15mm;}'
+    + '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    + 'html,body{margin:0;padding:0;background:#fff;color:' + textCol + ';}'
+    + 'body{font-family:' + settings.font + ';font-size:' + settings.size + 'px;'
+    + 'line-height:' + settings.lh + ';letter-spacing:' + settings.ls + 'em;'
+    + 'text-align:' + settings.align + ';}'
+    + '.page{max-width:none;padding:0;background:#fff;color:' + textCol + ';}'
+    + 'h1{font-size:2em;font-weight:750;line-height:1.25;margin:1.6em 0 .6em;'
+    + 'letter-spacing:-.018em;padding-bottom:.35em;border-bottom:2px solid ' + borderCol + ';'
+    + 'page-break-after:avoid;text-align:start;}'
+    + 'h2{font-size:1.5em;font-weight:750;line-height:1.25;margin:1.6em 0 .6em;'
+    + 'padding-bottom:.28em;border-bottom:1px solid ' + borderCol + ';'
+    + 'page-break-after:avoid;text-align:start;}'
+    + 'h3{font-size:1.24em;font-weight:750;margin:1.6em 0 .6em;page-break-after:avoid;text-align:start;}'
+    + 'h4{font-size:1.08em;font-weight:750;margin:1.6em 0 .6em;page-break-after:avoid;text-align:start;}'
+    + 'h5,h6{font-size:1em;font-weight:750;margin:1.6em 0 .6em;color:' + mutedCol + ';'
+    + 'page-break-after:avoid;text-align:start;}'
+    + 'p{margin:0 0 1.05em;}'
+    + 'a{color:' + linkCol + ';text-decoration:none;border-bottom:1px solid ' + linkBd + ';'
+    + (isBw ? 'text-decoration:underline;' : '') + '}'
+    + 'ul,ol{margin:0 0 1.05em;padding-left:1.6em;}'
+    + 'li{margin:.32em 0;}'
+    + 'blockquote{margin:1.2em 0;padding:.6em 1.1em;'
+    + 'border-left:4px solid ' + quoteBd + ';background:' + quoteBg + ';color:' + textCol + ';}'
+    + 'blockquote p:last-child{margin-bottom:0;}'
+    + 'code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88em;'
+    + 'background:' + codeBg + ';color:' + codeCol + ';padding:.16em .42em;'
+    + 'border-radius:6px;border:1px solid ' + borderCol + ';}'
+    + 'pre{background:' + codeBg + ';border:1px solid ' + borderCol + ';border-radius:12px;'
+    + 'padding:15px 18px;overflow:auto;margin:1.2em 0;line-height:1.6;'
+    + 'page-break-inside:avoid;color:' + codeTxt + ';}'
+    + 'pre code{background:none;border:0;padding:0;color:' + codeTxt + ';font-size:.85em;}'
+    + 'hr{border:0;height:1px;background:' + (isBw ? '#000' : '#e2e6ee') + ';margin:2.2em 0;}'
+    + '.table-wrap{overflow:visible;margin:1.3em 0;}'
+    + 'table{border-collapse:collapse;width:100%;font-size:.94em;}'
+    + 'th,td{border:1px solid ' + borderCol + ';padding:.62em .9em;vertical-align:top;text-align:left;}'
+    + 'thead{display:table-header-group;}'
+    + 'thead th{background:' + theadBg + ';font-weight:700;color:' + textCol + ';}'
+    + 'tr{page-break-inside:avoid;}'
+    + 'img{max-width:100%;height:auto;border-radius:10px;display:block;margin:1.1em auto;'
+    + 'page-break-inside:avoid;' + (isBw ? 'filter:grayscale(100%) contrast(1.05);' : '') + '}'
+    + 'mark{background:' + markBg + ';color:' + textCol + ';padding:.05em .25em;border-radius:3px;}'
+    + 'sup{font-size:.75em;vertical-align:super;line-height:0;}'
+    + 'sub{font-size:.75em;vertical-align:sub;line-height:0;}'
+    + 'u{text-decoration:underline;}' + (isBw ? 'u{text-decoration:underline;text-decoration-color:#000;}' : '')
+    + 'kbd{font-family:ui-monospace,Consolas,monospace;font-size:.85em;padding:.15em .4em;'
+    + 'border:1px solid ' + borderCol + ';border-bottom-width:2px;border-radius:5px;}'
+    + '.math-block{display:block;text-align:center;margin:1.4em 0;overflow:visible;}'
+    + '.math-inline{white-space:nowrap;}'
+    + '.math-raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em;color:' + mutedCol + ';}'
+    + '.katex{font-size:1.05em;' + (isBw ? 'color:#000;' : '') + '}'
+    + (isBw ? '.katex *{color:#000 !important;} strong,em,del{color:#000;}' : '')
+    + 'input[type=checkbox]{-webkit-appearance:none;appearance:none;width:14px;height:14px;'
+    + 'border:1.5px solid #000;border-radius:3px;vertical-align:middle;margin-right:6px;position:relative;}'
+    + 'input[type=checkbox]:checked::after{content:"✓";position:absolute;top:-3px;left:2px;font-size:13px;color:#000;}';
+
+  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n'
+    + '<meta charset="UTF-8">\n'
+    + '<title>Markdown → PDF' + (isBw ? ' (Ч/Б)' : '') + '</title>\n'
+    + '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">\n'
+    + '<style>' + css + '</style>\n'
+    + '</head>\n<body>\n'
+    + '<article class="page">' + content + '</article>\n'
+    + '</body>\n</html>';
+}
+
+function exportPdf(mode){
+  var html = buildPrintDoc(mode);
+  var iframe = document.createElement('iframe');
+  iframe.setAttribute('aria-hidden', 'true');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;border:0;visibility:hidden;';
+  document.body.appendChild(iframe);
+  var doc = iframe.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+
+  setTimeout(function(){
+    try{
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }catch(e){}
+    setTimeout(function(){
+      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    }, 2000);
+  }, 600);
+
+  toast(mode === 'bw' ? 'Печать / Сохранить PDF (Ч/Б)…' : 'Печать / Сохранить PDF (цвет)…');
+}
+
+document.getElementById('btnPdfColor').addEventListener('click', function(){ exportPdf('color'); });
+document.getElementById('btnPdfBw').addEventListener('click', function(){ exportPdf('bw'); });
+
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
+}
+
+loadState();
+applySettings();
+editor.addEventListener('input', render);
+updateCursor();
+render();
+})();
+</script>
+</body>
+</html>
