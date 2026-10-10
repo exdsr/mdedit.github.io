@@ -1,1408 +1,2102 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="be" data-theme="light" data-color="indigo">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markdown Studio — редактор с предпросмотром</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"
-        onload="window.__katexLoaded && window.__katexLoaded()"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<title>КТП · Матэматыка · Багданаўская СШ</title>
+
+<!-- KaTeX для формул -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+
 <style>
-/* ============ THEMES ============ */
+/* =========================================================
+   ЗМЕННЫЯ
+   ========================================================= */
 :root{
-  --bg:#eef1f6; --panel:#fff; --panel-2:#f7f8fb; --text:#1c2230; --muted:#6b7488;
-  --border:#e2e6ee; --accent:#6366f1; --accent-soft:rgba(99,102,241,.12);
-  --preview-bg:#ffffff; --page-bg:#ffffff; --page-text:#1c2230;
-  --code-bg:#f2f4f9; --code-text:#c026a3;
-  --shadow:0 1px 2px rgba(16,24,40,.05), 0 14px 34px -10px rgba(16,24,40,.16);
-  --radius:14px;
-  --doc-font:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --doc-size:17px; --doc-lh:1.75; --doc-ls:0em; --doc-align:left;
-  --page-padding:48px; --page-width:820px; --editor-size:14px;
+  --bg:#f4f5fa; --bg-deep:#eceefa;
+  --card:#ffffff; --card-2:#fafbff;
+  --text:#0f172a; --text-2:#475569; --muted:#94a3b8;
+  --border:#e5e9f2; --border-2:#eef1f8; --hover:#f8faff;
+  --danger:#e5484d;
+  --today:#10b981; --today-soft:#ecfdf5;
+  --next:#f59e0b;  --next-soft:#fffbeb;
+  --past:#94a3b8;  --past-soft:#f1f5f9;
+  --edit:#f59e0b;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04);
+  --shadow:0 4px 14px -4px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+  --shadow-lg:0 24px 48px -16px rgba(15,23,42,.16);
+  --radius:18px;
 }
-:root[data-theme="dark"]{
-  --bg:#0e1015; --panel:#161a22; --panel-2:#1b2029; --text:#e7eaf2; --muted:#8b93a7;
-  --border:#252b37; --accent:#818cf8; --accent-soft:rgba(129,140,248,.16);
-  --code-bg:#1e2431; --code-text:#f0a6d8;
+html[data-color="indigo"]{ --accent:#6366f1; --accent-2:#8b5cf6; --accent-text:#4f46e5; --accent-soft:#eef0ff; }
+html[data-color="ocean"] { --accent:#0ea5e9; --accent-2:#06b6d4; --accent-text:#0284c7; --accent-soft:#e0f2fe; }
+html[data-color="violet"]{ --accent:#8b5cf6; --accent-2:#a855f7; --accent-text:#7c3aed; --accent-soft:#f3e8ff; }
+html[data-color="rose"]  { --accent:#f43f5e; --accent-2:#ec4899; --accent-text:#e11d48; --accent-soft:#ffe4e6; }
+html[data-color="amber"] { --accent:#f59e0b; --accent-2:#f97316; --accent-text:#d97706; --accent-soft:#fef3c7; }
+html[data-color="teal"]  { --accent:#14b8a6; --accent-2:#06b6d4; --accent-text:#0d9488; --accent-soft:#ccfbf1; }
+html[data-color="slate"] { --accent:#64748b; --accent-2:#475569; --accent-text:#475569; --accent-soft:#f1f5f9; }
+
+html[data-theme="dark"]{
+  --bg:#0c0f16; --bg-deep:#070a10;
+  --card:#151a24; --card-2:#1a1f2b;
+  --text:#e8ecf4; --text-2:#a8b3c4; --muted:#6b7689;
+  --border:#242b38; --border-2:#1c222d; --hover:#1a1f2b;
+  --danger:#ff6b6f;
+  --today:#34d399; --today-soft:#0d2620;
+  --next:#fbbf24;  --next-soft:#2a2110;
+  --past:#64748b;  --past-soft:#141926;
+  --edit:#fbbf24;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 4px 14px -4px rgba(0,0,0,.5);
+  --shadow-lg:0 24px 48px -16px rgba(0,0,0,.7);
 }
-:root[data-theme="sepia"]{
-  --bg:#e7dcc6; --panel:#faf5ea; --panel-2:#f3ece0; --text:#3b3226; --muted:#8a7c66;
-  --border:#e0d4bd; --accent:#b45309; --accent-soft:rgba(180,83,9,.12);
+html[data-theme="dark"][data-color="indigo"]{ --accent:#818cf8; --accent-2:#a78bfa; --accent-text:#a5b4fc; --accent-soft:#1e2440; }
+html[data-theme="dark"][data-color="ocean"] { --accent:#38bdf8; --accent-2:#22d3ee; --accent-text:#7dd3fc; --accent-soft:#0c2c3f; }
+html[data-theme="dark"][data-color="violet"]{ --accent:#a78bfa; --accent-2:#c084fc; --accent-text:#c4b5fd; --accent-soft:#2a1e40; }
+html[data-theme="dark"][data-color="rose"]  { --accent:#fb7185; --accent-2:#f472b6; --accent-text:#fda4af; --accent-soft:#3a1a25; }
+html[data-theme="dark"][data-color="amber"] { --accent:#fbbf24; --accent-2:#fb923c; --accent-text:#fcd34d; --accent-soft:#2a2110; }
+html[data-theme="dark"][data-color="teal"]  { --accent:#2dd4bf; --accent-2:#22d3ee; --accent-text:#5eead4; --accent-soft:#0d2a26; }
+html[data-theme="dark"][data-color="slate"] { --accent:#94a3b8; --accent-2:#64748b; --accent-text:#cbd5e1; --accent-soft:#1c222d; }
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Inter","Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  background:
+    radial-gradient(1400px 700px at 15% -20%, var(--accent-soft), transparent 55%),
+    radial-gradient(1000px 500px at 100% 0%, color-mix(in srgb, var(--accent-2) 8%, transparent), transparent 50%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  font-size:15px; line-height:1.5;
+  transition:background-color .3s ease,color .3s ease;
 }
-:root[data-theme="solarized-light"]{
-  --bg:#fdf6e3; --panel:#fffbf0; --panel-2:#f5efdc; --text:#586e75; --muted:#93a1a1;
-  --border:#eee8d5; --accent:#268bd2; --accent-soft:rgba(38,139,210,.12);
+.app{max-width:1280px;margin:0 auto;padding:0 20px 80px;}
+
+/* =========================================================
+   ШАПКА — sticky
+   ========================================================= */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;
+  padding:14px 0;margin-bottom:16px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--bg) 94%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 85%, transparent) 75%,
+    transparent 100%);
+  transition:padding .25s ease,margin .25s ease;
 }
-:root[data-theme="solarized-dark"]{
-  --bg:#002b36; --panel:#073642; --panel-2:#0a4250; --text:#93a1a1; --muted:#657b83;
-  --border:#0d4c5a; --accent:#2aa198; --accent-soft:rgba(42,161,152,.16);
+.brand{display:flex;align-items:center;gap:14px;min-width:0;}
+.logo{
+  width:52px;height:52px;flex:none;border-radius:15px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);
+  color:#fff;display:grid;place-items:center;
+  font-size:26px;font-weight:800;font-family:"Times New Roman",serif;
+  box-shadow:0 10px 26px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.25);
+  letter-spacing:-1px;
+  transition:all .25s ease;
 }
-:root[data-theme="nord"]{
-  --bg:#2e3440; --panel:#3b4252; --panel-2:#434c5e; --text:#d8dee9; --muted:#7b88a1;
-  --border:#4c566a; --accent:#88c0d0; --accent-soft:rgba(136,192,208,.16);
+.brand h1{
+  margin:0;font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15;
+  background:linear-gradient(135deg,var(--text) 20%,var(--accent) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  transition:font-size .25s ease;
 }
-:root[data-theme="dracula"]{
-  --bg:#282a36; --panel:#2d303e; --panel-2:#343746; --text:#f8f8f2; --muted:#8b92a8;
-  --border:#3c3f52; --accent:#bd93f9; --accent-soft:rgba(189,147,249,.16);
+html[data-theme="dark"] .brand h1{
+  background:linear-gradient(135deg,#fff 20%,var(--accent-2) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
-:root[data-theme="gruvbox"]{
-  --bg:#282828; --panel:#3c3836; --panel-2:#504945; --text:#ebdbb2; --muted:#a89984;
-  --border:#504945; --accent:#fabd2f; --accent-soft:rgba(250,189,47,.16);
+.brand p{margin:3px 0 0;font-size:12.5px;color:var(--muted);font-weight:500;transition:all .25s ease;}
+
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative;transition:gap .25s ease;}
+
+button{
+  font:inherit;font-size:13.5px;font-weight:600;
+  border:1px solid var(--border);background:var(--card);color:var(--text);
+  padding:10px 16px;border-radius:12px;cursor:pointer;
+  transition:all .18s ease;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:42px;box-shadow:var(--shadow-sm);
 }
-:root[data-theme="tokyo-night"]{
-  --bg:#1a1b26; --panel:#1f2335; --panel-2:#24283b; --text:#c0caf5; --muted:#565f89;
-  --border:#292e42; --accent:#7aa2f7; --accent-soft:rgba(122,162,247,.16);
+button:hover{background:var(--hover);border-color:var(--accent);color:var(--accent-text);transform:translateY(-1px);box-shadow:var(--shadow);}
+button:active{transform:translateY(0);}
+button.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-color:transparent;color:#fff;
+  box-shadow:0 8px 20px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
 }
-:root[data-theme="rose"]{
-  --bg:#fff5f7; --panel:#ffffff; --panel-2:#ffe9ef; --text:#4a1d2c; --muted:#a3707e;
-  --border:#ffd3de; --accent:#e11d48; --accent-soft:rgba(225,29,72,.12);
+button.primary:hover{color:#fff;filter:brightness(1.08);}
+button.success{
+  background:linear-gradient(135deg,var(--today),#059669);
+  border-color:transparent;color:#fff;
+  box-shadow:0 8px 20px -8px var(--today), inset 0 1px 0 rgba(255,255,255,.2);
 }
-:root[data-theme="forest"]{
-  --bg:#eef3ea; --panel:#f8fbf5; --panel-2:#e2ecdb; --text:#22301a; --muted:#6b7d5f;
-  --border:#d3e0c8; --accent:#3f8f29; --accent-soft:rgba(63,143,41,.12);
+button.success:hover{color:#fff;filter:brightness(1.08);}
+button.warn{
+  background:linear-gradient(135deg,var(--next),#d97706);
+  border-color:transparent;color:#fff;
+  box-shadow:0 8px 20px -8px var(--next), inset 0 1px 0 rgba(255,255,255,.2);
 }
-:root[data-theme="ocean"]{
-  --bg:#e6f1f8; --panel:#f5fafd; --panel-2:#dcecf5; --text:#0b2b40; --muted:#5a7f98;
-  --border:#c8ddec; --accent:#0284c7; --accent-soft:rgba(2,132,199,.12);
+button.warn:hover{color:#fff;filter:brightness(1.08);}
+button.ghost{background:transparent;box-shadow:none;}
+button.ghost:hover{background:var(--card);}
+button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justify-content:center;}
+
+/* кампактная шапка (пры скролі на мабільным) */
+.topbar.compact{padding:8px 0;margin-bottom:8px;}
+.topbar.compact .logo{width:36px;height:36px;font-size:18px;border-radius:10px;}
+.topbar.compact .brand{gap:9px;}
+.topbar.compact .brand h1{font-size:15px;}
+.topbar.compact .brand p{display:none;}
+.topbar.compact button{
+  padding:7px 10px;min-height:34px;font-size:12.5px;gap:6px;
+  border-radius:9px;
 }
-:root[data-theme="monokai"]{
-  --bg:#272822; --panel:#2e2f28; --panel-2:#3a3b32; --text:#f8f8f2; --muted:#9a9a8c;
-  --border:#44453a; --accent:#a6e22e; --accent-soft:rgba(166,226,46,.16);
+.topbar.compact button.icon{min-width:34px;padding:7px 8px;font-size:14px;}
+.topbar.compact .actions{gap:6px;}
+
+/* =========================================================
+   ПАНЕЛЬ ТЭМ
+   ========================================================= */
+.theme-panel{
+  position:absolute;top:calc(100% + 10px);right:0;z-index:60;
+  width:290px;background:var(--card);
+  border:1px solid var(--border);border-radius:16px;
+  padding:16px;box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(-8px) scale(.97);
+  pointer-events:none;
+  transition:all .2s cubic-bezier(.2,.8,.2,1);
+  transform-origin:top right;
 }
-:root[data-theme="catppuccin"]{
-  --bg:#1e1e2e; --panel:#252535; --panel-2:#2e2e42; --text:#cdd6f4; --muted:#7f849c;
-  --border:#313244; --accent:#cba6f7; --accent-soft:rgba(203,166,247,.16);
+.theme-panel.show{opacity:1;transform:none;pointer-events:auto;}
+.theme-section{margin-bottom:16px;}
+.theme-section:last-child{margin-bottom:0;}
+.theme-label{
+  font-size:10.5px;font-weight:800;letter-spacing:.7px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:9px;
+}
+.mode-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.mode-btns button{
+  padding:9px 8px;font-size:11.5px;font-weight:600;
+  border-radius:10px;justify-content:center;min-height:auto;box-shadow:none;
+}
+.mode-btns button.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;border-color:transparent;
+  box-shadow:0 6px 14px -6px var(--accent);
+}
+.mode-btns button.active:hover{color:#fff;}
+.color-swatches{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.swatch{
+  width:100%;aspect-ratio:1;border-radius:50%;
+  border:2px solid transparent;
+  padding:0;min-height:0;box-shadow:none;
+  background:var(--sw);cursor:pointer;position:relative;
+  transition:all .18s ease;
+}
+.swatch:hover{transform:scale(1.12);box-shadow:0 4px 12px -3px var(--sw);}
+.swatch.active{border-color:var(--card);box-shadow:0 0 0 2px var(--sw), 0 4px 12px -3px var(--sw);}
+.swatch.active::after{
+  content:"✓";position:absolute;inset:0;
+  display:grid;place-items:center;
+  color:#fff;font-size:13px;font-weight:800;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);
 }
 
-/* ============ BASE ============ */
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:var(--bg); color:var(--text); overflow:hidden;
-  -webkit-font-smoothing:antialiased; transition:background .25s,color .25s}
-::-webkit-scrollbar{width:11px;height:11px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(120,130,150,.35);border-radius:20px;border:3px solid transparent;background-clip:content-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(120,130,150,.6);background-clip:content-box}
-
-.app{display:flex;flex-direction:column;height:100vh}
-
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;z-index:20}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{width:38px;height:38px;flex-shrink:0;border-radius:11px;
-  background:linear-gradient(135deg,var(--accent),#ec4899);
-  color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 16px -4px rgba(99,102,241,.5);letter-spacing:-.5px}
-.title{font-weight:700;font-size:15px;letter-spacing:-.2px;line-height:1.2}
-.subtitle{font-size:11.5px;color:var(--muted);line-height:1.3}
-.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-
-.seg{display:flex;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px}
-.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;
-  font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;transition:.18s;white-space:nowrap}
-.seg button:hover{color:var(--text)}
-.seg button.active{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
-
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);
-  background:var(--panel);color:var(--text);font:inherit;font-size:12.5px;font-weight:600;
-  padding:8px 13px;border-radius:10px;cursor:pointer;transition:.18s}
-.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
-.btn.icon{padding:8px 10px}
-
-/* TOOLBARS */
-.toolbar{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:7px 14px;
-  background:var(--panel-2);border-bottom:1px solid var(--border);flex-shrink:0}
-.math-toolbar{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:6px 14px;
-  background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;position:relative}
-.math-toolbar .mlabel{font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--muted);margin-right:8px;user-select:none}
-.tbtn{display:inline-flex;align-items:center;justify-content:center;gap:4px;
-  min-width:32px;height:32px;padding:0 7px;border:1px solid transparent;background:transparent;
-  color:var(--muted);border-radius:8px;cursor:pointer;font:inherit;font-size:12px;font-weight:700;transition:.15s}
-.math-toolbar .tbtn{min-width:30px;height:30px;font-size:14px;
-  font-family:ui-monospace,Consolas,Menlo,monospace;font-weight:600}
-.tbtn svg{width:16px;height:16px;display:block}
-.tbtn:hover{background:var(--panel-2);color:var(--accent);border-color:var(--border)}
-.math-toolbar .tbtn:hover{background:var(--accent-soft);border-color:var(--accent)}
-.tbtn:active{transform:scale(.94)}
-.tsep{width:1px;height:20px;background:var(--border);margin:0 6px}
-
-.greek-panel{position:absolute;top:calc(100% - 2px);left:14px;
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:12px;padding:8px;
-  display:none;grid-template-columns:repeat(11, 34px);gap:4px;
-  box-shadow:var(--shadow);z-index:60;
-  max-width:calc(100vw - 40px)}
-.greek-panel.open{display:grid}
-.greek-panel button{width:34px;height:34px;border:1px solid transparent;background:var(--panel-2);
-  color:var(--text);border-radius:8px;cursor:pointer;font-size:16px;
-  font-family:ui-monospace,Consolas,Menlo,monospace;transition:.15s}
-.greek-panel button:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
-
-/* WORKSPACE */
-.workspace{flex:1;display:flex;min-height:0;position:relative}
-.pane{min-width:0;min-height:0;display:flex;flex-direction:column}
-.editor-pane{flex:1 1 50%;background:var(--panel)}
-.preview-pane{flex:1 1 50%;background:#ffffff;overflow:auto}
-.splitter{width:6px;flex:0 0 6px;cursor:col-resize;background:var(--border);transition:background .18s;position:relative}
-.splitter:hover,.splitter.dragging{background:var(--accent)}
-.splitter::after{content:"";position:absolute;inset:0 -6px}
-
-#editor{flex:1;width:100%;height:100%;border:0;outline:0;resize:none;
-  padding:26px 30px 80px;background:transparent;color:var(--text);
-  font-family:ui-monospace,"SF Mono",Consolas,Menlo,monospace;
-  font-size:var(--editor-size);line-height:1.75;tab-size:2;caret-color:var(--accent)}
-#editor::placeholder{color:var(--muted);opacity:.65}
-#editor::selection{background:var(--accent-soft)}
-
-/* PAGE (always white) */
-.page{
-  background:#ffffff; color:#1c2230;
-  font-family:var(--doc-font);font-size:var(--doc-size);line-height:var(--doc-lh);
-  letter-spacing:var(--doc-ls);text-align:var(--doc-align);
-  max-width:var(--page-width);padding:var(--page-padding);
-  margin:0 auto;min-height:100%;overflow-wrap:break-word;
-  transition:font-size .12s, padding .12s, max-width .12s;
+/* =========================================================
+   ПАНЕЛЬ РЭДАГАВАННЯ
+   ========================================================= */
+.editbar{
+  display:none;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:12px 20px;margin-bottom:16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,
+    color-mix(in srgb, var(--edit) 12%, var(--card)),
+    color-mix(in srgb, var(--edit) 6%, var(--card)));
+  border:1.5px solid color-mix(in srgb, var(--edit) 40%, transparent);
+  box-shadow:0 8px 24px -10px color-mix(in srgb, var(--edit) 50%, transparent);
+  animation:slideDown .3s cubic-bezier(.2,.8,.2,1);
 }
-.page > *:first-child{margin-top:0}
-.page > *:last-child{margin-bottom:0}
-.page h1,.page h2,.page h3,.page h4,.page h5,.page h6{
-  font-weight:750;line-height:1.25;margin:1.6em 0 .6em;letter-spacing:-.018em;text-align:start}
-.page h1{font-size:2em;padding-bottom:.35em;border-bottom:2px solid #e2e6ee}
-.page h2{font-size:1.5em;padding-bottom:.28em;border-bottom:1px solid #e2e6ee}
-.page h3{font-size:1.24em}
-.page h4{font-size:1.08em}
-.page h5,.page h6{font-size:1em;color:#6b7488}
-.page p{margin:0 0 1.05em}
-.page a{color:#6366f1;text-decoration:none;
-  border-bottom:1px solid rgba(99,102,241,.4);transition:.15s}
-.page a:hover{border-bottom-color:#6366f1;background:rgba(99,102,241,.12)}
-.page ul,.page ol{margin:0 0 1.05em;padding-inline-start:1.6em}
-.page li{margin:.32em 0}
-.page li > ul,.page li > ol{margin:.32em 0}
-.page blockquote{margin:1.2em 0;padding:.6em 1.1em;
-  border-inline-start:4px solid #6366f1;background:rgba(99,102,241,.12);
-  border-radius:0 10px 10px 0}
-.page blockquote p:last-child{margin-bottom:0}
-.page code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88em;
-  background:#f2f4f9;color:#c026a3;padding:.16em .42em;
-  border-radius:6px;border:1px solid #e2e6ee}
-.page pre{background:#f2f4f9;border:1px solid #e2e6ee;border-radius:12px;
-  padding:15px 18px;overflow:auto;margin:1.2em 0;line-height:1.6}
-.page pre code{background:none;border:0;padding:0;color:#1c2230;font-size:.85em}
-.page hr{border:0;height:1px;background:#e2e6ee;margin:2.2em 0}
-.table-wrap{overflow-x:auto;margin:1.3em 0;border-radius:12px;border:1px solid #e2e6ee}
-.page table{border-collapse:collapse;width:100%;font-size:.94em;text-align:start}
-.page th,.page td{border-bottom:1px solid #e2e6ee;border-inline-end:1px solid #e2e6ee;
-  padding:.62em .9em;vertical-align:top}
-.page th:last-child,.page td:last-child{border-inline-end:0}
-.page tbody tr:last-child td{border-bottom:0}
-.page thead th{background:#f7f8fb;font-weight:700;font-size:.9em;white-space:nowrap}
-.page img{max-width:100%;height:auto;border-radius:10px;display:block;margin:1.1em auto}
-.page mark{background:#fef08a;color:inherit;padding:.05em .25em;border-radius:3px}
-.page sup{font-size:.75em;vertical-align:super;line-height:0}
-.page sub{font-size:.75em;vertical-align:sub;line-height:0}
-.page u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}
-.page kbd{font-family:ui-monospace,Consolas,monospace;font-size:.85em;padding:.15em .4em;
-  border:1px solid #ccc;border-bottom-width:2px;border-radius:5px;background:#f5f5f5}
-.page small{font-size:.85em}
-.math-block{display:block;text-align:center;margin:1.4em 0;overflow-x:auto;padding:.3em 0}
-.math-inline{white-space:nowrap}
-.math-raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em;color:#6b7488}
-.katex{font-size:1.05em}
+.editbar.show{display:flex;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+.editbar-icon{
+  width:34px;height:34px;border-radius:10px;flex:none;
+  background:var(--edit);color:#fff;
+  display:grid;place-items:center;font-size:17px;
+  box-shadow:0 4px 12px -4px var(--edit);
+}
+.editbar-text{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.4;}
+.editbar-text b{color:var(--edit);}
+.editbar-text small{display:block;font-weight:500;font-size:11.5px;color:var(--text-2);margin-top:2px;}
+.editbar-text code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:color-mix(in srgb, var(--edit) 18%, transparent);
+  color:var(--text);
+  padding:1px 5px;border-radius:5px;font-size:11px;font-weight:600;
+}
+.editbar-spacer{flex:1;min-width:8px;}
 
-/* STATUS */
-.statusbar{display:flex;align-items:center;gap:16px;padding:6px 18px;
-  background:var(--panel);border-top:1px solid var(--border);font-size:11.5px;
-  color:var(--muted);font-weight:500;flex-shrink:0}
-.statusbar .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;
-  box-shadow:0 0 0 3px rgba(34,197,94,.16)}
-.statusbar .right{margin-left:auto;display:flex;gap:16px}
+/* =========================================================
+   ТАБЫ
+   ========================================================= */
+.tabs{
+  display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;
+  scrollbar-width:none;margin-bottom:4px;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex:none;padding:11px 18px;border-radius:14px;cursor:pointer;
+  border:1px solid var(--border);background:var(--card);
+  font-size:13.5px;font-weight:600;color:var(--text-2);
+  transition:all .2s ease;user-select:none;line-height:1.25;text-align:left;
+  box-shadow:var(--shadow-sm);
+  min-height:56px;display:flex;flex-direction:column;justify-content:center;
+}
+.tab small{display:block;font-weight:500;font-size:10.5px;opacity:.7;margin-top:3px;letter-spacing:.2px;}
+.tab:hover{color:var(--text);border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow);}
+.tab.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;border-color:transparent;
+  box-shadow:0 10px 24px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
+  transform:translateY(-1px);
+}
+.tab.active small{opacity:.85;color:#fff;}
 
-/* SETTINGS */
-.backdrop{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;visibility:hidden;
-  transition:.25s;z-index:70;backdrop-filter:blur(2px)}
-.backdrop.show{opacity:1;visibility:visible}
-.settings{position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;
-  background:var(--panel);border-left:1px solid var(--border);
-  box-shadow:-20px 0 50px -20px rgba(16,24,40,.4);transform:translateX(105%);
-  transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:80;display:flex;flex-direction:column}
-.settings.open{transform:translateX(0)}
-.settings-head{display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
-.settings-head h2{margin:0;font-size:15px;font-weight:700}
-.icon-btn{width:30px;height:30px;border:0;border-radius:8px;background:transparent;
-  color:var(--muted);cursor:pointer;font-size:15px;display:flex;align-items:center;
-  justify-content:center;transition:.15s}
-.icon-btn:hover{background:var(--panel-2);color:var(--text)}
-.settings-body{flex:1;overflow-y:auto;padding:8px 18px 30px}
-.group{padding:16px 0;border-bottom:1px solid var(--border)}
-.group:last-child{border-bottom:0}
-.group h3{margin:0 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.09em;color:var(--muted)}
-.field{display:block;margin-bottom:16px}
-.field:last-child{margin-bottom:0}
-.field > .label{display:flex;align-items:center;justify-content:space-between;
-  font-size:12.5px;font-weight:600;margin-bottom:8px}
-.field .val{font-size:11.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);
-  padding:2px 7px;border-radius:6px;font-variant-numeric:tabular-nums}
-select{width:100%;padding:9px 11px;font:inherit;font-size:13px;background:var(--panel-2);
-  color:var(--text);border:1px solid var(--border);border-radius:9px;cursor:pointer;
-  outline:none;transition:.15s}
-select:hover{border-color:var(--accent)}
-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;
-  background:transparent;cursor:pointer;margin:0}
-input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:20px;background:var(--border)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
-  border-radius:50%;margin-top:-5.5px;background:var(--accent);border:2.5px solid var(--panel);
-  box-shadow:0 1px 5px rgba(16,24,40,.28);transition:.15s}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.14)}
-input[type=range]::-moz-range-track{height:5px;border-radius:20px;background:var(--border)}
-input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;
-  background:var(--accent);border:2.5px solid var(--panel);box-shadow:0 1px 5px rgba(16,24,40,.28)}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chips.themes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.chip{padding:8px 6px;border:1px solid var(--border);
-  background:var(--panel-2);color:var(--muted);border-radius:9px;cursor:pointer;
-  font:inherit;font-size:12px;font-weight:600;transition:.15s;text-align:center}
-.chips:not(.themes) .chip{flex:1;min-width:62px}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;
-  box-shadow:0 4px 12px -3px rgba(99,102,241,.6)}
-.color-row{display:flex;align-items:center;gap:10px}
-input[type=color]{-webkit-appearance:none;width:42px;height:32px;border:1px solid var(--border);
-  border-radius:9px;background:transparent;cursor:pointer;padding:3px}
-input[type=color]::-webkit-color-swatch-wrapper{padding:0}
-input[type=color]::-webkit-color-swatch{border:0;border-radius:6px}
-.swatches{display:flex;gap:6px;flex-wrap:wrap}
-.swatch{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.15s}
-.swatch:hover{transform:scale(1.1)}
-.swatch.active{border-color:var(--text)}
+/* =========================================================
+   СУБ-ТАБЫ
+   ========================================================= */
+.subtabs-wrap{display:none;margin-bottom:14px;animation:subIn .25s ease;}
+.subtabs-wrap.show{display:block;}
+@keyframes subIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+.subtabs-label{
+  font-size:10px;font-weight:800;letter-spacing:.7px;
+  text-transform:uppercase;color:var(--muted);
+  margin:0 0 7px 4px;
+}
+.subtabs{
+  display:flex;gap:6px;padding:6px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:fit-content;max-width:100%;
+  box-shadow:var(--shadow-sm);
+  overflow-x:auto;scrollbar-width:none;
+}
+.subtabs::-webkit-scrollbar{display:none;}
+.subtab{
+  padding:9px 20px;border-radius:11px;
+  font-size:13.5px;font-weight:700;
+  color:var(--text-2);cursor:pointer;
+  border:none;background:transparent;box-shadow:none;
+  transition:all .18s ease;
+  display:flex;flex-direction:column;align-items:flex-start;
+  min-height:0;flex:none;line-height:1.2;
+  text-align:left;
+}
+.subtab small{font-size:10px;font-weight:500;opacity:.7;margin-top:3px;letter-spacing:.2px;}
+.subtab:hover{color:var(--text);background:var(--hover);transform:none;box-shadow:none;}
+.subtab.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;
+  box-shadow:0 6px 16px -6px var(--accent);
+}
+.subtab.active small{opacity:.85;color:#fff;}
 
-.toast{position:fixed;left:50%;bottom:56px;transform:translate(-50%,18px);
-  background:var(--text);color:var(--panel);padding:10px 18px;border-radius:11px;
-  font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.28s;z-index:100;
-  box-shadow:0 12px 30px -8px rgba(16,24,40,.45)}
-.toast.show{opacity:1;transform:translate(-50%,0)}
+/* =========================================================
+   КАРТКА
+   ========================================================= */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  overflow:hidden;
+  transition:box-shadow .3s ease,border-color .3s ease;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.card.editing{
+  border-color:color-mix(in srgb, var(--edit) 45%, transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--edit) 15%, transparent), var(--shadow-lg);
+}
+.cardhead{
+  padding:22px 24px 18px;border-bottom:1px solid var(--border-2);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;
+}
+.cardhead h2{
+  margin:0;font-size:18px;font-weight:800;letter-spacing:-.3px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.cardhead h2::before{
+  content:"";width:4px;height:20px;border-radius:2px;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+}
+.comp-chip{
+  font-size:10.5px;font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:4px 10px;border-radius:8px;
+  background:var(--accent-soft);color:var(--accent-text);
+  border:1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  margin-left:4px;
+}
+.cardhead .sub{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-weight:500;}
 
-.app[data-view="editor"] .preview-pane,
-.app[data-view="editor"] .splitter{display:none}
-.app[data-view="preview"] .editor-pane,
-.app[data-view="preview"] .splitter{display:none}
+.nextinfo{
+  font-size:13px;padding:11px 16px;border-radius:14px;
+  background:var(--accent-soft);color:var(--accent-text);
+  font-weight:600;line-height:1.5;max-width:440px;
+  display:flex;align-items:center;gap:9px;
+  border:1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  transition:all .3s ease;
+}
+.nextinfo::before{
+  content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none;
+  box-shadow:0 0 0 4px color-mix(in srgb, currentColor 20%, transparent);
+  animation:pulse 2s ease-in-out infinite;
+}
+.nextinfo.no-pulse::before{animation:none;}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 4px color-mix(in srgb, currentColor 20%, transparent);}
+  50%{box-shadow:0 0 0 7px color-mix(in srgb, currentColor 8%, transparent);}
+}
 
-@media (max-width:880px){
-  .workspace{flex-direction:column}
-  .splitter{display:none}
-  .editor-pane{border-bottom:1px solid var(--border)}
-  .page{padding:calc(var(--page-padding) * .65)}
-  .subtitle{display:none}
-  .btn span{display:none}
-  .greek-panel{grid-template-columns:repeat(8, 34px)}
+/* =========================================================
+   ТАБЛІЦА
+   ========================================================= */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:760px;font-size:14px;}
+thead th{
+  text-align:left;font-size:11px;font-weight:800;letter-spacing:.7px;
+  text-transform:uppercase;color:var(--muted);
+  padding:13px 16px;border-bottom:1px solid var(--border);
+  background:var(--card-2);position:sticky;top:0;z-index:5;
+}
+tbody td{
+  padding:14px 16px;border-bottom:1px solid var(--border-2);
+  vertical-align:top;line-height:1.55;
+}
+tbody tr{transition:background .18s ease;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr.group-start{border-top:2px solid var(--border);}
+tbody tr.group-start:first-child{border-top:none;}
+
+.col-n{width:52px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:600;}
+.col-date{width:150px;white-space:nowrap;}
+.col-h{width:80px;text-align:center;}
+.col-topic{min-width:260px;font-weight:500;}
+.col-hw{width:210px;color:var(--text-2);font-size:13px;}
+.col-act{width:130px;text-align:right;white-space:nowrap;}
+
+.date-edit{
+  font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px;
+  padding:2px 6px;margin:-2px -6px;border-radius:6px;
+  display:inline-block;vertical-align:middle;
+}
+.date-empty{color:var(--muted);font-weight:500;opacity:.6;font-style:italic;}
+
+/* кнопка календара */
+.cal-btn{
+  display:inline-grid;place-items:center;
+  width:28px;height:28px;
+  padding:0;min-height:0;
+  margin-left:6px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text-2);
+  cursor:pointer;
+  font-size:13px;
+  vertical-align:middle;
+  box-shadow:none;
+  transition:all .15s ease;
+}
+.cal-btn:hover{
+  color:var(--accent-text);
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  transform:none;box-shadow:none;
+}
+.cal-btn:active{transform:scale(.94);}
+
+.badge{
+  display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.6px;
+  padding:3px 8px;border-radius:7px;margin-left:7px;vertical-align:1px;
+  text-transform:uppercase;
+  animation:badgeIn .3s ease;
+}
+@keyframes badgeIn{from{transform:scale(.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+.badge.today{background:var(--today);color:#fff;box-shadow:0 3px 8px -2px var(--today);}
+.badge.next {background:var(--next); color:#fff;box-shadow:0 3px 8px -2px var(--next);}
+.badge.past {background:var(--past); color:#fff;box-shadow:0 3px 8px -2px var(--past);}
+
+tr.row-today{background:var(--today-soft)!important;}
+tr.row-today td{border-bottom-color:color-mix(in srgb,var(--today) 22%,transparent);}
+tr.row-today .col-date{color:var(--today);}
+tr.row-today .date-edit{color:var(--today);}
+tr.row-today .col-topic{font-weight:700;color:var(--text);}
+tr.row-today td:first-child{box-shadow:inset 4px 0 0 var(--today);}
+
+tr.row-next{background:var(--next-soft)!important;}
+tr.row-next td{border-bottom-color:color-mix(in srgb,var(--next) 20%,transparent);}
+tr.row-next .col-date{color:var(--next);}
+tr.row-next .col-topic{color:var(--text);}
+tr.row-next td:first-child{box-shadow:inset 4px 0 0 var(--next);}
+
+tr.row-past{background:var(--past-soft)!important;}
+tr.row-past td{border-bottom-color:color-mix(in srgb,var(--past) 20%,transparent);}
+tr.row-past .col-date{color:var(--past);}
+tr.row-past .date-edit{color:var(--past);}
+tr.row-past .col-topic{color:var(--text-2);}
+tr.row-past .col-hw{color:var(--muted);}
+tr.row-past td:first-child{box-shadow:inset 4px 0 0 var(--past);color:var(--past);}
+tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!important;}
+
+.hours-val{
+  display:inline-block;min-width:28px;
+  font-weight:700;font-size:14px;color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+.hours-input{
+  width:52px;text-align:center;
+  font:inherit;font-weight:700;font-size:14px;
+  padding:6px 4px;border-radius:9px;
+  border:1px solid var(--border);background:var(--card-2);
+  color:var(--text);-moz-appearance:textfield;
+}
+.hours-input::-webkit-outer-spin-button,
+.hours-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.hours-input:focus{outline:none;border-color:var(--edit);background:var(--card);box-shadow:0 0 0 3px color-mix(in srgb,var(--edit) 20%,transparent);}
+
+/* рэдагаванне */
+.ktp.editing [contenteditable]{
+  outline:none;border-radius:7px;padding:3px 7px;margin:-3px -7px;
+  transition:background .15s,box-shadow .15s;
+  min-height:1.4em;cursor:text;
+  background:color-mix(in srgb, var(--edit) 6%, transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--edit) 18%, transparent);
+  white-space:pre-wrap;
+}
+.ktp.editing [contenteditable]:hover{background:color-mix(in srgb, var(--edit) 12%, transparent);}
+.ktp.editing [contenteditable]:focus{
+  background:color-mix(in srgb, var(--edit) 10%, var(--card));
+  box-shadow:0 0 0 2px var(--edit);
+}
+.ktp.editing [contenteditable]:empty::before{
+  content:attr(data-ph);color:var(--muted);opacity:.55;font-weight:400;
+  pointer-events:none;
+}
+
+/* =========================================================
+   ФОРМУЛЫ (KaTeX)
+   ========================================================= */
+.katex{
+  font-size:1.05em !important;
+  color:inherit;
+}
+.katex-display{
+  margin:.4em 0 !important;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+.math-raw{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.92em;
+  color:var(--accent-text);
+  background:var(--accent-soft);
+  padding:1px 5px;border-radius:5px;
+  white-space:pre-wrap;
+}
+
+.rowbtns{
+  opacity:0;transition:opacity .18s ease;
+  display:flex;gap:5px;justify-content:flex-end;
+}
+tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
+.mini{
+  border:1px solid var(--border);background:var(--card);color:var(--text-2);
+  width:30px;height:30px;padding:0;border-radius:9px;font-size:12px;
+  display:grid;place-items:center;cursor:pointer;
+  transition:all .15s ease;min-height:0;
+}
+.mini:hover{color:var(--accent-text);border-color:var(--accent);background:var(--card);transform:translateY(-1px);}
+.mini.del:hover{color:var(--danger);border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--card));}
+
+.cardfoot{
+  padding:16px 24px;border-top:1px solid var(--border-2);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:linear-gradient(180deg,transparent,var(--bg-deep));
+}
+.saved{
+  font-size:12.5px;color:var(--today);font-weight:600;
+  opacity:0;transition:opacity .3s ease;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.saved.show{opacity:1;}
+.spacer{flex:1;}
+.counter{font-size:12.5px;color:var(--muted);font-weight:500;}
+
+.empty{padding:64px 22px;text-align:center;color:var(--muted);font-size:14px;}
+.empty-icon{font-size:42px;margin-bottom:14px;opacity:.35;}
+.empty h3{color:var(--text);margin:0 0 6px;font-size:16px;font-weight:700;}
+
+/* =========================================================
+   КАЛЯНДАР
+   ========================================================= */
+.cal-backdrop{
+  position:fixed;inset:0;z-index:199;
+  background:rgba(10,14,25,.45);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity .2s ease;
+}
+.cal-backdrop.show{opacity:1;pointer-events:auto;}
+
+.cal-popup{
+  position:fixed;z-index:200;
+  width:308px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:var(--shadow-lg);
+  opacity:0;
+  transform:translateY(-8px) scale(.97);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s cubic-bezier(.2,.8,.2,1);
+  transform-origin:top center;
+  user-select:none;
+}
+.cal-popup.show{
+  opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+}
+
+.cal-head{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.cal-nav{
+  width:34px;height:34px;padding:0;min-height:0;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--card);display:grid;place-items:center;
+  cursor:pointer;color:var(--text-2);
+  font-size:16px;font-weight:800;
+  transition:all .15s ease;box-shadow:none;
+}
+.cal-nav:hover{
+  color:var(--accent-text);border-color:var(--accent);
+  background:var(--accent-soft);transform:none;box-shadow:none;
+}
+.cal-title{
+  flex:1;text-align:center;
+  font-weight:800;font-size:14px;letter-spacing:-.2px;
+  text-transform:capitalize;
+}
+.cal-title small{
+  display:block;font-weight:600;font-size:10.5px;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.6px;margin-top:1px;
+}
+
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.cal-weekdays span{
+  text-align:center;font-size:10.5px;font-weight:800;
+  color:var(--muted);padding:5px 0;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.cal-weekdays span.weekend{color:color-mix(in srgb,var(--danger) 60%,var(--muted));}
+
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+
+.cal-day{
+  position:relative;aspect-ratio:1;
+  border:none;background:transparent;border-radius:10px;
+  font:inherit;font-size:13px;font-weight:600;
+  color:var(--text);cursor:pointer;
+  display:grid;place-items:center;
+  padding:0;min-height:0;box-shadow:none;
+  transition:background .12s ease,color .12s ease,transform .1s ease;
+  font-variant-numeric:tabular-nums;
+}
+.cal-day:hover{background:var(--accent-soft);color:var(--accent-text);transform:none;box-shadow:none;}
+.cal-day:active{transform:scale(.94);}
+.cal-day.other{color:var(--muted);opacity:.42;}
+.cal-day.other:hover{opacity:.75;}
+.cal-day.weekend:not(.selected){color:color-mix(in srgb,var(--danger) 70%,var(--text));}
+html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,var(--danger) 75%,var(--text));}
+.cal-day.today:not(.selected){
+  color:var(--today);font-weight:800;
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 55%, transparent);
+}
+.cal-day.selected{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;font-weight:800;
+  box-shadow:0 6px 14px -5px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
+}
+.cal-day.selected:hover{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+
+.cal-foot{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2);}
+.cal-foot button{
+  flex:1;padding:9px 12px;font-size:12.5px;font-weight:700;
+  border-radius:10px;justify-content:center;min-height:auto;box-shadow:none;
+}
+.cal-foot button.ghost:hover{background:var(--hover);border-color:var(--accent);color:var(--accent-text);}
+
+@media (max-width:520px){
+  .cal-popup{
+    width:calc(100vw - 24px);max-width:360px;
+    left:12px !important;right:12px !important;
+    top:auto !important;bottom:12px;
+    transform-origin:bottom center;
+    transform:translateY(20px) scale(.96);
+  }
+  .cal-popup.show{transform:translateY(0) scale(1);}
+  .cal-day{font-size:14px;}
+}
+
+/* =========================================================
+   МАДАЛЬ
+   ========================================================= */
+.modal-back{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(10,14,25,.55);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;animation:fadeIn .18s ease;
+}
+.modal-back.show{display:flex;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{
+  background:var(--card);border-radius:20px;
+  padding:26px 26px 22px;max-width:420px;width:100%;
+  box-shadow:var(--shadow-lg);border:1px solid var(--border);
+  animation:pop .25s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes pop{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal h3{margin:0 0 10px;font-size:17px;font-weight:800;letter-spacing:-.2px;}
+.modal p{margin:0 0 20px;font-size:14px;color:var(--text-2);line-height:1.55;}
+.modal .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+.modal .btns button{flex:none;}
+
+/* =========================================================
+   МОБІЛЬНЫЯ
+   ========================================================= */
+@media (max-width:760px){
+  .app{padding:0 12px 60px;}
+  body{font-size:14.5px;}
+  .topbar{padding:10px 0;gap:10px;}
+  .brand h1{font-size:17px;}
+  .brand p{font-size:11px;}
+  .logo{width:44px;height:44px;font-size:22px;border-radius:13px;}
+  .actions button span{display:none;}
+  .actions button{padding:10px 13px;}
+  .actions button.primary span,
+  .actions button.success span,
+  .actions button.warn span{display:inline;}
+
+  .theme-panel{width:270px;right:-8px;}
+
+  .editbar{padding:11px 14px;gap:10px;}
+  .editbar-icon{width:30px;height:30px;font-size:15px;}
+  .editbar-text{font-size:12.5px;}
+  .editbar-text small{font-size:11px;}
+
+  .subtabs{width:100%;}
+  .subtab{flex:1;min-width:130px;padding:9px 12px;font-size:12.5px;}
+
+  .cardhead{padding:18px 16px;}
+  .cardhead h2{font-size:16px;}
+  .nextinfo{font-size:12.5px;padding:10px 13px;max-width:100%;}
+
+  .tablewrap{overflow:visible;padding:4px 0 0;}
+
+  table,thead,tbody,tr,td,th{display:block;min-width:0;}
+  thead{display:none;}
+  table{border-collapse:separate;}
+
+  tbody tr{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "n    date    act"
+      "topic topic topic"
+      "hw    hw    hw"
+      "hrs   hrs   hrs";
+    gap:8px 10px;
+    margin:0 0 10px;
+    padding:14px 16px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:var(--card);
+    box-shadow:var(--shadow-sm);
+  }
+  tbody tr.group-start{margin-top:16px;}
+  tbody tr.group-start:first-child{margin-top:0;}
+  tbody tr:hover{transform:none;}
+
+  tbody tr.row-today{
+    background:var(--today-soft)!important;
+    border-color:color-mix(in srgb,var(--today) 35%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 25%,transparent),var(--shadow-sm);
+  }
+  tbody tr.row-today td:first-child{box-shadow:none;}
+  tbody tr.row-next{
+    background:var(--next-soft)!important;
+    border-color:color-mix(in srgb,var(--next) 35%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--next) 25%,transparent),var(--shadow-sm);
+  }
+  tbody tr.row-next td:first-child{box-shadow:none;}
+  tbody tr.row-past{
+    background:var(--past-soft)!important;
+    border-color:color-mix(in srgb,var(--past) 28%,transparent);
+  }
+  tbody tr.row-past td:first-child{box-shadow:none;}
+
+  tbody td{padding:0;border:none;background:transparent!important;box-shadow:none!important;}
+  tbody td::before{
+    content:attr(data-label);display:block;
+    font-size:9.5px;font-weight:800;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;
+  }
+
+  .col-n{grid-area:n;font-size:12px;font-weight:700;color:var(--muted);align-self:center;padding-top:2px!important;}
+  .col-n::before{display:none!important;}
+  .col-date{grid-area:date;align-self:center;}
+  .col-date::before{display:none!important;}
+  .col-topic{grid-area:topic;font-size:14.5px;padding-top:4px!important;}
+  .col-topic::before{display:none!important;}
+  .col-h{grid-area:hrs;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+  .col-h::before{margin:0!important;}
+  .col-hw{grid-area:hw;font-size:13px;line-height:1.5;}
+  .col-act{grid-area:act;text-align:right;align-self:center;}
+  .col-act::before{display:none!important;}
+
+  .rowbtns{opacity:1;}
+  .mini{width:34px;height:34px;font-size:13px;}
+  .cal-btn{width:32px;height:32px;font-size:14px;}
+  .hours-input{width:48px;}
+  .cardfoot{padding:14px 16px;}
+}
+@media (max-width:420px){
+  .brand p{display:none;}
+  .tab{padding:10px 14px;font-size:12.5px;}
+  .tab small{font-size:10px;}
+  .theme-panel{width:calc(100vw - 32px);right:-10px;}
+}
+
+/* =========================================================
+   ДРУК (базавы — кнопка ў інтэрфейсе выдалена)
+   ========================================================= */
+@media print{
+  .topbar,.tabs,.subtabs-wrap,.cardfoot,.col-act,.rowbtns,.nextinfo,.editbar,.actions,.theme-panel,.cal-popup,.cal-backdrop,.cal-btn{display:none!important;}
+  body{background:#fff;padding:0;}
+  .app{padding:0;max-width:100%;}
+  .card{box-shadow:none;border:none;border-radius:0;}
+  .cardhead{border-bottom:2px solid #000;padding:0 0 12px;}
+  .cardhead h2::before{display:none;}
+  table{min-width:0;font-size:11px;}
+  thead th{position:static;background:#f5f5f5;color:#000;border-bottom:1px solid #000;}
+  tbody td{padding:5px 7px;}
+  .badge{background:#000!important;color:#fff!important;font-size:8px;}
+  tbody tr.group-start{border-top:2px solid #000;}
+  .hours-input{border:none;background:transparent;}
+  .katex{font-size:1em !important;}
 }
 </style>
 </head>
 <body>
 
-<div class="app" id="app" data-view="split">
+<div class="app">
 
-  <header class="topbar">
+  <header class="topbar" id="topbar">
     <div class="brand">
-      <div class="logo">M↓</div>
+      <div class="logo">∑</div>
       <div>
-        <div class="title">Markdown Studio</div>
-        <div class="subtitle">редактор с живым предпросмотром</div>
+        <h1>КТП · Матэматыка</h1>
+        <p>Багданаўская сярэдняя школа · 2026/2027</p>
       </div>
     </div>
     <div class="actions">
-      <div class="seg" id="viewMode">
-        <button data-view="split" class="active">Разделённый</button>
-        <button data-view="editor">Редактор</button>
-        <button data-view="preview">Просмотр</button>
+      <button id="themeBtn" class="icon" title="Тэма афармлення">🎨</button>
+      <div class="theme-panel" id="themePanel">
+        <div class="theme-section">
+          <div class="theme-label">Рэжым</div>
+          <div class="mode-btns">
+            <button data-mode="light">☀️ Светлы</button>
+            <button data-mode="dark">🌙 Цёмны</button>
+            <button data-mode="auto">🌗 Сістэма</button>
+          </div>
+        </div>
+        <div class="theme-section">
+          <div class="theme-label">Колер</div>
+          <div class="color-swatches" id="colorSwatches"></div>
+        </div>
       </div>
-      <button class="btn" id="btnExportHtml" title="Скачать HTML">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>HTML</span>
-      </button>
-      <button class="btn" id="btnExportMd" title="Скачать .md">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <span>.md</span>
-      </button>
-      <button class="btn" id="btnPdfColor" title="Печать / Сохранить PDF — цветной">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span>PDF цвет</span>
-      </button>
-      <button class="btn" id="btnPdfBw" title="Печать / Сохранить PDF — для ч/б печати">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/><line x1="8.5" y1="17.5" x2="15.5" y2="17.5"/></svg>
-        <span>PDF Ч/Б</span>
-      </button>
-      <button class="btn icon" id="btnSettings" title="Настройки">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
+      <button id="exportBtn" class="ghost" title="Спампаваць копію">⤓<span> Экспарт</span></button>
+      <button id="importBtn" class="ghost" title="Загрузіць копію">⤒<span> Імпарт</span></button>
+      <button id="editBtn" class="primary">✎<span> Рэдагаваць</span></button>
     </div>
   </header>
 
-  <!-- ============ TOOLBAR ============ -->
-  <div class="toolbar" id="toolbar">
-    <button class="tbtn" data-act="h1" title="Заголовок 1">H1</button>
-    <button class="tbtn" data-act="h2" title="Заголовок 2">H2</button>
-    <button class="tbtn" data-act="h3" title="Заголовок 3">H3</button>
-    <button class="tbtn" data-act="h4" title="Заголовок 4">H4</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-act="bold" title="Жирный (Ctrl+B)"><b>B</b></button>
-    <button class="tbtn" data-act="italic" title="Курсив (Ctrl+I)"><i>I</i></button>
-    <button class="tbtn" data-act="underline" title="Подчёркнутый (Ctrl+U)"><u>U</u></button>
-    <button class="tbtn" data-act="strike" title="Зачёркнутый"><s>S</s></button>
-    <button class="tbtn" data-act="highlight" title="Выделение (маркер)">==</button>
-    <button class="tbtn" data-act="sup" title="Верхний индекс (x²)">x²</button>
-    <button class="tbtn" data-act="sub" title="Нижний индекс (x₂)">x₂</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-act="quote" title="Цитата">❝</button>
-    <button class="tbtn" data-act="code" title="Блок кода">&lt;/&gt;</button>
-    <button class="tbtn" data-act="inlinecode" title="Строчный код">`…`</button>
-    <button class="tbtn" data-act="comment" title="Комментарий">&lt;!-- --&gt;</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-act="ul" title="Маркированный список">• ≡</button>
-    <button class="tbtn" data-act="ol" title="Нумерованный список">1. ≡</button>
-    <button class="tbtn" data-act="task" title="Список задач">☑</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-act="link" title="Ссылка (Ctrl+K)">🔗</button>
-    <button class="tbtn" data-act="image" title="Изображение">🖼</button>
-    <button class="tbtn" data-act="table" title="Таблица">⊞</button>
-    <button class="tbtn" data-act="tablemath" title="Таблица (математическая)">⊞∑</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-act="math" title="Формула в строке">$…$</button>
-    <button class="tbtn" data-act="mathblock" title="Формула блоком">$$…$$</button>
-    <button class="tbtn" data-act="hr" title="Разделитель">—</button>
-  </div>
-
-  <!-- ============ MATH TOOLBAR ============ -->
-  <div class="math-toolbar" id="mathToolbar">
-    <span class="mlabel">Математика (LaTeX):</span>
-    <button class="tbtn" data-math="frac" title="Дробь \frac{a}{b}">a/b</button>
-    <button class="tbtn" data-math="dfrac" title="Крупная дробь \dfrac{a}{b}">A/B</button>
-    <button class="tbtn" data-math="sqrt" title="Квадратный корень \sqrt{x}">√</button>
-    <button class="tbtn" data-math="nthroot" title="Корень n-й степени \sqrt[n]{x}">ⁿ√</button>
-    <button class="tbtn" data-math="pow" title="Степень x^{n}">xⁿ</button>
-    <button class="tbtn" data-math="sub" title="Индекс x_{n}">xₙ</button>
-    <button class="tbtn" data-math="binom" title="Биномиальный коэффициент \binom{n}{k}">Cⁿₖ</button>
-    <button class="tbtn" data-math="abs" title="Модуль |x|">|x|</button>
-    <button class="tbtn" data-math="floor" title="Целая часть ⌊x⌋">⌊x⌋</button>
-    <button class="tbtn" data-math="ceil" title="Потолок ⌈x⌉">⌈x⌉</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-math="sum" title="Сумма \sum">∑</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-math="vec" title="Вектор \vec{v}">v⃗</button>
-    <button class="tbtn" data-math="infty" title="Бесконечность ∞">∞</button>
-    <button class="tbtn" data-math="pi" title="Число π">π</button>
-    <button class="tbtn" data-math="angle" title="Угол ∠">∠</button>
-    <button class="tbtn" data-math="degree" title="Градус °">°</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-math="leq" title="≤">≤</button>
-    <button class="tbtn" data-math="geq" title="≥">≥</button>
-    <button class="tbtn" data-math="neq" title="≠">≠</button>
-    <button class="tbtn" data-math="approx" title="≈">≈</button>
-    <button class="tbtn" data-math="equiv" title="≡">≡</button>
-    <button class="tbtn" data-math="pm" title="±">±</button>
-    <button class="tbtn" data-math="times" title="×">×</button>
-    <button class="tbtn" data-math="cdot" title="·">·</button>
-    <button class="tbtn" data-math="div" title="÷">÷</button>
-    <button class="tbtn" data-math="to" title="→">→</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-math="forall" title="Для всех ∀">∀</button>
-    <button class="tbtn" data-math="exists" title="Существует ∃">∃</button>
-    <button class="tbtn" data-math="in_" title="Принадлежит ∈">∈</button>
-    <button class="tbtn" data-math="notin" title="Не принадлежит ∉">∉</button>
-    <button class="tbtn" data-math="subset" title="Подмножество ⊂">⊂</button>
-    <button class="tbtn" data-math="cup" title="Объединение ∪">∪</button>
-    <button class="tbtn" data-math="cap" title="Пересечение ∩">∩</button>
-    <button class="tbtn" data-math="emptyset" title="Пустое множество ∅">∅</button>
-    <div class="tsep"></div>
-    <button class="tbtn" data-math="log" title="Логарифм \log">log</button>
-    <button class="tbtn" data-math="ln" title="Натуральный логарифм \ln">ln</button>
-    <button class="tbtn" data-math="sin" title="Синус \sin">sin</button>
-    <button class="tbtn" data-math="cos" title="Косинус \cos">cos</button>
-    <button class="tbtn" data-math="tan" title="Тангенс \tan">tan</button>
-    <div class="tsep"></div>
-    <button class="tbtn" id="btnGreek" title="Греческие буквы">αβγ ▾</button>
-    <div class="greek-panel" id="greekPanel">
-      <button data-greek="\\alpha">α</button>
-      <button data-greek="\\beta">β</button>
-      <button data-greek="\\gamma">γ</button>
-      <button data-greek="\\delta">δ</button>
-      <button data-greek="\\varepsilon">ε</button>
-      <button data-greek="\\zeta">ζ</button>
-      <button data-greek="\\eta">η</button>
-      <button data-greek="\\theta">θ</button>
-      <button data-greek="\\iota">ι</button>
-      <button data-greek="\\kappa">κ</button>
-      <button data-greek="\\lambda">λ</button>
-      <button data-greek="\\mu">μ</button>
-      <button data-greek="\\nu">ν</button>
-      <button data-greek="\\xi">ξ</button>
-      <button data-greek="\\pi">π</button>
-      <button data-greek="\\rho">ρ</button>
-      <button data-greek="\\sigma">σ</button>
-      <button data-greek="\\tau">τ</button>
-      <button data-greek="\\upsilon">υ</button>
-      <button data-greek="\\varphi">φ</button>
-      <button data-greek="\\chi">χ</button>
-      <button data-greek="\\psi">ψ</button>
-      <button data-greek="\\omega">ω</button>
-      <button data-greek="\\Gamma">Γ</button>
-      <button data-greek="\\Delta">Δ</button>
-      <button data-greek="\\Theta">Θ</button>
-      <button data-greek="\\Lambda">Λ</button>
-      <button data-greek="\\Xi">Ξ</button>
-      <button data-greek="\\Pi">Π</button>
-      <button data-greek="\\Sigma">Σ</button>
-      <button data-greek="\\Phi">Φ</button>
-      <button data-greek="\\Psi">Ψ</button>
-      <button data-greek="\\Omega">Ω</button>
+  <div class="editbar" id="editbar">
+    <div class="editbar-icon">✎</div>
+    <div class="editbar-text">
+      <b>Рэжым рэдагавання ўключаны</b>
+      <small>Формулы пішыце паміж знакамі <code>$...$</code> — напрыклад <code>$\frac{a}{b}$</code> ці <code>$x^2+\sqrt{y}$</code>.</small>
     </div>
+    <div class="editbar-spacer"></div>
+    <button id="cancelBtn" class="ghost">↶ Адмяніць</button>
+    <button id="saveBtn" class="success">✓ Захаваць</button>
   </div>
 
-  <main class="workspace" id="workspace">
-    <section class="pane editor-pane" id="editorPane">
-      <textarea id="editor" spellcheck="false" placeholder="Начните печатать в Markdown…"></textarea>
-    </section>
-    <div class="splitter" id="splitter"></div>
-    <section class="pane preview-pane" id="previewPane">
-      <article class="page" id="preview"></article>
-    </section>
+  <nav class="tabs" id="tabs"></nav>
+
+  <div class="subtabs-wrap" id="subtabsWrap">
+    <div class="subtabs-label">Кампанент</div>
+    <div class="subtabs" id="subtabs"></div>
+  </div>
+
+  <main class="card" id="mainCard">
+    <div class="cardhead">
+      <div>
+        <h2 id="clsTitle">—</h2>
+        <p class="sub" id="clsSub"></p>
+      </div>
+      <div class="nextinfo" id="nextInfo"></div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="ktp" id="ktpTable">
+        <thead>
+          <tr>
+            <th class="col-n">№</th>
+            <th class="col-date">Дата</th>
+            <th class="col-topic">Тэма ўрока</th>
+            <th class="col-h">Гадз.</th>
+            <th class="col-hw">Дамашняе заданне</th>
+            <th class="col-act"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="cardfoot">
+      <button id="addRow" class="primary" style="display:none">＋ Дадаць тэму</button>
+      <span class="saved" id="savedMsg">✓ Закладзена</span>
+      <div class="spacer"></div>
+      <span class="counter" id="counter"></span>
+    </div>
   </main>
 
-  <footer class="statusbar">
-    <span class="dot"></span>
-    <span id="statWords">0 слов</span>
-    <span id="statChars">0 символов</span>
-    <span id="statLines">0 строк</span>
-    <div class="right">
-      <span id="statRead">~0 мин</span>
-      <span id="statPos">Стр 1, Кол 1</span>
-    </div>
-  </footer>
 </div>
 
-<script type="text/markdown" id="defaultDoc"># Markdown Studio для учителя математики
-
-Добро пожаловать! Пишите слева — результат появляется справа мгновенно.
-
-## Оформление текста
-
-Поддерживается **жирный**, *курсив*, <u>подчёркнутый</u>, ~~зачёркнутый~~, ==выделение маркером==, верхний индекс x^2^, нижний индекс H~2~O и `моноширинный` текст.
-
-Комментарии в тексте не отображаются: <!-- это комментарий, его не видно в предпросмотре -->
-
-## Математика
-
-Панель **«Математика»** вставляет куски LaTeX без знаков доллара. Чтобы получить формулу, оберните их в `$...$` (строчная) или `$$...$$` (выключная). Кнопки `$…$` и `$$…$$` на главной панели делают это автоматически.
-
-Пример дроби: $\frac{a}{b}$, крупная дробь: $\dfrac{x+1}{x-1}$.
-
-Корень: $\sqrt{x^2 + y^2}$, корень n-й степени: $\sqrt[n]{a}$.
-
-Степень: $x^{n}$, индекс: $a_{n}$, биномиальный коэффициент: $\binom{n}{k}$.
-
-Сумма: $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
-
-Греческие буквы: $\alpha + \beta = \gamma$, $\theta$, $\lambda$, $\Sigma$, $\Omega$.
-
-Сравнения: $a \le b$, $x \ne 0$, $a \approx 3{,}14$, $\alpha \equiv \beta$.
-
-Логика и множества: $\forall x \in A$, $\exists y \notin B$, $A \subset B$, $A \cup B$, $A \cap B$, $\emptyset$.
-
-Тригонометрия и логарифмы: $\sin x$, $\cos x$, $\tan x$, $\log_{10} x$, $\ln x$.
-
-## Таблица
-
-| Тема | Формула | Класс |
-|:-----|:-------:|------:|
-| Квадрат суммы | $(a+b)^2 = a^2 + 2ab + b^2$ | 7 |
-| Теорема Пифагора | $c^2 = a^2 + b^2$ | 8 |
-| Формула Эйлера | $e^{i\pi} + 1 = 0$ | 10 |
-
-## Список задач
-
-- [x] Подготовить конспект
-- [ ] Разобрать примеры
-- [ ] Раздать домашнее задание
-
----
-
-*Совет:* выделите текст и нажмите **Ctrl+B** — он станет жирным.
-</script>
-
-<div class="backdrop" id="backdrop"></div>
-<aside class="settings" id="settings">
-  <div class="settings-head">
-    <h2>Настройки документа</h2>
-    <button class="icon-btn" id="closeSettings" title="Закрыть">✕</button>
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <h3 id="modalTitle">Пацверджанне</h3>
+    <p id="modalText">Вы ўпэўнены?</p>
+    <div class="btns">
+      <button id="modalNo" class="ghost">Не</button>
+      <button id="modalYes" class="warn">Так</button>
+    </div>
   </div>
-  <div class="settings-body">
+</div>
 
-    <section class="group">
-      <h3>Типографика</h3>
-      <label class="field">
-        <span class="label">Шрифт текста</span>
-        <select id="setFont">
-          <option value='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'>Системный (без засечек)</option>
-          <option value='"Segoe UI", Tahoma, Geneva, sans-serif'>Segoe UI</option>
-          <option value='Verdana, Geneva, sans-serif'>Verdana</option>
-          <option value='Georgia, "Times New Roman", serif'>Georgia (с засечками)</option>
-          <option value='"Times New Roman", Times, serif'>Times New Roman</option>
-          <option value='"Palatino Linotype", Palatino, Georgia, serif'>Palatino</option>
-          <option value='ui-monospace, "SF Mono", Consolas, Menlo, monospace'>Моноширинный</option>
-        </select>
-      </label>
-      <label class="field">
-        <span class="label">Размер шрифта <b class="val" id="valSize">17px</b></span>
-        <input type="range" id="setSize" min="12" max="30" step="1" value="17">
-      </label>
-      <label class="field">
-        <span class="label">Интерлиньяж <b class="val" id="valLh">1.75</b></span>
-        <input type="range" id="setLh" min="1.2" max="2.4" step="0.05" value="1.75">
-      </label>
-      <label class="field">
-        <span class="label">Межбуквенное <b class="val" id="valLs">0.000em</b></span>
-        <input type="range" id="setLs" min="-0.02" max="0.08" step="0.005" value="0">
-      </label>
-    </section>
+<div class="cal-backdrop" id="calBackdrop"></div>
+<div class="cal-popup" id="calPopup" role="dialog" aria-label="Выбар даты"></div>
 
-    <section class="group">
-      <h3>Поля и ширина</h3>
-      <label class="field">
-        <span class="label">Поля страницы <b class="val" id="valPad">48px</b></span>
-        <input type="range" id="setPad" min="0" max="140" step="2" value="48">
-      </label>
-      <label class="field">
-        <span class="label">Ширина страницы <b class="val" id="valWidth">820px</b></span>
-        <input type="range" id="setWidth" min="480" max="1400" step="10" value="820">
-      </label>
-      <div class="field">
-        <span class="label">Выравнивание</span>
-        <div class="chips" id="alignChips">
-          <button class="chip active" data-align="left">Слева</button>
-          <button class="chip" data-align="center">Центр</button>
-          <button class="chip" data-align="right">Справа</button>
-          <button class="chip" data-align="justify">По ширине</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="group">
-      <h3>Тема интерфейса</h3>
-      <div class="chips themes" id="themeChips">
-        <button class="chip active" data-theme="light">Светлая</button>
-        <button class="chip" data-theme="dark">Тёмная</button>
-        <button class="chip" data-theme="sepia">Сепия</button>
-        <button class="chip" data-theme="solarized-light">Solarized</button>
-        <button class="chip" data-theme="solarized-dark">Solar Dark</button>
-        <button class="chip" data-theme="nord">Nord</button>
-        <button class="chip" data-theme="dracula">Dracula</button>
-        <button class="chip" data-theme="gruvbox">Gruvbox</button>
-        <button class="chip" data-theme="tokyo-night">Tokyo</button>
-        <button class="chip" data-theme="catppuccin">Catppuccin</button>
-        <button class="chip" data-theme="monokai">Monokai</button>
-        <button class="chip" data-theme="rose">Розовая</button>
-        <button class="chip" data-theme="forest">Лес</button>
-        <button class="chip" data-theme="ocean">Океан</button>
-      </div>
-    </section>
-
-    <section class="group">
-      <h3>Акцентный цвет</h3>
-      <div class="color-row">
-        <input type="color" id="setAccent" value="#6366f1">
-        <div class="swatches" id="swatches">
-          <div class="swatch" data-color="#6366f1" style="background:#6366f1"></div>
-          <div class="swatch" data-color="#0ea5e9" style="background:#0ea5e9"></div>
-          <div class="swatch" data-color="#10b981" style="background:#10b981"></div>
-          <div class="swatch" data-color="#f59e0b" style="background:#f59e0b"></div>
-          <div class="swatch" data-color="#ef4444" style="background:#ef4444"></div>
-          <div class="swatch" data-color="#ec4899" style="background:#ec4899"></div>
-          <div class="swatch" data-color="#8b5cf6" style="background:#8b5cf6"></div>
-          <div class="swatch" data-color="#22c55e" style="background:#22c55e"></div>
-          <div class="swatch" data-color="#a3a3a3" style="background:#a3a3a3"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="group">
-      <h3>Редактор</h3>
-      <label class="field">
-        <span class="label">Размер шрифта <b class="val" id="valEditorSize">14px</b></span>
-        <input type="range" id="setEditorSize" min="11" max="22" step="1" value="14">
-      </label>
-    </section>
-
-    <section class="group">
-      <button class="btn" id="btnReset" style="width:100%;justify-content:center;">Сбросить настройки</button>
-    </section>
-
-  </div>
-</aside>
-
-<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json" hidden>
 
 <script>
-/* ============ MARKDOWN PARSER ============ */
-(function(){
-function markdownToHtml(src){
-  var store = [], counter = 0;
-  function stash(html){ var id = counter++; store[id] = html; return '\u0000' + id + '\u0000'; }
-  function escapeHtml(s){
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
-                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function mathSpan(tex, display){
-    var t = String(tex).trim();
-    var fb = escapeHtml(display ? '$$' + t + '$$' : '$' + t + '$');
-    return '<span class="math ' + (display ? 'math-block' : 'math-inline') + '"'
-         + ' data-tex="' + encodeURIComponent(t) + '"'
-         + ' data-display="' + (display ? '1' : '0') + '">' + fb + '</span>';
-  }
-  function inline(s){
-    /* HTML-комментарии — удаляем */
-    s = s.replace(/<!--[\s\S]*?-->/g, '');
-    /* Разрешённые inline-HTML-теги — сохраняем (без обработчиков) */
-    s = s.replace(/<\/?(?:u|mark|sup|sub|kbd|small|br|abbr|cite|var|samp|ins|del)\b[^>]*>/gi,
-      function(m){
-        if (/(?:on\w+\s*=|javascript:)/i.test(m)) return '';
-        return stash(m);
-      });
-    s = escapeHtml(s);
-    /* изображения и ссылки */
-    s = s.replace(/!\[([^\]]*)\]\(\s*([^)\s]+)\s*\)/g,
-        function(m, alt, src){ return '<img src="' + src + '" alt="' + alt + '" loading="lazy">'; });
-    s = s.replace(/\[([^\]]+)\]\(\s*([^)\s]+)\s*\)/g,
-        function(m, txt, href){ return '<a href="' + href + '" target="_blank" rel="noopener">' + txt + '</a>'; });
-    /* жирный */
-    s = s.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
-    s = s.replace(/__([\s\S]+?)__/g, '<strong>$1</strong>');
-    /* зачёркнутый */
-    s = s.replace(/~~([\s\S]+?)~~/g, '<del>$1</del>');
-    /* выделение маркером */
-    s = s.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
-    /* верхний индекс ^x^ */
-    s = s.replace(/\^([^\^\n]+)\^/g, '<sup>$1</sup>');
-    /* нижний индекс ~x~ (одиночная тильда, после обработки ~~) */
-    s = s.replace(/(^|[^~])~([^~\n]+)~(?!~)/g, '$1<sub>$2</sub>');
-    /* курсив */
-    s = s.replace(/(^|[^*\w])\*([^*\n]+)\*/g, '$1<em>$2</em>');
-    s = s.replace(/(^|[^_\w])_([^_\n]+)_/g, '$1<em>$2</em>');
-    /* автоссылки */
-    s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
-        function(m, pre, url){ return pre + '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>'; });
-    return s;
-  }
-  function renderTable(rows){
-    function parseRow(r){
-      return r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function(c){ return c.trim(); });
-    }
-    var head = parseRow(rows[0]);
-    var sep  = parseRow(rows[1]);
-    var aligns = sep.map(function(c){
-      var l = c.charAt(0) === ':', r = c.charAt(c.length-1) === ':';
-      return (l && r) ? 'center' : (r ? 'right' : (l ? 'left' : ''));
-    });
-    var html = '<div class="table-wrap"><table><thead><tr>';
-    head.forEach(function(c, i){
-      html += '<th' + (aligns[i] ? ' style="text-align:' + aligns[i] + '"' : '') + '>' + inline(c) + '</th>';
-    });
-    html += '</tr></thead><tbody>';
-    for (var r = 2; r < rows.length; r++){
-      if (!rows[r].trim()) continue;
-      var cells = parseRow(rows[r]);
-      html += '<tr>';
-      for (var c = 0; c < head.length; c++){
-        html += '<td' + (aligns[c] ? ' style="text-align:' + aligns[c] + '"' : '') + '>'
-              + inline(cells[c] || '') + '</td>';
-      }
-      html += '</tr>';
-    }
-    return html + '</tbody></table></div>';
-  }
-  function listToHtml(items, baseIndent){
-    if (!items.length) return '';
-    var ordered = items[0].ordered;
-    var html = ordered ? '<ol>' : '<ul>';
-    var i = 0;
-    while (i < items.length){
-      var item = items[i];
-      var children = [], j = i + 1;
-      while (j < items.length && items[j].indent > baseIndent){ children.push(items[j]); j++; }
-      var text = inline(item.text);
-      if (item.task){
-        var checked = item.task === 'x';
-        text = '<input type="checkbox" disabled ' + (checked ? 'checked' : '') + '> ' + text;
-      }
-      html += '<li>' + text
-            + (children.length ? listToHtml(children, children[0].indent) : '')
-            + '</li>';
-      i = j;
-    }
-    return html + (ordered ? '</ol>' : '</ul>');
-  }
-  function renderBlocks(text){
-    text = text.replace(
-      /^[ \t]*```[ \t]*([\w+.\-]*)[ \t]*\n([\s\S]*?)^[ \t]*```[ \t]*$/gm,
-      function(m, lang, code){
-        return stash('<pre><code' + (lang ? ' class="language-' + escapeHtml(lang) + '"' : '') + '>'
-          + escapeHtml(code.replace(/\n$/, '')) + '</code></pre>');
-      });
-    text = text.replace(/`([^`\n]+)`/g, function(m, c){ return stash('<code>' + escapeHtml(c) + '</code>'); });
-    text = text.replace(/\$\$([\s\S]+?)\$\$/g, function(m, tex){ return stash(mathSpan(tex, true)); });
-    text = text.replace(/\\\[([\s\S]+?)\\\]/g, function(m, tex){ return stash(mathSpan(tex, true)); });
-    text = text.replace(/\\\(([\s\S]+?)\\\)/g, function(m, tex){ return stash(mathSpan(tex, false)); });
-    text = text.replace(/\$(?!\s)([^\$\n]+?)(?<!\s)\$/g, function(m, tex){ return stash(mathSpan(tex, false)); });
+/* =========================================================
+   КАНСТАНТЫ
+   ========================================================= */
+const SCHOOL_YEAR = { start: 2026, end: 2027 };
+const STORE_KEY   = 'ktp-math-bgd-v7';
+const THEME_KEY   = 'ktp-math-theme-mode';
+const COLOR_KEY   = 'ktp-math-theme-color';
 
-    var lines = text.split('\n'), out = [], i = 0;
-    function isPlaceholder(l){ return /^\u0000\d+\u0000$/.test(l.trim()); }
-    function isHr(l){ return /^ {0,3}(?:(?:\*\s*){3,}|(?:-\s*){3,}|(?:_\s*){3,})$/.test(l.trim()); }
-    function isList(l){ return /^ {0,3}([-*+]|\d+[.)])\s+/.test(l); }
-    function isHeading(l){ return /^ {0,3}#{1,6}\s+/.test(l); }
-    function isQuote(l){ return /^ {0,3}>/.test(l); }
-    function isBlockStart(l){
-      return isPlaceholder(l) || isHr(l) || isList(l) || isHeading(l) || isQuote(l);
-    }
-    while (i < lines.length){
-      var raw = lines[i];
-      if (!raw.trim()){ i++; continue; }
-      if (isPlaceholder(raw)){ out.push(raw.trim()); i++; continue; }
-      if (isHr(raw)){ out.push('<hr>'); i++; continue; }
-      var m = raw.match(/^ {0,3}(#{1,6})\s+(.*?)\s*#*\s*$/);
-      if (m){
-        var lv = m[1].length;
-        out.push('<h' + lv + '>' + inline(m[2]) + '</h' + lv + '>');
-        i++; continue;
-      }
-      if (isQuote(raw)){
-        var qbuf = [];
-        while (i < lines.length && isQuote(lines[i])){
-          qbuf.push(lines[i].replace(/^ {0,3}>[ \t]?/, ''));
-          i++;
-        }
-        out.push('<blockquote>' + renderBlocks(qbuf.join('\n')) + '</blockquote>');
-        continue;
-      }
-      if (raw.indexOf('|') !== -1 && i + 1 < lines.length
-          && /^[\s|:\-]+$/.test(lines[i + 1])
-          && lines[i + 1].indexOf('-') !== -1
-          && lines[i + 1].indexOf('|') !== -1){
-        var rows = [lines[i], lines[i + 1]];
-        i += 2;
-        while (i < lines.length && lines[i].indexOf('|') !== -1 && lines[i].trim()){
-          rows.push(lines[i]); i++;
-        }
-        out.push(renderTable(rows));
-        continue;
-      }
-      if (isList(raw)){
-        var items = [];
-        while (i < lines.length){
-          var mm = lines[i].match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/);
-          if (mm){
-            var task = null, t = mm[3];
-            var taskM = t.match(/^\[([ xX])\]\s+(.*)$/);
-            if (taskM){ task = taskM[1].toLowerCase(); t = taskM[2]; }
-            items.push({
-              indent: mm[1].replace(/\t/g, '  ').length,
-              ordered: /^\d/.test(mm[2]),
-              text: t, task: task
-            });
-            i++;
-          } else if (lines[i].trim() && /^\s{2,}/.test(lines[i]) && items.length){
-            items[items.length - 1].text += ' ' + lines[i].trim();
-            i++;
-          } else break;
-        }
-        out.push(listToHtml(items, items[0].indent));
-        continue;
-      }
-      var pbuf = [lines[i]];
-      i++;
-      while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i])
-             && !(lines[i].indexOf('|') !== -1 && i + 1 < lines.length
-                  && /^[\s|:\-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') !== -1)){
-        pbuf.push(lines[i]); i++;
-      }
-      out.push('<p>' + inline(pbuf.join('\n')) + '</p>');
-    }
-    return out.join('\n');
-  }
-  var html = renderBlocks(String(src).replace(/\r\n?/g, '\n'));
-  return html.replace(/\u0000(\d+)\u0000/g, function(m, id){
-    return store[+id] !== undefined ? store[+id] : '';
-  });
+const COLORS = [
+  { id:'indigo', hex:'#6366f1', name:'Індыга' },
+  { id:'ocean',  hex:'#0ea5e9', name:'Акіян' },
+  { id:'violet', hex:'#8b5cf6', name:'Фіялет' },
+  { id:'rose',   hex:'#f43f5e', name:'Ружа' },
+  { id:'amber',  hex:'#f59e0b', name:'Бурштын' },
+  { id:'teal',   hex:'#14b8a6', name:'Біруза' },
+  { id:'slate',  hex:'#64748b', name:'Шэры' },
+];
+
+const ALG = { id:'alg', name:'Алгебра',   short:'Алг.' };
+const GEO = { id:'geo', name:'Геаметрыя', short:'Геам.' };
+
+const CLASSES = [
+  { id:'5',  name:'5 клас',        sub:'5 г/тыдзень · 175 г' },
+  { id:'6',  name:'6 клас',        sub:'5 г/тыдзень · 175 г' },
+  { id:'7',  name:'7 клас',        sub:'5 г/тыдзень · 175 г',
+    components:[
+      { ...ALG, sub:'3 г/тыдзень · 105 г' },
+      { ...GEO, sub:'2 г/тыдзень · 70 г'  },
+    ]},
+  { id:'8',  name:'8 клас',        sub:'5 г/тыдзень · 175 г',
+    components:[
+      { ...ALG, sub:'3 г/тыдзень · 105 г' },
+      { ...GEO, sub:'2 г/тыдзень · 70 г'  },
+    ]},
+  { id:'9',  name:'9 клас',        sub:'5 г/тыдзень · 152 г',
+    components:[
+      { ...ALG, sub:'91 г' },
+      { ...GEO, sub:'61 г' },
+    ]},
+  { id:'9f', name:'Факультатыў 9', sub:'1 г/тыдзень · 35 г' },
+  { id:'9h', name:'Надомнае 9',    sub:'3,5 г/тыдзень · 125 г' },
+];
+
+const MONTHS_NOM = ['студзень','люты','сакавік','красавік','май','чэрвень',
+                    'ліпень','жнівень','верасень','кастрычнік','лістапад','снежань'];
+const WEEKDAYS   = ['Пн','Аў','Ср','Ча','Пт','Сб','Нд'];
+
+/* =========================================================
+   УТЫЛІТЫ
+   ========================================================= */
+function uid(){ return Math.random().toString(36).slice(2, 9); }
+function G(topic, hours, hw, dates){
+  return { id: uid(), topic, hours, hw, dates: dates || [] };
 }
-window.markdownToHtml = markdownToHtml;
-})();
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
 
-/* ============ APP ============ */
-(function(){
-var $ = function(s){ return document.querySelector(s); };
-var editor = $('#editor'), preview = $('#preview');
-var previewPane = $('#previewPane'), editorPane = $('#editorPane');
-var app = $('#app'), toastEl = $('#toast');
+/* =========================================================
+   ФОРМУЛЫ (KaTeX)
+   ========================================================= */
+function katexReady(){ return typeof window.katex !== 'undefined'; }
 
-var DEFAULTS = {
-  font: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  size: 17, lh: 1.75, ls: 0, padding: 48, width: 820,
-  align: 'left', theme: 'light', accent: '#6366f1', editorSize: 14
+/**
+ * Рэндэрыць тэкст з падтрымкай формул:
+ *   $...$   — інлайн
+ *   $$...$$ — блочная
+ * Усё астатняе экраніруецца.
+ */
+function renderMixed(text){
+  if(text == null || text === '') return '';
+  const src = String(text);
+
+  // калі KaTeX не загрузіўся — паказваем проста тэкст
+  if(!katexReady()){
+    return esc(src);
+  }
+
+  let out = '';
+  let i = 0;
+
+  while(i < src.length){
+    const dollar = src.indexOf('$', i);
+    if(dollar < 0){
+      out += esc(src.slice(i));
+      break;
+    }
+
+    // вызначаем даўжыню адкрывальнага раздельніка
+    const isBlock = src[dollar + 1] === '$';
+    const openLen = isBlock ? 2 : 1;
+    const closeTok = isBlock ? '$$' : '$';
+
+    // шукаем закрыццё
+    const close = src.indexOf(closeTok, dollar + openLen);
+    if(close < 0){
+      // няма закрыцця — проста выводзім як тэкст
+      out += esc(src.slice(i, dollar + openLen));
+      i = dollar + openLen;
+      continue;
+    }
+
+    // тэкст перад формулай
+    out += esc(src.slice(i, dollar));
+
+    // сама формула
+    const formula = src.slice(dollar + openLen, close);
+    if(!formula.trim()){
+      // пустая формула — выводзім як тэкст
+      out += esc(src.slice(dollar, close + openLen));
+    } else {
+      try{
+        out += katex.renderToString(formula, {
+          throwOnError: false,
+          displayMode: isBlock,
+          strict: 'ignore',
+          trust: false,
+        });
+      }catch(e){
+        out += esc(src.slice(dollar, close + openLen));
+      }
+    }
+    i = close + openLen;
+  }
+
+  return out;
+}
+
+/* =========================================================
+   СТАН
+   ========================================================= */
+let state = {
+  current: '5',
+  currentComponent: null,
+  editing: false,
+  data: load() || seed(),
+  snapshot: null,
 };
-var settings = Object.assign({}, DEFAULTS);
-var saveTimer = null;
 
-function hexToRgba(hex, a){
-  var h = hex.replace('#', '');
-  if (h.length === 3) h = h.charAt(0)+h.charAt(0)+h.charAt(1)+h.charAt(1)+h.charAt(2)+h.charAt(2);
-  var n = parseInt(h, 16);
-  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+/* =========================================================
+   ПАЧАТКОВЫЯ ДАНЫЯ
+   ========================================================= */
+function seed(){
+  return {
+    '5': [
+      G('НПБП. Паўтарэнне. Задачы на ўсе дзеянні з натуральнымі лікамі', 3, 'Стар. 9 № 26-31',
+        ['01.09','02.09','03.09']),
+      G('Як рашаць задачу. Тэматычная самастойная работа', 6, 'Раздзел 1, § 1, № 43-57',
+        ['04.09','07.09','08.09','09.09','10.09','11.09']),
+      G('Натуральныя лікі і нуль. Чытанне і запіс. Параўнанне', 4, '§ 2, № 67-72; § 3, № 84-87',
+        ['14.09','15.09','16.09','17.09']),
+    ],
+    '6': [
+      G('НПБП. Дзесятковы запіс дробаў. Разрады дзесятковых дробаў', 3, 'Раздзел 1, § 1, № 24-28',
+        ['01.09','02.09','03.09']),
+      G('Параўнанне дзесятковых дробаў', 3, '§ 2, № 54-58', ['04.09','07.09','08.09']),
+      G('Акругленне дзесятковых дробаў', 2, '§ 2, № 59', ['09.09','10.09']),
+    ],
+    '7/alg': [
+      G('НПБП. Ступень з натуральным паказчыкам і яе ўласцівасці', 4, '§ 1, № 1.60-1.94',
+        ['01.09','04.09','07.09','08.09']),
+      G('Ступень з цэлым паказчыкам і яе ўласцівасці', 6, '§ 2, № 1.137-1.162',
+        ['11.09','14.09','15.09','18.09','21.09','22.09']),
+      G('Стандартны выгляд ліку', 3, '§ 3, № 1.190-1.98', ['25.09','28.09','29.09']),
+    ],
+    '7/geo': [
+      G('Паўтарэнне. Наглядная геаметрыя', 1, 'Раздзел 1, § 1, № 4, 6', ['02.09']),
+      G('Прадмет геаметрыі. Азначэнне. Аксіёма. Тэарэма', 1, '§ 2, № 2, стар. 19', ['03.09']),
+      G('Прамая. Прамень. Адрэзак. Ломаная', 2, '§ 3, № 3 (б), 5 (б), 7 (в), 9 (б)',
+        ['09.09','10.09']),
+    ],
+    '8/alg': [
+      G('НПБП. Паўтарэнне. Ступень з натуральным і цэлым паказчыкамі', 1, '№ 1 (б), № 3 (б, в, г)', ['01.09']),
+      G('Паўтарэнне. Лінейныя ўраўненні і няроўнасці. Лінейная функцыя', 1, '№ 41 (б, г, е)', ['04.09']),
+      G('Квадратны корань з ліку. Арыфметычны квадратны корань', 3, '§ 1, № 1.35-1.50',
+        ['07.09','08.09','11.09']),
+      G('Мноства ірацыянальных лікаў', 2, '§ 2, № 1.79-1.88', ['14.09','15.09']),
+    ],
+    '8/geo': [
+      G('Паўтарэнне. Паралельнасць прамых. Прыметы роўнасці трохвугольнікаў', 1, 'Стар. 5-8', ['02.09']),
+      G('Многавугольнік', 2, '§ 1, № 1-16', ['03.09','09.09']),
+      G('Паралелаграм і яго ўласцівасці', 2, '§ 2, № 17-34', ['10.09','16.09']),
+    ],
+    '9/alg': [
+      G('Паўтарэнне. Выразы і іх пераўтварэнні', 1, '№ 10-12, 16', ['04.09']),
+      G('Паўтарэнне. Ступень з натуральным і цэлым паказчыкамі', 1, '№ 3', ['07.09']),
+      G('Паўтарэнне. Лінейныя ўраўненні і няроўнасці', 1, '№ 21, 29', ['11.09']),
+      G('Рацыянальны дроб', 2, '§ 1, № 1.18-1.25; § 2, № 1.62-1.79', ['14.09','18.09']),
+    ],
+    '9/geo': [
+      G('НПБП. Сінус, косінус, тангенс, катангенс вострага вугла', 1, '§ 1, № 1-9', ['01.09']),
+      G('Значэнні сінуса, косінуса, тангенса і катангенса вуглоў 30°, 45°, 60°', 1, '§ 1, № 10-21', ['02.09']),
+      G('Рашэнне прамавугольнага трохвугольніка', 2, '§ 2, № 22-33', ['03.09','04.09']),
+    ],
+    '9f': [
+      G('ОПБП. Натуральныя лікі. Дзеянні над цэлымі лікамі. Дзялімасць', 1, '', ['07.09']),
+      G('Звычайныя дробы. Складанне, адніманне, множанне, дзяленне', 1, '', ['14.09']),
+      G('Дзесятковыя дробы. Дзеянні з дзесятковымі дробамі', 1, '', ['21.09']),
+      G('Рацыянальныя лікі. Параўнанне і вылічэнні', 1, '', ['28.09']),
+    ],
+    '9h': [
+      G('Нумарацыя лікаў у межах 1000, 10 000, 100 000', 2, '', ['','']),
+      G('Лічэнне роўнымі лікавымі групамі. Акругленне лікаў', 1, '', ['']),
+      G('Паралелаграм (прамавугольнік, квадрат, ромб). Уласцівасці', 1, '', ['']),
+    ],
+  };
 }
 
-function applySettings(){
-  var r = document.documentElement.style;
-  r.setProperty('--doc-font', settings.font);
-  r.setProperty('--doc-size', settings.size + 'px');
-  r.setProperty('--doc-lh', settings.lh);
-  r.setProperty('--doc-ls', settings.ls + 'em');
-  r.setProperty('--doc-align', settings.align);
-  r.setProperty('--page-padding', settings.padding + 'px');
-  r.setProperty('--page-width', settings.width + 'px');
-  r.setProperty('--editor-size', settings.editorSize + 'px');
-  r.setProperty('--accent', settings.accent);
-  r.setProperty('--accent-soft', hexToRgba(settings.accent, 0.13));
-  document.documentElement.setAttribute('data-theme', settings.theme);
-
-  var el;
-  el = $('#setFont');       if (el) el.value = settings.font;
-  el = $('#setSize');       if (el) el.value = settings.size;
-  el = $('#valSize');       if (el) el.textContent = settings.size + 'px';
-  el = $('#setLh');         if (el) el.value = settings.lh;
-  el = $('#valLh');         if (el) el.textContent = Number(settings.lh).toFixed(2);
-  el = $('#setLs');         if (el) el.value = settings.ls;
-  el = $('#valLs');         if (el) el.textContent = Number(settings.ls).toFixed(3) + 'em';
-  el = $('#setPad');        if (el) el.value = settings.padding;
-  el = $('#valPad');        if (el) el.textContent = settings.padding + 'px';
-  el = $('#setWidth');      if (el) el.value = settings.width;
-  el = $('#valWidth');      if (el) el.textContent = settings.width + 'px';
-  el = $('#setEditorSize'); if (el) el.value = settings.editorSize;
-  el = $('#valEditorSize'); if (el) el.textContent = settings.editorSize + 'px';
-  el = $('#setAccent');     if (el) el.value = settings.accent;
-
-  Array.prototype.forEach.call(document.querySelectorAll('#alignChips .chip'), function(c){
-    c.classList.toggle('active', c.dataset.align === settings.align);
-  });
-  Array.prototype.forEach.call(document.querySelectorAll('#themeChips .chip'), function(c){
-    c.classList.toggle('active', c.dataset.theme === settings.theme);
-  });
-  Array.prototype.forEach.call(document.querySelectorAll('#swatches .swatch'), function(s){
-    s.classList.toggle('active', s.dataset.color.toLowerCase() === String(settings.accent).toLowerCase());
-  });
-}
-
-var renderQueued = false;
-function render(){
-  if (renderQueued) return;
-  renderQueued = true;
-  requestAnimationFrame(function(){
-    renderQueued = false;
-    var md = editor.value;
-    preview.innerHTML = window.markdownToHtml(md);
-    renderMath();
-    updateStats(md);
-    scheduleSave();
-  });
-}
-function renderMath(){
-  var nodes = preview.querySelectorAll('[data-tex]');
-  Array.prototype.forEach.call(nodes, function(el){
-    var tex = decodeURIComponent(el.dataset.tex);
-    var display = el.dataset.display === '1';
-    if (window.katex){
-      try{ window.katex.render(tex, el, { displayMode: display, throwOnError: false }); return; }catch(e){}
-    }
-    el.textContent = display ? '$$' + tex + '$$' : '$' + tex + '$';
-    el.classList.add('math-raw');
-  });
-}
-window.__katexLoaded = function(){ if (window.markdownToHtml) render(); };
-
-function plural(n, one, few, many){
-  var m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}
-function updateStats(md){
-  var words = md.trim() ? md.trim().split(/\s+/).filter(Boolean).length : 0;
-  var wEl = $('#statWords'), cEl = $('#statChars'), lEl = $('#statLines'), rEl = $('#statRead');
-  if (wEl) wEl.textContent = words + ' ' + plural(words, 'слово', 'слова', 'слов');
-  if (cEl) cEl.textContent = md.length + ' ' + plural(md.length, 'символ', 'символа', 'символов');
-  var lines = md ? md.split('\n').length : 0;
-  if (lEl) lEl.textContent = lines + ' ' + plural(lines, 'строка', 'строки', 'строк');
-  if (rEl) rEl.textContent = '~' + Math.max(1, Math.round(words / 180)) + ' мин';
-}
-
-function scheduleSave(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(function(){
-    try{
-      localStorage.setItem('mdstudio.doc', editor.value);
-      localStorage.setItem('mdstudio.settings', JSON.stringify(settings));
-    }catch(e){}
-  }, 400);
-}
-function loadState(){
-  var hasDoc = false;
+/* =========================================================
+   ЗАГРУЗКА
+   ========================================================= */
+function load(){
   try{
-    var s = localStorage.getItem('mdstudio.settings');
-    if (s) settings = Object.assign({}, DEFAULTS, JSON.parse(s));
-    var d = localStorage.getItem('mdstudio.doc');
-    if (d !== null){ editor.value = d; hasDoc = true; }
-  }catch(e){}
-  if (!hasDoc){
-    var tpl = document.getElementById('defaultDoc');
-    editor.value = tpl ? tpl.textContent.replace(/^\n/, '') : '';
-  }
+    let d = null;
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      d = JSON.parse(raw);
+    } else {
+      const old = localStorage.getItem('ktp-math-bgd-v6')
+              || localStorage.getItem('ktp-math-bgd-v5')
+              || localStorage.getItem('ktp-math-bgd-v4')
+              || localStorage.getItem('ktp-math-bgd-v3')
+              || localStorage.getItem('ktp-math-bgd-v2');
+      if(old){ try { d = JSON.parse(old); } catch(e){ d = null; } }
+    }
+    if(!d || typeof d !== 'object') return null;
+    const migration = { '7':'alg', '8':'alg', '9':'alg' };
+    for(const k in migration){
+      if(Array.isArray(d[k])){
+        const nk = k + '/' + migration[k];
+        if(!d[nk]) d[nk] = d[k];
+        delete d[k];
+      }
+    }
+    for(const k in d){
+      if(!Array.isArray(d[k])) return null;
+      for(const g of d[k]){
+        if(typeof g !== 'object' || !('topic' in g) || !('dates' in g)) return null;
+      }
+    }
+    return d;
+  }catch(e){ return null; }
 }
 
-function replaceRange(start, end, text, selStart, selEnd){
-  editor.focus();
-  editor.setSelectionRange(start, end);
-  var ok = false;
-  try { ok = document.execCommand('insertText', false, text); } catch(e){ ok = false; }
-  if (!ok){ editor.setRangeText(text, start, end, 'end'); }
-  if (selStart != null) editor.setSelectionRange(selStart, selEnd);
-  render();
+let saveTimer = null;
+function save(instant){
+  clearTimeout(saveTimer);
+  const doIt = () => {
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(state.data));
+      flashSaved();
+    }catch(e){ console.warn('Не ўдалося захаваць', e); }
+  };
+  instant ? doIt() : (saveTimer = setTimeout(doIt, 400));
 }
-function wrapSel(before, after, placeholder){
-  var s = editor.selectionStart, e = editor.selectionEnd;
-  var sel = editor.value.slice(s, e);
-  var inner = sel || placeholder || '';
-  var text = before + inner + after;
-  replaceRange(s, e, text, s + before.length, s + before.length + inner.length);
+function flashSaved(){
+  const m = document.getElementById('savedMsg');
+  m.classList.add('show');
+  clearTimeout(m._t);
+  m._t = setTimeout(() => m.classList.remove('show'), 1200);
 }
-function prefixLines(kind){
-  var s = editor.selectionStart, e = editor.selectionEnd;
-  var val = editor.value;
-  var ls = val.lastIndexOf('\n', s - 1) + 1;
-  var le = val.indexOf('\n', e);
-  if (le === -1) le = val.length;
-  var lines = val.slice(ls, le).split('\n');
-  var test = { h1:/^# /, h2:/^## /, h3:/^### /, h4:/^#### /,
-               ul:/^[-*+] /, ol:/^\d+[.)] /, quote:/^> /,
-               task:/^[-*+] \[[ xX]\] / }[kind];
-  var allHave = lines.every(function(l){ return test.test(l); });
-  var newLines = lines.map(function(l, idx){
-    if (allHave) return l.replace(test, '');
-    switch (kind){
-      case 'h1': return '# ' + l;
-      case 'h2': return '## ' + l;
-      case 'h3': return '### ' + l;
-      case 'h4': return '#### ' + l;
-      case 'ul': return '- ' + l;
-      case 'ol': return (idx + 1) + '. ' + l;
-      case 'quote': return '> ' + l;
-      case 'task': return '- [ ] ' + l;
-      default: return l;
+
+/* =========================================================
+   ДАТЫ
+   ========================================================= */
+function parseDate(str){
+  if(!str) return null;
+  const m = String(str).trim().match(/^(\d{1,2})[.\/\-](\d{1,2})(?:[.\/\-](\d{2,4}))?$/);
+  if(!m) return null;
+  const d = +m[1], mo = +m[2];
+  let y = m[3] ? +m[3] : null;
+  if(y !== null && y < 100) y += 2000;
+  if(y === null) y = (mo >= 9) ? SCHOOL_YEAR.start : SCHOOL_YEAR.end;
+  if(d < 1 || d > 31 || mo < 1 || mo > 12) return null;
+  const dt = new Date(y, mo - 1, d);
+  dt.setHours(0,0,0,0);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+function todayMidnight(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+function fmt(dt){
+  const p = n => String(n).padStart(2,'0');
+  return `${p(dt.getDate())}.${p(dt.getMonth()+1)}.${dt.getFullYear()}`;
+}
+function fmtShort(d, m){ 
+  return `${String(d).padStart(2,'0')}.${String(m+1).padStart(2,'0')}`;
+}
+
+/* =========================================================
+   КЛЮЧЫ
+   ========================================================= */
+function currentKey(){
+  return state.currentComponent
+    ? state.current + '/' + state.currentComponent
+    : state.current;
+}
+function getCurrentData(){
+  const k = currentKey();
+  if(!Array.isArray(state.data[k])) state.data[k] = [];
+  return state.data[k];
+}
+function getCurrentClass(){
+  return CLASSES.find(c => c.id === state.current);
+}
+function getCurrentComponent(){
+  const cls = getCurrentClass();
+  if(!cls || !cls.components) return null;
+  return cls.components.find(c => c.id === state.currentComponent) || null;
+}
+
+/* =========================================================
+   МАДАЛЬ
+   ========================================================= */
+const modalBack = document.getElementById('modalBack');
+const modalTitle = document.getElementById('modalTitle');
+const modalText  = document.getElementById('modalText');
+const modalYes   = document.getElementById('modalYes');
+const modalNo    = document.getElementById('modalNo');
+let modalResolve = null;
+
+function confirmDialog(title, text, yesLabel, danger){
+  return new Promise(resolve => {
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+    modalYes.textContent = yesLabel || 'Так';
+    modalYes.className = danger ? 'warn' : 'primary';
+    modalResolve = resolve;
+    modalBack.classList.add('show');
+  });
+}
+function closeModal(val){
+  modalBack.classList.remove('show');
+  if(modalResolve){ modalResolve(val); modalResolve = null; }
+}
+modalYes.onclick = () => closeModal(true);
+modalNo.onclick  = () => closeModal(false);
+modalBack.onclick = e => { if(e.target === modalBack) closeModal(false); };
+
+/* =========================================================
+   РАЗГОРТКА
+   ========================================================= */
+function expandRows(){
+  const out = [];
+  const groups = getCurrentData();
+  groups.forEach((g, gi) => {
+    const h = Math.max(1, Math.min(40, parseInt(g.hours) || 1));
+    for(let i = 0; i < h; i++){
+      out.push({
+        group: g,
+        groupIndex: gi,
+        lessonIdx: i,
+        isFirst: i === 0,
+        totalInGroup: h,
+        date: (g.dates && g.dates[i]) || '',
+      });
     }
   });
-  var block = newLines.join('\n');
-  replaceRange(ls, le, block, ls, ls + block.length);
+  return out;
 }
-function insertBlock(text){
-  var s = editor.selectionStart, e = editor.selectionEnd;
-  var val = editor.value;
-  var needNl = s > 0 && val.charAt(s - 1) !== '\n' ? '\n' : '';
-  var full = needNl + text;
-  replaceRange(s, e, full, s + full.length, s + full.length);
-}
-var TABLE_TPL = '| Заголовок 1 | Заголовок 2 |\n|:------------|:-----------:|\n| Текст       | Текст       |\n';
-var TABLE_MATH_TPL = '| Формула | Описание |\n|:-------:|:---------|\n| $a^2 + b^2 = c^2$ | Теорема Пифагора |\n| $\\frac{a}{b}$ | Дробь |\n';
 
-function runAction(act){
-  switch (act){
-    case 'h1': case 'h2': case 'h3': case 'h4':
-    case 'ul': case 'ol': case 'quote': case 'task':
-      prefixLines(act); break;
-    case 'bold': wrapSel('**', '**', 'жирный текст'); break;
-    case 'italic': wrapSel('*', '*', 'курсив'); break;
-    case 'underline': wrapSel('<u>', '</u>', 'подчёркнутый'); break;
-    case 'strike': wrapSel('~~', '~~', 'зачёркнутый'); break;
-    case 'highlight': wrapSel('==', '==', 'выделенный'); break;
-    case 'sup': wrapSel('^', '^', 'верхний индекс'); break;
-    case 'sub': wrapSel('~', '~', 'нижний индекс'); break;
-    case 'inlinecode': wrapSel('`', '`', 'код'); break;
-    case 'comment': wrapSel('<!-- ', ' -->', 'комментарий'); break;
-    case 'code': {
-      var sel = editor.value.slice(editor.selectionStart, editor.selectionEnd) || 'код';
-      insertBlock('```\n' + sel + '\n```\n'); break;
-    }
-    case 'link': wrapSel('[', '](https://example.com)', 'текст ссылки'); break;
-    case 'image': wrapSel('![', '](https://picsum.photos/800/400)', 'описание'); break;
-    case 'table': insertBlock(TABLE_TPL); break;
-    case 'tablemath': insertBlock(TABLE_MATH_TPL); break;
-    case 'math': wrapSel('$', '$', 'E = mc^2'); break;
-    case 'mathblock': insertBlock('$$\n\\int_{0}^{\\infty} e^{-x}\\,dx = 1\n$$\n'); break;
-    case 'hr': insertBlock('---\n'); break;
+/* =========================================================
+   ТАБЫ
+   ========================================================= */
+function renderTabs(){
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  CLASSES.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (c.id === state.current ? ' active' : '');
+    b.innerHTML = `${esc(c.name)}<small>${esc(c.sub)}</small>`;
+    b.onclick = () => switchClass(c.id);
+    el.appendChild(b);
+  });
+}
+async function switchClass(classId){
+  if(classId === state.current && !state.editing) return;
+  if(state.editing){
+    const ok = await confirmDialog(
+      'Пераключыць клас?',
+      'Вы ў рэжыме рэдагавання. Незахаваныя змены будуць страчаны. Працягнуць?',
+      'Пераключыць', true
+    );
+    if(!ok) return;
+    state.editing = false;
+    state.snapshot = null;
   }
+  state.current = classId;
+  const cls = CLASSES.find(c => c.id === classId);
+  state.currentComponent = (cls.components && cls.components.length)
+    ? cls.components[0].id : null;
+  renderAll();
 }
 
-document.getElementById('toolbar').addEventListener('click', function(e){
-  var btn = e.target.closest('.tbtn');
-  if (btn) runAction(btn.dataset.act);
-});
-
-/* ============ MATH TOOLBAR ============ */
-var MATH_INLINE = {
-  frac:'\\frac{}{}', dfrac:'\\dfrac{}{}', sqrt:'\\sqrt{}', nthroot:'\\sqrt[n]{}',
-  pow:'^{}', sub:'_{}', binom:'\\binom{n}{k}', abs:'\\left|{}\\right|',
-  floor:'\\lfloor{}\\rfloor', ceil:'\\lceil{}\\rceil', sum:'\\sum_{i=1}^{n}',
-  vec:'\\vec{}', infty:'\\infty', pi:'\\pi', angle:'\\angle', degree:'^{\\circ}',
-  leq:'\\le', geq:'\\ge', neq:'\\ne', approx:'\\approx', equiv:'\\equiv',
-  pm:'\\pm', times:'\\times', cdot:'\\cdot', div:'\\div', to:'\\to',
-  forall:'\\forall', exists:'\\exists', in_:'\\in', notin:'\\notin',
-  subset:'\\subset', cup:'\\cup', cap:'\\cap', emptyset:'\\emptyset',
-  log:'\\log_{}', ln:'\\ln', sin:'\\sin', cos:'\\cos', tan:'\\tan'
-};
-
-/* Вставка LaTeX без обрамляющих $ — как просил пользователь */
-function insertMath(tex){
-  var s = editor.selectionStart, e = editor.selectionEnd;
-  var sel = editor.value.slice(s, e);
-  var text = tex;
-  var cursorRel = text.length;
-  if (sel && text.indexOf('{}') !== -1){
-    text = text.replace('{}', '{' + sel + '}');
-    cursorRel = text.indexOf('{' + sel + '}') + 1 + sel.length + 1;
-  } else {
-    var idx = text.indexOf('{}');
-    if (idx !== -1) cursorRel = idx + 1;
-  }
-  replaceRange(s, e, text, s + cursorRel, s + cursorRel);
-}
-
-document.getElementById('mathToolbar').addEventListener('click', function(e){
-  var btn = e.target.closest('button');
-  if (!btn) return;
-  if (btn.id === 'btnGreek'){
-    document.getElementById('greekPanel').classList.toggle('open');
-    e.stopPropagation();
+function renderSubtabs(){
+  const wrap = document.getElementById('subtabsWrap');
+  const el   = document.getElementById('subtabs');
+  const cls  = getCurrentClass();
+  if(!cls || !cls.components || cls.components.length === 0){
+    wrap.classList.remove('show');
+    el.innerHTML = '';
     return;
   }
-  var key = btn.dataset.math;
-  if (!key || MATH_INLINE[key] === undefined) return;
-  insertMath(MATH_INLINE[key]);
-});
-
-document.getElementById('greekPanel').addEventListener('click', function(e){
-  var btn = e.target.closest('button');
-  if (!btn || !btn.dataset.greek) return;
-  e.stopPropagation();
-  var tex = btn.dataset.greek;
-  var s = editor.selectionStart, e2 = editor.selectionEnd;
-  replaceRange(s, e2, tex, s + tex.length, s + tex.length);
-  document.getElementById('greekPanel').classList.remove('open');
-});
-
-document.addEventListener('click', function(e){
-  var panel = document.getElementById('greekPanel');
-  if (!panel || !panel.classList.contains('open')) return;
-  if (e.target.closest('#greekPanel') || e.target.closest('#btnGreek')) return;
-  panel.classList.remove('open');
-});
-
-/* ============ HOTKEYS ============ */
-editor.addEventListener('keydown', function(e){
-  if (e.ctrlKey || e.metaKey){
-    var k = e.key.toLowerCase();
-    if (k === 'b'){ e.preventDefault(); runAction('bold'); }
-    else if (k === 'i'){ e.preventDefault(); runAction('italic'); }
-    else if (k === 'u'){ e.preventDefault(); runAction('underline'); }
-    else if (k === 'k'){ e.preventDefault(); runAction('link'); }
-    else if (k === 'e'){ e.preventDefault(); runAction('inlinecode'); }
-    else if (k === 'm'){ e.preventDefault(); runAction('math'); }
-  }
-  if (e.key === 'Tab'){
-    e.preventDefault();
-    var s = editor.selectionStart, en = editor.selectionEnd;
-    replaceRange(s, en, '  ', s + 2, s + 2);
-  }
-});
-
-function updateCursor(){
-  var pos = editor.selectionStart;
-  var before = editor.value.slice(0, pos);
-  var line = before.split('\n').length;
-  var col = pos - before.lastIndexOf('\n');
-  var el = $('#statPos');
-  if (el) el.textContent = 'Стр ' + line + ', Кол ' + col;
+  wrap.classList.add('show');
+  el.innerHTML = '';
+  cls.components.forEach(comp => {
+    const b = document.createElement('button');
+    b.className = 'subtab' + (comp.id === state.currentComponent ? ' active' : '');
+    b.innerHTML = `${esc(comp.name)}<small>${esc(comp.sub || '')}</small>`;
+    b.onclick = () => switchComponent(comp.id);
+    el.appendChild(b);
+  });
 }
-['keyup','click','input','select'].forEach(function(ev){
-  editor.addEventListener(ev, updateCursor);
-});
+async function switchComponent(compId){
+  if(compId === state.currentComponent) return;
+  if(state.editing){
+    const ok = await confirmDialog(
+      'Пераключыць кампанент?',
+      'Вы ў рэжыме рэдагавання. Незахаваныя змены будуць страчаны. Працягнуць?',
+      'Пераключыць', true
+    );
+    if(!ok) return;
+    state.editing = false;
+    state.snapshot = null;
+  }
+  state.currentComponent = compId;
+  renderAll();
+}
 
-var syncing = false;
-editor.addEventListener('scroll', function(){
-  if (syncing) return;
-  syncing = true;
-  var ratio = editor.scrollTop / Math.max(1, editor.scrollHeight - editor.clientHeight);
-  previewPane.scrollTop = ratio * (previewPane.scrollHeight - previewPane.clientHeight);
-  requestAnimationFrame(function(){ syncing = false; });
-});
-previewPane.addEventListener('scroll', function(){
-  if (syncing) return;
-  syncing = true;
-  var ratio = previewPane.scrollTop / Math.max(1, previewPane.scrollHeight - previewPane.clientHeight);
-  editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
-  requestAnimationFrame(function(){ syncing = false; });
-});
+/* =========================================================
+   ТАБЛІЦА
+   ========================================================= */
+const tbody = document.getElementById('tbody');
 
-(function(){
-  var sp = document.getElementById('splitter');
-  var dragging = false;
-  sp.addEventListener('mousedown', function(e){
-    if (app.dataset.view !== 'split') return;
-    dragging = true;
-    sp.classList.add('dragging');
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', function(e){
-    if (!dragging) return;
-    var ws = document.getElementById('workspace').getBoundingClientRect();
-    var pct = ((e.clientX - ws.left) / ws.width) * 100;
-    pct = Math.min(80, Math.max(20, pct));
-    editorPane.style.flex = '0 0 ' + pct + '%';
-    previewPane.style.flex = '1 1 auto';
-  });
-  window.addEventListener('mouseup', function(){
-    if (!dragging) return;
-    dragging = false;
-    sp.classList.remove('dragging');
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  });
-})();
+function renderTable(){
+  const cls  = getCurrentClass();
+  const comp = getCurrentComponent();
+  const rows = expandRows();
 
-document.getElementById('viewMode').addEventListener('click', function(e){
-  var btn = e.target.closest('button');
-  if (!btn) return;
-  Array.prototype.forEach.call(document.querySelectorAll('#viewMode button'), function(b){
-    b.classList.remove('active');
+  const titleHTML = comp
+    ? `МАТЭМАТЫКА · ${esc(cls.name)} <span class="comp-chip">${esc(comp.name)}</span>`
+    : `МАТЭМАТЫКА · ${esc(cls.name)}`;
+  document.getElementById('clsTitle').innerHTML = titleHTML;
+
+  document.getElementById('clsSub').textContent = comp
+    ? `${comp.sub || ''} · ${cls.sub}`
+    : cls.sub;
+
+  const t0 = todayMidnight();
+  let todayRow = null, nextRow = null, nextDate = null;
+  rows.forEach(r => {
+    const d = parseDate(r.date);
+    if(!d) return;
+    const diff = Math.round((d - t0) / 86400000);
+    if(diff === 0 && !todayRow) todayRow = r;
+    if(diff > 0 && (nextDate === null || d < nextDate)){ nextDate = d; nextRow = r; }
   });
-  btn.classList.add('active');
-  app.dataset.view = btn.dataset.view;
-  if (btn.dataset.view === 'split'){
-    editorPane.style.flex = '';
-    previewPane.style.flex = '';
+
+  tbody.innerHTML = '';
+
+  if(rows.length === 0){
+    const tr = document.createElement('tr');
+    const emptyTitle = comp ? `Няма тэм у кампаненце «${esc(comp.name)}»` : 'Няма тэм';
+    tr.innerHTML = `<td colspan="6" style="border:none">
+      <div class="empty">
+        <div class="empty-icon">📚</div>
+        <h3>${emptyTitle}</h3>
+        <p>${state.editing ? 'Націсніце «＋ Дадаць тэму», каб пачаць' : 'Уключыце рэжым рэдагавання, каб дадаць тэмы'}</p>
+      </div>
+    </td>`;
+    tbody.appendChild(tr);
+    updateNextInfo(todayRow, nextRow, nextDate);
+    updateCounter(rows);
+    applyEditMode();
+    return;
+  }
+
+  rows.forEach((r, idx) => {
+    const d = parseDate(r.date);
+    const diff = d ? Math.round((d - t0) / 86400000) : null;
+
+    let status = '';
+    if(diff === 0) status = 'row-today';
+    else if(r === nextRow) status = 'row-next';
+    else if(diff !== null && diff < 0) status = 'row-past';
+
+    const tr = document.createElement('tr');
+    tr.dataset.group = r.group.id;
+    tr.dataset.lesson = r.lessonIdx;
+    tr.className = [status, r.isFirst ? 'group-start' : ''].filter(Boolean).join(' ');
+
+    let badge = '';
+    if(status === 'row-today') badge = '<span class="badge today">Сёння</span>';
+    else if(status === 'row-next') badge = '<span class="badge next">Далей</span>';
+    else if(status === 'row-past') badge = '<span class="badge past">✓ Прайшоў</span>';
+
+    let hoursCell;
+    if(r.isFirst){
+      hoursCell = state.editing
+        ? `<input class="hours-input" type="number" min="1" max="40" value="${r.totalInGroup}" data-field="hours">`
+        : `<span class="hours-val">${r.totalInGroup}</span>`;
+    } else {
+      hoursCell = '';
+    }
+
+    const actCell = (r.isFirst && state.editing)
+      ? `<div class="rowbtns">
+           <button class="mini" data-act="up"   title="Уверх групы">↑</button>
+           <button class="mini" data-act="down" title="Уніз групы">↓</button>
+           <button class="mini del" data-act="del"  title="Выдаліць тэму">✕</button>
+         </div>`
+      : '';
+
+    const dateText = r.date
+      ? `<span class="date-edit" data-field="date" data-ph="00.00" contenteditable="false">${esc(r.date)}</span>`
+      : `<span class="date-edit date-empty" data-field="date" data-ph="00.00" contenteditable="false">—</span>`;
+
+    const calBtnHTML = state.editing
+      ? `<button class="cal-btn" data-act="calendar" type="button" title="Выбраць дату з календара" aria-label="Каляндар">📅</button>`
+      : '';
+
+    // тэма і Д/З — з падтрымкай формул
+    const topicHTML = state.editing
+      ? esc(r.group.topic)
+      : renderMixed(r.group.topic);
+    const hwHTML = state.editing
+      ? esc(r.group.hw)
+      : renderMixed(r.group.hw);
+
+    tr.innerHTML = `
+      <td class="col-n" data-label="№">${idx + 1}</td>
+      <td class="col-date" data-label="Дата">${dateText}${calBtnHTML}${badge}</td>
+      <td class="col-topic" data-label="Тэма" data-field="topic" data-ph="Увядзіце тэму" contenteditable="false">${topicHTML}</td>
+      <td class="col-h" data-label="Гадз.">${hoursCell}</td>
+      <td class="col-hw" data-label="Д/З" data-field="hw" data-ph="—" contenteditable="false">${hwHTML}</td>
+      <td class="col-act">${actCell}</td>`;
+
+    tbody.appendChild(tr);
+  });
+
+  updateNextInfo(todayRow, nextRow, nextDate);
+  updateCounter(rows);
+  applyEditMode();
+}
+
+function updateNextInfo(todayRow, nextRow, nextDate){
+  const info = document.getElementById('nextInfo');
+  info.classList.remove('no-pulse');
+  const topicToday = todayRow ? (todayRow.group.topic || 'урок') : '';
+  const topicNext  = nextRow  ? (nextRow.group.topic  || '—')   : '';
+  if(todayRow){
+    info.innerHTML = `<span>● <b>Сёння</b> — ${renderMixed(topicToday)}</span>`;
+    info.style.background = 'var(--today-soft)';
+    info.style.color = 'var(--today)';
+    info.style.borderColor = 'color-mix(in srgb, var(--today) 30%, transparent)';
+  } else if(nextRow){
+    info.innerHTML = `<span>◷ <b>Наступны ўрок:</b> ${fmt(nextDate)} — ${renderMixed(topicNext)}</span>`;
+    info.style.background = 'var(--next-soft)';
+    info.style.color = 'var(--next)';
+    info.style.borderColor = 'color-mix(in srgb, var(--next) 30%, transparent)';
+  } else {
+    info.innerHTML = `<span>Няма дат у будучыні</span>`;
+    info.style.background = 'var(--accent-soft)';
+    info.style.color = 'var(--accent-text)';
+    info.style.borderColor = 'color-mix(in srgb, var(--accent) 20%, transparent)';
+    info.classList.add('no-pulse');
+  }
+}
+
+function updateCounter(rows){
+  const arr = getCurrentData();
+  const hours = arr.reduce((s, g) => s + (parseInt(g.hours) || 0), 0);
+  document.getElementById('counter').textContent =
+    `${arr.length} тэм · ${hours} гадзін · ${rows.length} радкоў`;
+}
+
+/* =========================================================
+   РЭЖЫМ
+   ========================================================= */
+function applyEditMode(){
+  const table = document.getElementById('ktpTable');
+  table.classList.toggle('editing', state.editing);
+
+  document.getElementById('mainCard').classList.toggle('editing', state.editing);
+  document.getElementById('editbar').classList.toggle('show', state.editing);
+  document.getElementById('addRow').style.display = state.editing ? 'inline-flex' : 'none';
+
+  table.querySelectorAll('[data-field]').forEach(el => {
+    if(el.tagName === 'INPUT') return;
+    el.setAttribute('contenteditable', state.editing ? 'true' : 'false');
+  });
+
+  const btn = document.getElementById('editBtn');
+  if(state.editing){
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = 'inline-flex';
+    btn.innerHTML = '✎<span> Рэдагаваць</span>';
+    btn.className = 'primary';
+  }
+}
+
+/* =========================================================
+   УВАХОД / ВЫХАД
+   ========================================================= */
+function enterEditMode(){
+  state.snapshot = clone(state.data);
+  state.editing = true;
+  renderTable();
+}
+function saveAndExit(){
+  closeCalendar();
+  state.editing = false;
+  state.snapshot = null;
+  save(true);
+  renderTable();
+}
+async function cancelAndExit(){
+  closeCalendar();
+  if(!state.snapshot){ state.editing = false; renderTable(); return; }
+  const ok = await confirmDialog(
+    'Адмяніць змены?',
+    'Усе змены, зробленыя ў рэжыме рэдагавання, будуць страчаны. Працягнуць?',
+    'Адмяніць змены', true
+  );
+  if(ok){
+    state.data = state.snapshot;
+    state.snapshot = null;
+    state.editing = false;
+    save(true);
+    renderTable();
+  }
+}
+
+document.getElementById('editBtn').onclick = enterEditMode;
+document.getElementById('saveBtn').onclick = saveAndExit;
+document.getElementById('cancelBtn').onclick = cancelAndExit;
+
+/* =========================================================
+   ПАДЗЕІ Ў ТАБЛІЦЫ
+   ========================================================= */
+function findGroup(id){
+  return getCurrentData().find(g => g.id === id);
+}
+function syncGroupField(groupId, field, value, sourceEl){
+  const cells = tbody.querySelectorAll(`tr[data-group="${groupId}"] [data-field="${field}"]`);
+  cells.forEach(el => {
+    if(el !== sourceEl && el.textContent !== value) el.textContent = value;
+  });
+}
+
+tbody.addEventListener('input', e => {
+  if(!state.editing) return;
+  const el = e.target.closest('[data-field]');
+  if(!el || el.tagName === 'INPUT') return;
+
+  const tr = el.closest('tr');
+  const group = findGroup(tr.dataset.group);
+  if(!group) return;
+
+  const field = el.dataset.field;
+  const val = el.textContent;
+
+  if(field === 'topic'){
+    group.topic = val;
+    syncGroupField(group.id, 'topic', val, el);
+    save();
+  } else if(field === 'hw'){
+    group.hw = val;
+    syncGroupField(group.id, 'hw', val, el);
+    save();
+  } else if(field === 'date'){
+    const lessonIdx = +tr.dataset.lesson;
+    if(!group.dates) group.dates = [];
+    group.dates[lessonIdx] = val;
+    save();
+    clearTimeout(el._t);
+    el._t = setTimeout(() => {
+      const active = document.activeElement;
+      if(active && active.dataset && active.dataset.field === 'date') return;
+      renderTable();
+    }, 1500);
   }
 });
 
-var settingsPanel = document.getElementById('settings');
-var backdrop = document.getElementById('backdrop');
-function openSettings(){ settingsPanel.classList.add('open'); backdrop.classList.add('show'); }
-function closeSettings(){ settingsPanel.classList.remove('open'); backdrop.classList.remove('show'); }
-document.getElementById('btnSettings').addEventListener('click', openSettings);
-document.getElementById('closeSettings').addEventListener('click', closeSettings);
-backdrop.addEventListener('click', closeSettings);
-document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeSettings(); });
+tbody.addEventListener('blur', e => {
+  const el = e.target.closest && e.target.closest('[data-field="date"]');
+  if(!el) return;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    const active = document.activeElement;
+    if(active && active.dataset && active.dataset.field === 'date') return;
+    renderTable();
+  }, 120);
+}, true);
 
-document.getElementById('setFont').addEventListener('change', function(e){ settings.font = e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setSize').addEventListener('input', function(e){ settings.size = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setLh').addEventListener('input', function(e){ settings.lh = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setLs').addEventListener('input', function(e){ settings.ls = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setPad').addEventListener('input', function(e){ settings.padding = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setWidth').addEventListener('input', function(e){ settings.width = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setEditorSize').addEventListener('input', function(e){ settings.editorSize = +e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('setAccent').addEventListener('input', function(e){ settings.accent = e.target.value; applySettings(); scheduleSave(); });
-document.getElementById('alignChips').addEventListener('click', function(e){
-  var chip = e.target.closest('.chip'); if (!chip) return;
-  settings.align = chip.dataset.align; applySettings(); scheduleSave();
-});
-document.getElementById('themeChips').addEventListener('click', function(e){
-  var chip = e.target.closest('.chip'); if (!chip) return;
-  settings.theme = chip.dataset.theme; applySettings(); scheduleSave();
-});
-document.getElementById('swatches').addEventListener('click', function(e){
-  var sw = e.target.closest('.swatch'); if (!sw) return;
-  settings.accent = sw.dataset.color; applySettings(); scheduleSave();
-});
-document.getElementById('btnReset').addEventListener('click', function(){
-  settings = Object.assign({}, DEFAULTS);
-  applySettings(); scheduleSave(); toast('Настройки сброшены');
+tbody.addEventListener('change', e => {
+  if(!state.editing) return;
+  const inp = e.target.closest('input[data-field="hours"]');
+  if(!inp) return;
+  const tr = inp.closest('tr');
+  const group = findGroup(tr.dataset.group);
+  if(!group) return;
+
+  let n = parseInt(inp.value, 10);
+  if(isNaN(n) || n < 1) n = 1;
+  if(n > 40) n = 40;
+  if(n === group.hours){ inp.value = n; return; }
+
+  if(n < group.hours){
+    confirmDialog(
+      'Паменшыць колькасць гадзін?',
+      `Колькасць гадзін зменшыцца з ${group.hours} да ${n}. Даты апошніх ${group.hours - n} урокаў будуць выдалены.`,
+      'Паменшыць', true
+    ).then(ok => {
+      if(ok){
+        group.hours = n;
+        if(Array.isArray(group.dates)) group.dates = group.dates.slice(0, n);
+        save(true);
+      }
+      renderTable();
+    });
+  } else {
+    group.hours = n;
+    if(!Array.isArray(group.dates)) group.dates = [];
+    while(group.dates.length < n) group.dates.push('');
+    save(true);
+    renderTable();
+  }
 });
 
-function download(content, filename, mime){
-  var blob = new Blob([content], { type: mime });
-  var a = document.createElement('a');
+tbody.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey && e.target.isContentEditable){
+    e.preventDefault();
+    e.target.blur();
+  }
+});
+
+tbody.addEventListener('click', async e => {
+  if(!state.editing) return;
+  const tr = e.target.closest('tr');
+  if(!tr) return;
+  const group = findGroup(tr.dataset.group);
+  if(!group) return;
+
+  const calBtn = e.target.closest('[data-act="calendar"]');
+  if(calBtn){
+    e.preventDefault(); e.stopPropagation();
+    const lessonIdx = +tr.dataset.lesson;
+    const currentVal = (group.dates && group.dates[lessonIdx]) || '';
+    openCalendar(calBtn, currentVal, (newVal) => {
+      if(!group.dates) group.dates = [];
+      group.dates[lessonIdx] = newVal;
+      save();
+      const span = tr.querySelector('[data-field="date"]');
+      if(span){
+        span.textContent = newVal || '—';
+        span.classList.toggle('date-empty', !newVal);
+      }
+      setTimeout(() => { if(state.editing) renderTable(); }, 180);
+    });
+    return;
+  }
+
+  const actBtn = e.target.closest('[data-act]');
+  if(actBtn){
+    const id = tr.dataset.group;
+    const arr = getCurrentData();
+    const i = arr.findIndex(g => g.id === id);
+    if(i < 0) return;
+    const act = actBtn.dataset.act;
+    if(act === 'up' && i > 0){
+      [arr[i-1], arr[i]] = [arr[i], arr[i-1]];
+      save(true); renderTable();
+    } else if(act === 'down' && i < arr.length - 1){
+      [arr[i+1], arr[i]] = [arr[i], arr[i+1]];
+      save(true); renderTable();
+    } else if(act === 'del'){
+      const comp = getCurrentComponent();
+      const ctx = comp ? ` (${comp.name})` : '';
+      const ok = await confirmDialog(
+        'Выдаліць тэму?',
+        `Тэма «${arr[i].topic || 'без назвы'}»${ctx} разам з ${arr[i].hours} гадзінамі і датамі будзе выдалена.`,
+        'Выдаліць', true
+      );
+      if(ok){
+        arr.splice(i, 1);
+        save(true); renderTable();
+      }
+    }
+  }
+});
+
+tbody.addEventListener('dblclick', e => {
+  if(!state.editing) return;
+  const el = e.target.closest('[data-field="date"]');
+  if(!el) return;
+  const tr = el.closest('tr');
+  const group = findGroup(tr.dataset.group);
+  if(!group) return;
+  const lessonIdx = +tr.dataset.lesson;
+  const currentVal = (group.dates && group.dates[lessonIdx]) || '';
+  openCalendar(el, currentVal, (newVal) => {
+    if(!group.dates) group.dates = [];
+    group.dates[lessonIdx] = newVal;
+    save();
+    const span = tr.querySelector('[data-field="date"]');
+    if(span){
+      span.textContent = newVal || '—';
+      span.classList.toggle('date-empty', !newVal);
+    }
+    setTimeout(() => { if(state.editing) renderTable(); }, 180);
+  });
+});
+
+/* =========================================================
+   КАЛЯНДАР
+   ========================================================= */
+const calPopup    = document.getElementById('calPopup');
+const calBackdrop = document.getElementById('calBackdrop');
+let calState = { anchor: null, year: 0, month: 0, onPick: null };
+
+function isMobileCal(){ return window.innerWidth <= 520; }
+
+function openCalendar(anchorEl, initialValue, onPick){
+  calState.anchor = anchorEl;
+  calState.onPick = onPick;
+  const dt = parseDate(initialValue) || new Date();
+  calState.year  = dt.getFullYear();
+  calState.month = dt.getMonth();
+  renderCalendar(initialValue);
+  positionCalendar();
+  calPopup.classList.add('show');
+  calBackdrop.classList.add('show');
+}
+
+function closeCalendar(){
+  calPopup.classList.remove('show');
+  calBackdrop.classList.remove('show');
+  calState.anchor = null;
+  calState.onPick = null;
+}
+
+function positionCalendar(){
+  const anchor = calState.anchor;
+  if(!anchor) return;
+  const rect = anchor.getBoundingClientRect();
+  const popupW = calPopup.offsetWidth || 308;
+  const popupH = calPopup.offsetHeight || 380;
+  const margin = 10;
+
+  if(isMobileCal()){
+    calPopup.style.top = '';
+    calPopup.style.left = '';
+    return;
+  }
+
+  let left = rect.left + rect.width / 2 - popupW / 2;
+  if(left < margin) left = margin;
+  if(left + popupW > window.innerWidth - margin){
+    left = window.innerWidth - popupW - margin;
+  }
+  let top = rect.bottom + 8;
+  if(top + popupH > window.innerHeight - margin){
+    top = rect.top - popupH - 8;
+  }
+  if(top < margin) top = margin;
+
+  calPopup.style.top = top + 'px';
+  calPopup.style.left = left + 'px';
+}
+
+function renderCalendar(selectedValue){
+  const sel = parseDate(selectedValue);
+  const first = new Date(calState.year, calState.month, 1);
+  let firstDay = first.getDay() - 1;
+  if(firstDay < 0) firstDay = 6;
+
+  const daysInMonth = new Date(calState.year, calState.month + 1, 0).getDate();
+  const daysInPrev  = new Date(calState.year, calState.month, 0).getDate();
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let daysHTML = '';
+  for(let i = firstDay - 1; i >= 0; i--){
+    const d = daysInPrev - i;
+    daysHTML += `<button type="button" class="cal-day other" data-d="${d}" data-m="-1">${d}</button>`;
+  }
+  for(let d = 1; d <= daysInMonth; d++){
+    const dt = new Date(calState.year, calState.month, d);
+    dt.setHours(0,0,0,0);
+    const dow = dt.getDay();
+    const isWeekend = (dow === 0 || dow === 6);
+    const isToday = dt.getTime() === today.getTime();
+    const isSel = sel && dt.getFullYear() === sel.getFullYear()
+                && dt.getMonth() === sel.getMonth()
+                && dt.getDate() === sel.getDate();
+    const cls = ['cal-day'];
+    if(isToday) cls.push('today');
+    if(isSel)   cls.push('selected');
+    if(isWeekend && !isSel) cls.push('weekend');
+    daysHTML += `<button type="button" class="${cls.join(' ')}" data-d="${d}" data-m="0">${d}</button>`;
+  }
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  const remaining = totalCells - firstDay - daysInMonth;
+  for(let d = 1; d <= remaining; d++){
+    daysHTML += `<button type="button" class="cal-day other" data-d="${d}" data-m="1">${d}</button>`;
+  }
+
+  calPopup.innerHTML = `
+    <div class="cal-head">
+      <button type="button" class="cal-nav" data-nav="-1" aria-label="Папярэдні месяц">‹</button>
+      <div class="cal-title">
+        ${MONTHS_NOM[calState.month]}
+        <small>${calState.year}</small>
+      </div>
+      <button type="button" class="cal-nav" data-nav="1" aria-label="Наступны месяц">›</button>
+    </div>
+    <div class="cal-weekdays">
+      ${WEEKDAYS.map((w, i) => `<span class="${(i >= 5) ? 'weekend' : ''}">${w}</span>`).join('')}
+    </div>
+    <div class="cal-days">${daysHTML}</div>
+    <div class="cal-foot">
+      <button type="button" class="ghost" data-action="today">Сёння</button>
+      <button type="button" class="ghost" data-action="clear">Ачысціць</button>
+    </div>
+  `;
+
+  calPopup.querySelectorAll('.cal-nav').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      const dir = parseInt(b.dataset.nav, 10);
+      calState.month += dir;
+      if(calState.month < 0){ calState.month = 11; calState.year--; }
+      if(calState.month > 11){ calState.month = 0; calState.year++; }
+      renderCalendar(selectedValue);
+      if(!isMobileCal()) positionCalendar();
+    };
+  });
+
+  calPopup.querySelectorAll('.cal-day').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      const offset = parseInt(b.dataset.m, 10);
+      let y = calState.year, m = calState.month;
+      if(offset === -1){ m--; if(m < 0){ m = 11; y--; } }
+      if(offset === 1){ m++; if(m > 11){ m = 0; y++; } }
+      const d = parseInt(b.dataset.d, 10);
+      const value = fmtShort(d, m);
+      const cb = calState.onPick;
+      closeCalendar();
+      if(cb) cb(value);
+    };
+  });
+
+  calPopup.querySelector('[data-action="today"]').onclick = (e) => {
+    e.stopPropagation();
+    const t = new Date();
+    const value = fmtShort(t.getDate(), t.getMonth());
+    const cb = calState.onPick;
+    closeCalendar();
+    if(cb) cb(value);
+  };
+
+  calPopup.querySelector('[data-action="clear"]').onclick = (e) => {
+    e.stopPropagation();
+    const cb = calState.onPick;
+    closeCalendar();
+    if(cb) cb('');
+  };
+}
+
+calBackdrop.onclick = () => closeCalendar();
+document.addEventListener('click', e => {
+  if(!calPopup.classList.contains('show')) return;
+  if(calPopup.contains(e.target)) return;
+  if(e.target.closest('[data-act="calendar"]')) return;
+  if(e.target.closest('[data-field="date"]')) return;
+  closeCalendar();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){
+    if(calPopup.classList.contains('show')) closeCalendar();
+    else if(modalBack.classList.contains('show')) closeModal(false);
+  }
+});
+window.addEventListener('resize', () => {
+  if(calPopup.classList.contains('show')) positionCalendar();
+});
+window.addEventListener('scroll', () => {
+  if(calPopup.classList.contains('show') && !isMobileCal()) positionCalendar();
+}, true);
+
+/* =========================================================
+   ДАДАЦЬ
+   ========================================================= */
+document.getElementById('addRow').onclick = () => {
+  if(!state.editing) return;
+  const arr = getCurrentData();
+  arr.push({ id: uid(), topic: '', hours: 1, hw: '', dates: [''] });
+  save(true);
+  renderTable();
+  setTimeout(() => {
+    const rows = tbody.querySelectorAll('tr');
+    const last = rows[rows.length - 1];
+    if(last){
+      last.scrollIntoView({ behavior:'smooth', block:'center' });
+      const td = last.querySelector('[data-field="topic"]');
+      if(td) td.focus();
+    }
+  }, 80);
+};
+
+/* =========================================================
+   ЭКСПАРТ / ІМПАРТ
+   ========================================================= */
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(state.data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
+  a.download = 'КТП_Матэматыка_2026-2027.json';
   a.click();
-  document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
-}
-document.getElementById('btnExportMd').addEventListener('click', function(){
-  download(editor.value, 'document.md', 'text/markdown;charset=utf-8');
-  toast('Скачан .md');
-});
-document.getElementById('btnExportHtml').addEventListener('click', function(){
-  var css = ''
-    + 'body{font-family:' + settings.font + ';font-size:' + settings.size + 'px;'
-    + 'line-height:' + settings.lh + ';letter-spacing:' + settings.ls + 'em;'
-    + 'background:#fff;color:#1c2230;margin:0;padding:40px 20px}'
-    + '.page{max-width:' + settings.width + 'px;margin:0 auto;background:#fff;'
-    + 'padding:' + settings.padding + 'px;text-align:' + settings.align + '}'
-    + '.page pre{background:#f2f4f9;padding:15px 18px;border-radius:12px;overflow:auto}'
-    + '.page code{background:#f2f4f9;padding:.16em .42em;border-radius:6px;font-family:ui-monospace,Consolas,monospace}'
-    + '.page pre code{background:none;padding:0}'
-    + '.page blockquote{border-left:4px solid #6366f1;background:rgba(99,102,241,.12);'
-    + 'margin:1.2em 0;padding:.6em 1.1em;border-radius:0 10px 10px 0}'
-    + '.page table{border-collapse:collapse;width:100%}'
-    + '.page th,.page td{border:1px solid #e2e6ee;padding:.62em .9em}'
-    + '.page img{max-width:100%;border-radius:10px}'
-    + '.page a{color:#6366f1}'
-    + '.page mark{background:#fef08a;padding:.05em .25em;border-radius:3px}'
-    + '.page sup{font-size:.75em;vertical-align:super;line-height:0}'
-    + '.page sub{font-size:.75em;vertical-align:sub;line-height:0}'
-    + '.page u{text-decoration:underline}'
-    + '.math-block{display:block;text-align:center;margin:1.4em 0}';
-  var html = '<!DOCTYPE html>\n<html lang="ru">\n<head>\n<meta charset="UTF-8">\n'
-    + '<title>Markdown Export</title>\n'
-    + '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">\n'
-    + '<style>' + css + '</style>\n</head>\n<body>\n'
-    + '<article class="page">' + preview.innerHTML + '</article>\n</body>\n</html>';
-  download(html, 'document.html', 'text/html;charset=utf-8');
-  toast('Скачан HTML');
-});
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
 
-function buildPrintDoc(mode){
-  var isBw = mode === 'bw';
-  var content = preview.innerHTML;
-  var borderCol = isBw ? '#000' : '#e2e6ee';
-  var textCol   = isBw ? '#000' : '#1c2230';
-  var mutedCol  = isBw ? '#333' : '#6b7488';
-  var codeBg    = isBw ? '#fff' : '#f2f4f9';
-  var codeCol   = isBw ? '#000' : '#c026a3';
-  var codeTxt   = isBw ? '#000' : '#1c2230';
-  var linkCol   = isBw ? '#000' : settings.accent;
-  var linkBd    = isBw ? '#000' : hexToRgba(settings.accent, .4);
-  var quoteBd   = isBw ? '#000' : settings.accent;
-  var quoteBg   = isBw ? '#fff' : hexToRgba(settings.accent, .12);
-  var theadBg   = isBw ? '#fff' : '#f7f8fb';
-  var markBg    = isBw ? '#e5e5e5' : '#fef08a';
+document.getElementById('importBtn').onclick = async () => {
+  if(state.editing){
+    const ok = await confirmDialog(
+      'Імпарт падчас рэдагавання',
+      'Вы ў рэжыме рэдагавання. Імпарт заменіць усе дадзеныя. Працягнуць?',
+      'Імпартаваць', true
+    );
+    if(!ok) return;
+  }
+  document.getElementById('fileInput').click();
+};
 
-  var css = ''
-    + '@page{size:A4;margin:15mm;}'
-    + '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
-    + 'html,body{margin:0;padding:0;background:#fff;color:' + textCol + ';}'
-    + 'body{font-family:' + settings.font + ';font-size:' + settings.size + 'px;'
-    + 'line-height:' + settings.lh + ';letter-spacing:' + settings.ls + 'em;'
-    + 'text-align:' + settings.align + ';}'
-    + '.page{max-width:none;padding:0;background:#fff;color:' + textCol + ';}'
-    + 'h1{font-size:2em;font-weight:750;line-height:1.25;margin:1.6em 0 .6em;'
-    + 'letter-spacing:-.018em;padding-bottom:.35em;border-bottom:2px solid ' + borderCol + ';'
-    + 'page-break-after:avoid;text-align:start;}'
-    + 'h2{font-size:1.5em;font-weight:750;line-height:1.25;margin:1.6em 0 .6em;'
-    + 'padding-bottom:.28em;border-bottom:1px solid ' + borderCol + ';'
-    + 'page-break-after:avoid;text-align:start;}'
-    + 'h3{font-size:1.24em;font-weight:750;margin:1.6em 0 .6em;page-break-after:avoid;text-align:start;}'
-    + 'h4{font-size:1.08em;font-weight:750;margin:1.6em 0 .6em;page-break-after:avoid;text-align:start;}'
-    + 'h5,h6{font-size:1em;font-weight:750;margin:1.6em 0 .6em;color:' + mutedCol + ';'
-    + 'page-break-after:avoid;text-align:start;}'
-    + 'p{margin:0 0 1.05em;}'
-    + 'a{color:' + linkCol + ';text-decoration:none;border-bottom:1px solid ' + linkBd + ';'
-    + (isBw ? 'text-decoration:underline;' : '') + '}'
-    + 'ul,ol{margin:0 0 1.05em;padding-left:1.6em;}'
-    + 'li{margin:.32em 0;}'
-    + 'blockquote{margin:1.2em 0;padding:.6em 1.1em;'
-    + 'border-left:4px solid ' + quoteBd + ';background:' + quoteBg + ';color:' + textCol + ';}'
-    + 'blockquote p:last-child{margin-bottom:0;}'
-    + 'code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88em;'
-    + 'background:' + codeBg + ';color:' + codeCol + ';padding:.16em .42em;'
-    + 'border-radius:6px;border:1px solid ' + borderCol + ';}'
-    + 'pre{background:' + codeBg + ';border:1px solid ' + borderCol + ';border-radius:12px;'
-    + 'padding:15px 18px;overflow:auto;margin:1.2em 0;line-height:1.6;'
-    + 'page-break-inside:avoid;color:' + codeTxt + ';}'
-    + 'pre code{background:none;border:0;padding:0;color:' + codeTxt + ';font-size:.85em;}'
-    + 'hr{border:0;height:1px;background:' + (isBw ? '#000' : '#e2e6ee') + ';margin:2.2em 0;}'
-    + '.table-wrap{overflow:visible;margin:1.3em 0;}'
-    + 'table{border-collapse:collapse;width:100%;font-size:.94em;}'
-    + 'th,td{border:1px solid ' + borderCol + ';padding:.62em .9em;vertical-align:top;text-align:left;}'
-    + 'thead{display:table-header-group;}'
-    + 'thead th{background:' + theadBg + ';font-weight:700;color:' + textCol + ';}'
-    + 'tr{page-break-inside:avoid;}'
-    + 'img{max-width:100%;height:auto;border-radius:10px;display:block;margin:1.1em auto;'
-    + 'page-break-inside:avoid;' + (isBw ? 'filter:grayscale(100%) contrast(1.05);' : '') + '}'
-    + 'mark{background:' + markBg + ';color:' + textCol + ';padding:.05em .25em;border-radius:3px;}'
-    + 'sup{font-size:.75em;vertical-align:super;line-height:0;}'
-    + 'sub{font-size:.75em;vertical-align:sub;line-height:0;}'
-    + 'u{text-decoration:underline;}' + (isBw ? 'u{text-decoration:underline;text-decoration-color:#000;}' : '')
-    + 'kbd{font-family:ui-monospace,Consolas,monospace;font-size:.85em;padding:.15em .4em;'
-    + 'border:1px solid ' + borderCol + ';border-bottom-width:2px;border-radius:5px;}'
-    + '.math-block{display:block;text-align:center;margin:1.4em 0;overflow:visible;}'
-    + '.math-inline{white-space:nowrap;}'
-    + '.math-raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em;color:' + mutedCol + ';}'
-    + '.katex{font-size:1.05em;' + (isBw ? 'color:#000;' : '') + '}'
-    + (isBw ? '.katex *{color:#000 !important;} strong,em,del{color:#000;}' : '')
-    + 'input[type=checkbox]{-webkit-appearance:none;appearance:none;width:14px;height:14px;'
-    + 'border:1.5px solid #000;border-radius:3px;vertical-align:middle;margin-right:6px;position:relative;}'
-    + 'input[type=checkbox]:checked::after{content:"✓";position:absolute;top:-3px;left:2px;font-size:13px;color:#000;}';
-
-  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n'
-    + '<meta charset="UTF-8">\n'
-    + '<title>Markdown → PDF' + (isBw ? ' (Ч/Б)' : '') + '</title>\n'
-    + '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">\n'
-    + '<style>' + css + '</style>\n'
-    + '</head>\n<body>\n'
-    + '<article class="page">' + content + '</article>\n'
-    + '</body>\n</html>';
-}
-
-function exportPdf(mode){
-  var html = buildPrintDoc(mode);
-  var iframe = document.createElement('iframe');
-  iframe.setAttribute('aria-hidden', 'true');
-  iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;border:0;visibility:hidden;';
-  document.body.appendChild(iframe);
-  var doc = iframe.contentWindow.document;
-  doc.open(); doc.write(html); doc.close();
-
-  setTimeout(function(){
+document.getElementById('fileInput').onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
     try{
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    }catch(e){}
-    setTimeout(function(){
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-    }, 2000);
-  }, 600);
+      const d = JSON.parse(reader.result);
+      if(typeof d !== 'object' || d === null) throw new Error('няправільны фармат');
+      state.data = d;
+      state.editing = false;
+      state.snapshot = null;
+      const cls = CLASSES.find(c => c.id === state.current);
+      if(cls.components && cls.components.length){
+        state.currentComponent = cls.components[0].id;
+      }
+      save(true);
+      renderAll();
+      setTimeout(() => flashSaved(), 200);
+    }catch(err){
+      alert('Не ўдалося прачытаць файл: ' + err.message);
+    }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+};
 
-  toast(mode === 'bw' ? 'Печать / Сохранить PDF (Ч/Б)…' : 'Печать / Сохранить PDF (цвет)…');
+/* =========================================================
+   ТЭМА
+   ========================================================= */
+function getThemeMode(){ return localStorage.getItem(THEME_KEY) || 'auto'; }
+function setThemeMode(m){ localStorage.setItem(THEME_KEY, m); applyThemeMode(); }
+function getThemeColor(){ return localStorage.getItem(COLOR_KEY) || 'indigo'; }
+function setThemeColor(c){ localStorage.setItem(COLOR_KEY, c); applyThemeColor(); }
+
+function applyThemeMode(){
+  const mode = getThemeMode();
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const resolved = mode === 'auto' ? (sysDark ? 'dark' : 'light') : mode;
+  document.documentElement.dataset.theme = resolved;
+  document.querySelectorAll('.mode-btns button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
+function applyThemeColor(){
+  const color = getThemeColor();
+  document.documentElement.dataset.color = color;
+  document.querySelectorAll('.swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.color === color);
+  });
 }
 
-document.getElementById('btnPdfColor').addEventListener('click', function(){ exportPdf('color'); });
-document.getElementById('btnPdfBw').addEventListener('click', function(){ exportPdf('bw'); });
-
-function toast(msg){
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
-}
-
-loadState();
-applySettings();
-editor.addEventListener('input', render);
-updateCursor();
-render();
+(function buildSwatches(){
+  const wrap = document.getElementById('colorSwatches');
+  COLORS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'swatch';
+    b.dataset.color = c.id;
+    b.style.setProperty('--sw', c.hex);
+    b.title = c.name;
+    b.setAttribute('aria-label', c.name);
+    b.onclick = () => setThemeColor(c.id);
+    wrap.appendChild(b);
+  });
 })();
+
+document.querySelectorAll('.mode-btns button').forEach(b => {
+  b.onclick = () => setThemeMode(b.dataset.mode);
+});
+
+const themePanel = document.getElementById('themePanel');
+const themeBtn   = document.getElementById('themeBtn');
+themeBtn.onclick = e => {
+  e.stopPropagation();
+  themePanel.classList.toggle('show');
+};
+document.addEventListener('click', e => {
+  if(!themePanel.classList.contains('show')) return;
+  if(themePanel.contains(e.target)) return;
+  if(themeBtn.contains(e.target)) return;
+  themePanel.classList.remove('show');
+});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if(getThemeMode() === 'auto') applyThemeMode();
+});
+
+/* =========================================================
+   КАМПАКТНАЯ ШАПКА ПРЫ СКРОЛЕ (мабільны)
+   ========================================================= */
+const topbarEl = document.getElementById('topbar');
+let scrollTicking = false;
+
+function handleScroll(){
+  const isMobile = window.innerWidth <= 760;
+  if(!isMobile){
+    topbarEl.classList.remove('compact');
+    return;
+  }
+  if(window.scrollY > 30){
+    topbarEl.classList.add('compact');
+  } else {
+    topbarEl.classList.remove('compact');
+  }
+}
+
+window.addEventListener('scroll', () => {
+  if(!scrollTicking){
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      handleScroll();
+      scrollTicking = false;
+    });
+  }
+}, { passive:true });
+
+window.addEventListener('resize', handleScroll);
+
+/* =========================================================
+   СТАРТ
+   ========================================================= */
+function renderAll(){
+  renderTabs();
+  renderSubtabs();
+  renderTable();
+}
+
+(function initCurrentComponent(){
+  const cls = CLASSES.find(c => c.id === state.current);
+  if(cls.components && cls.components.length){
+    state.currentComponent = cls.components[0].id;
+  }
+})();
+
+applyThemeMode();
+applyThemeColor();
+handleScroll();
+renderAll();
+
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden && !state.editing) renderTable();
+});
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 's'){
+    e.preventDefault();
+    if(state.editing) saveAndExit();
+    else save(true);
+  }
+});
+
+/* калі KaTeX пагрузіўся пасля першага рэндэра — перамалёўваем */
+window.addEventListener('load', () => {
+  if(!state.editing) renderTable();
+});
 </script>
 </body>
 </html>
