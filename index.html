@@ -6,14 +6,12 @@
 <meta name="theme-color" content="#6366f1">
 <title>КТП · Матэматыка · Багданаўская СШ</title>
 
-<!-- KaTeX для формул -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 
+<script src="data.js"></script>
+
 <style>
-/* =========================================================
-   ЗМЕННЫЯ
-   ========================================================= */
 :root{
   --bg:#f4f5fa; --bg-deep:#eceefa;
   --card:#ffffff; --card-2:#fafbff;
@@ -76,9 +74,6 @@ body{
 }
 .app{max-width:1280px;margin:0 auto;padding:0 20px 80px;}
 
-/* =========================================================
-   ШАПКА — sticky
-   ========================================================= */
 .topbar{
   position:sticky;top:0;z-index:40;
   display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -147,7 +142,6 @@ button.ghost{background:transparent;box-shadow:none;}
 button.ghost:hover{background:var(--card);}
 button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justify-content:center;}
 
-/* кампактная шапка (пры скролі на мабільным) */
 .topbar.compact{padding:8px 0;margin-bottom:8px;}
 .topbar.compact .logo{width:36px;height:36px;font-size:18px;border-radius:10px;}
 .topbar.compact .brand{gap:9px;}
@@ -160,9 +154,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 .topbar.compact button.icon{min-width:34px;padding:7px 8px;font-size:14px;}
 .topbar.compact .actions{gap:6px;}
 
-/* =========================================================
-   ПАНЕЛЬ ТЭМ
-   ========================================================= */
 .theme-panel{
   position:absolute;top:calc(100% + 10px);right:0;z-index:60;
   width:290px;background:var(--card);
@@ -208,9 +199,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   text-shadow:0 1px 3px rgba(0,0,0,.35);
 }
 
-/* =========================================================
-   ПАНЕЛЬ РЭДАГАВАННЯ
-   ========================================================= */
 .editbar{
   display:none;align-items:center;gap:14px;flex-wrap:wrap;
   padding:12px 20px;margin-bottom:16px;
@@ -241,9 +229,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 }
 .editbar-spacer{flex:1;min-width:8px;}
 
-/* =========================================================
-   ТАБЫ
-   ========================================================= */
 .tabs{
   display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;
   scrollbar-width:none;margin-bottom:4px;
@@ -267,9 +252,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 }
 .tab.active small{opacity:.85;color:#fff;}
 
-/* =========================================================
-   СУБ-ТАБЫ
-   ========================================================= */
 .subtabs-wrap{display:none;margin-bottom:14px;animation:subIn .25s ease;}
 .subtabs-wrap.show{display:block;}
 @keyframes subIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
@@ -307,9 +289,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 }
 .subtab.active small{opacity:.85;color:#fff;}
 
-/* =========================================================
-   КАРТКА
-   ========================================================= */
 .card{
   background:var(--card);border:1px solid var(--border);
   border-radius:var(--radius);box-shadow:var(--shadow);
@@ -363,9 +342,6 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   50%{box-shadow:0 0 0 7px color-mix(in srgb, currentColor 8%, transparent);}
 }
 
-/* =========================================================
-   ТАБЛІЦА
-   ========================================================= */
 .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 table{width:100%;border-collapse:collapse;min-width:760px;font-size:14px;}
 thead th{
@@ -397,7 +373,6 @@ tbody tr.group-start:first-child{border-top:none;}
 }
 .date-empty{color:var(--muted);font-weight:500;opacity:.6;font-style:italic;}
 
-/* кнопка календара */
 .cal-btn{
   display:inline-grid;place-items:center;
   width:28px;height:28px;
@@ -470,8 +445,7 @@ tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!im
 .hours-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .hours-input:focus{outline:none;border-color:var(--edit);background:var(--card);box-shadow:0 0 0 3px color-mix(in srgb,var(--edit) 20%,transparent);}
 
-/* рэдагаванне */
-.ktp.editing [contenteditable]{
+.ktp.editing [contenteditable="true"]{
   outline:none;border-radius:7px;padding:3px 7px;margin:-3px -7px;
   transition:background .15s,box-shadow .15s;
   min-height:1.4em;cursor:text;
@@ -479,19 +453,16 @@ tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!im
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--edit) 18%, transparent);
   white-space:pre-wrap;
 }
-.ktp.editing [contenteditable]:hover{background:color-mix(in srgb, var(--edit) 12%, transparent);}
-.ktp.editing [contenteditable]:focus{
+.ktp.editing [contenteditable="true"]:hover{background:color-mix(in srgb, var(--edit) 12%, transparent);}
+.ktp.editing [contenteditable="true"]:focus{
   background:color-mix(in srgb, var(--edit) 10%, var(--card));
   box-shadow:0 0 0 2px var(--edit);
 }
-.ktp.editing [contenteditable]:empty::before{
+.ktp.editing [contenteditable="true"]:empty::before{
   content:attr(data-ph);color:var(--muted);opacity:.55;font-weight:400;
   pointer-events:none;
 }
 
-/* =========================================================
-   ФОРМУЛЫ (KaTeX)
-   ========================================================= */
 .katex{
   font-size:1.05em !important;
   color:inherit;
@@ -508,6 +479,69 @@ tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!im
   background:var(--accent-soft);
   padding:1px 5px;border-radius:5px;
   white-space:pre-wrap;
+}
+
+tr.hl-control .col-topic,
+tr.hl-test    .col-topic,
+tr.hl-credit  .col-topic{
+  position:relative;
+}
+tr.hl-control .col-topic{
+  background:color-mix(in srgb, var(--danger) 7%, transparent);
+  box-shadow:inset 3px 0 0 var(--danger);
+  padding-left:19px;
+}
+tr.hl-control .col-topic::after{
+  content:"⚠ Кантрольная";
+  display:inline-block;
+  font-size:9px;font-weight:800;letter-spacing:.4px;
+  text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;
+  margin-left:8px;vertical-align:2px;
+  background:linear-gradient(135deg, var(--danger), #b91c1c);
+  color:#fff;
+  box-shadow:0 3px 8px -3px var(--danger);
+  white-space:nowrap;
+}
+tr.hl-test .col-topic{
+  background:color-mix(in srgb, var(--next) 9%, transparent);
+  box-shadow:inset 3px 0 0 var(--next);
+  padding-left:19px;
+}
+tr.hl-test .col-topic::after{
+  content:"✎ Самастойная";
+  display:inline-block;
+  font-size:9px;font-weight:800;letter-spacing:.4px;
+  text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;
+  margin-left:8px;vertical-align:2px;
+  background:linear-gradient(135deg, var(--next), #d97706);
+  color:#fff;
+  box-shadow:0 3px 8px -3px var(--next);
+  white-space:nowrap;
+}
+tr.hl-credit .col-topic{
+  background:color-mix(in srgb, var(--accent) 8%, transparent);
+  box-shadow:inset 3px 0 0 var(--accent);
+  padding-left:19px;
+}
+tr.hl-credit .col-topic::after{
+  content:"★ Зачёт";
+  display:inline-block;
+  font-size:9px;font-weight:800;letter-spacing:.4px;
+  text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;
+  margin-left:8px;vertical-align:2px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  color:#fff;
+  box-shadow:0 3px 8px -3px var(--accent);
+  white-space:nowrap;
+}
+.ktp.editing tr.hl-control .col-topic::after,
+.ktp.editing tr.hl-test    .col-topic::after,
+.ktp.editing tr.hl-credit  .col-topic::after{
+  opacity:.55;
+  pointer-events:none;
 }
 
 .rowbtns{
@@ -542,9 +576,35 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
 .empty-icon{font-size:42px;margin-bottom:14px;opacity:.35;}
 .empty h3{color:var(--text);margin:0 0 6px;font-size:16px;font-weight:700;}
 
-/* =========================================================
-   КАЛЯНДАР
-   ========================================================= */
+/* банер памылкі, калі data.js не знойдзены */
+.data-error{
+  display:none;
+  padding:20px 24px;
+  margin-bottom:16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,
+    color-mix(in srgb, var(--danger) 12%, var(--card)),
+    color-mix(in srgb, var(--danger) 5%, var(--card)));
+  border:1.5px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  box-shadow:0 8px 24px -10px color-mix(in srgb, var(--danger) 40%, transparent);
+  animation:slideDown .3s cubic-bezier(.2,.8,.2,1);
+}
+.data-error.show{display:flex;gap:14px;align-items:flex-start;}
+.data-error-icon{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:var(--danger);color:#fff;
+  display:grid;place-items:center;font-size:20px;font-weight:800;
+  box-shadow:0 4px 12px -4px var(--danger);
+}
+.data-error-text{font-size:13.5px;line-height:1.55;color:var(--text);}
+.data-error-text b{color:var(--danger);display:block;margin-bottom:4px;font-size:14.5px;}
+.data-error-text code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:color-mix(in srgb, var(--danger) 15%, transparent);
+  color:var(--text);
+  padding:1px 6px;border-radius:5px;font-size:12px;font-weight:600;
+}
+
 .cal-backdrop{
   position:fixed;inset:0;z-index:199;
   background:rgba(10,14,25,.45);
@@ -596,7 +656,6 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   color:var(--muted);text-transform:uppercase;
   letter-spacing:.6px;margin-top:1px;
 }
-
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
 .cal-weekdays span{
   text-align:center;font-size:10.5px;font-weight:800;
@@ -604,9 +663,7 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   text-transform:uppercase;letter-spacing:.5px;
 }
 .cal-weekdays span.weekend{color:color-mix(in srgb,var(--danger) 60%,var(--muted));}
-
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
-
 .cal-day{
   position:relative;aspect-ratio:1;
   border:none;background:transparent;border-radius:10px;
@@ -633,7 +690,6 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   box-shadow:0 6px 14px -5px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
 }
 .cal-day.selected:hover{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
-
 .cal-foot{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2);}
 .cal-foot button{
   flex:1;padding:9px 12px;font-size:12.5px;font-weight:700;
@@ -653,9 +709,6 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   .cal-day{font-size:14px;}
 }
 
-/* =========================================================
-   МАДАЛЬ
-   ========================================================= */
 .modal-back{
   position:fixed;inset:0;z-index:100;
   background:rgba(10,14,25,.55);
@@ -677,9 +730,6 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
 .modal .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
 .modal .btns button{flex:none;}
 
-/* =========================================================
-   МОБІЛЬНЫЯ
-   ========================================================= */
 @media (max-width:760px){
   .app{padding:0 12px 60px;}
   body{font-size:14.5px;}
@@ -770,6 +820,32 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   .col-act{grid-area:act;text-align:right;align-self:center;}
   .col-act::before{display:none!important;}
 
+  tr.hl-control .col-topic{
+    background:color-mix(in srgb, var(--danger) 10%, var(--card)) !important;
+    box-shadow:inset 3px 0 0 var(--danger) !important;
+    padding-left:12px !important;
+    border-radius:10px;
+  }
+  tr.hl-test .col-topic{
+    background:color-mix(in srgb, var(--next) 12%, var(--card)) !important;
+    box-shadow:inset 3px 0 0 var(--next) !important;
+    padding-left:12px !important;
+    border-radius:10px;
+  }
+  tr.hl-credit .col-topic{
+    background:color-mix(in srgb, var(--accent) 12%, var(--card)) !important;
+    box-shadow:inset 3px 0 0 var(--accent) !important;
+    padding-left:12px !important;
+    border-radius:10px;
+  }
+  tr.hl-control .col-topic::after,
+  tr.hl-test    .col-topic::after,
+  tr.hl-credit  .col-topic::after{
+    font-size:8.5px;
+    padding:1px 6px;
+    margin-left:6px;
+  }
+
   .rowbtns{opacity:1;}
   .mini{width:34px;height:34px;font-size:13px;}
   .cal-btn{width:32px;height:32px;font-size:14px;}
@@ -783,11 +859,8 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   .theme-panel{width:calc(100vw - 32px);right:-10px;}
 }
 
-/* =========================================================
-   ДРУК (базавы — кнопка ў інтэрфейсе выдалена)
-   ========================================================= */
 @media print{
-  .topbar,.tabs,.subtabs-wrap,.cardfoot,.col-act,.rowbtns,.nextinfo,.editbar,.actions,.theme-panel,.cal-popup,.cal-backdrop,.cal-btn{display:none!important;}
+  .topbar,.tabs,.subtabs-wrap,.cardfoot,.col-act,.rowbtns,.nextinfo,.editbar,.actions,.theme-panel,.cal-popup,.cal-backdrop,.cal-btn,.data-error{display:none!important;}
   body{background:#fff;padding:0;}
   .app{padding:0;max-width:100%;}
   .card{box-shadow:none;border:none;border-radius:0;}
@@ -831,11 +904,22 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
           <div class="color-swatches" id="colorSwatches"></div>
         </div>
       </div>
+      <button id="reloadBtn" class="ghost" title="Перачытаць data.js">⟳<span> Перачытаць</span></button>
       <button id="exportBtn" class="ghost" title="Спампаваць копію">⤓<span> Экспарт</span></button>
       <button id="importBtn" class="ghost" title="Загрузіць копію">⤒<span> Імпарт</span></button>
       <button id="editBtn" class="primary">✎<span> Рэдагаваць</span></button>
     </div>
   </header>
+
+  <div class="data-error" id="dataError">
+    <div class="data-error-icon">!</div>
+    <div class="data-error-text">
+      <b>data.js не знойдзены ці мае памылку</b>
+      Праверце, што файл <code>data.js</code> ляжыць побач з гэтым HTML і ўтрымлівае радок
+      <code>window.KTP_DATA = { ... };</code>. Пасля выпраўлення націсніце
+      <code>⟳ Перачытаць</code> або перазагрузіце старонку.
+    </div>
+  </div>
 
   <div class="editbar" id="editbar">
     <div class="editbar-icon">✎</div>
@@ -911,7 +995,6 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
    КАНСТАНТЫ
    ========================================================= */
 const SCHOOL_YEAR = { start: 2026, end: 2027 };
-const STORE_KEY   = 'ktp-math-bgd-v7';
 const THEME_KEY   = 'ktp-math-theme-mode';
 const COLOR_KEY   = 'ktp-math-theme-color';
 
@@ -958,9 +1041,6 @@ const WEEKDAYS   = ['Пн','Аў','Ср','Ча','Пт','Сб','Нд'];
    УТЫЛІТЫ
    ========================================================= */
 function uid(){ return Math.random().toString(36).slice(2, 9); }
-function G(topic, hours, hw, dates){
-  return { id: uid(), topic, hours, hw, dates: dates || [] };
-}
 function esc(s){
   return String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -968,56 +1048,57 @@ function esc(s){
 function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
 
 /* =========================================================
+   ВЫЗНАЧЭННЕ СПЕЦЫЯЛЬНЫХ ТЭМ
+   ========================================================= */
+function getTopicHighlight(topic){
+  if(!topic) return '';
+  const t = String(topic).toLowerCase();
+  if(/кантрольн/.test(t) || /контрольн/.test(t)
+     || /(^|\s)к\.?\s*р\.?(\s|$)/.test(t)){
+    return 'hl-control';
+  }
+  if(/зач[ёе]т/.test(t) || /зачот/.test(t)){
+    return 'hl-credit';
+  }
+  if(/самастойн/.test(t) || /самостоятельн/.test(t)
+     || /тэматычн/.test(t) || /тематичн/.test(t)
+     || /тэст/.test(t) || /тест/.test(t)
+     || /практычн/.test(t) || /практичн/.test(t)){
+    return 'hl-test';
+  }
+  return '';
+}
+
+/* =========================================================
    ФОРМУЛЫ (KaTeX)
    ========================================================= */
 function katexReady(){ return typeof window.katex !== 'undefined'; }
 
-/**
- * Рэндэрыць тэкст з падтрымкай формул:
- *   $...$   — інлайн
- *   $$...$$ — блочная
- * Усё астатняе экраніруецца.
- */
 function renderMixed(text){
   if(text == null || text === '') return '';
   const src = String(text);
-
-  // калі KaTeX не загрузіўся — паказваем проста тэкст
-  if(!katexReady()){
-    return esc(src);
-  }
+  if(!katexReady()) return esc(src);
 
   let out = '';
   let i = 0;
-
   while(i < src.length){
     const dollar = src.indexOf('$', i);
-    if(dollar < 0){
-      out += esc(src.slice(i));
-      break;
-    }
+    if(dollar < 0){ out += esc(src.slice(i)); break; }
 
-    // вызначаем даўжыню адкрывальнага раздельніка
     const isBlock = src[dollar + 1] === '$';
     const openLen = isBlock ? 2 : 1;
     const closeTok = isBlock ? '$$' : '$';
 
-    // шукаем закрыццё
     const close = src.indexOf(closeTok, dollar + openLen);
     if(close < 0){
-      // няма закрыцця — проста выводзім як тэкст
       out += esc(src.slice(i, dollar + openLen));
       i = dollar + openLen;
       continue;
     }
 
-    // тэкст перад формулай
     out += esc(src.slice(i, dollar));
-
-    // сама формула
     const formula = src.slice(dollar + openLen, close);
     if(!formula.trim()){
-      // пустая формула — выводзім як тэкст
       out += esc(src.slice(dollar, close + openLen));
     } else {
       try{
@@ -1033,8 +1114,37 @@ function renderMixed(text){
     }
     i = close + openLen;
   }
-
   return out;
+}
+
+/* =========================================================
+   ▼▼▼ ЗАГРУЗКА — ТОЛЬКО data.js ▼▼▼
+   ========================================================= */
+function normalizeData(d){
+  if(!d || typeof d !== 'object') return null;
+  const migration = { '7':'alg', '8':'alg', '9':'alg' };
+  for(const k in migration){
+    if(Array.isArray(d[k])){
+      const nk = k + '/' + migration[k];
+      if(!d[nk]) d[nk] = d[k];
+      delete d[k];
+    }
+  }
+  for(const k in d){
+    if(!Array.isArray(d[k])) return null;
+    for(const g of d[k]){
+      if(typeof g !== 'object' || !('topic' in g) || !('dates' in g)) return null;
+    }
+  }
+  return d;
+}
+
+/* чытанне з data.js (глабальная зменная KTP_DATA) */
+function loadFromDataJs(){
+  if(typeof window.KTP_DATA === 'object' && window.KTP_DATA){
+    return normalizeData(clone(window.KTP_DATA));
+  }
+  return null;
 }
 
 /* =========================================================
@@ -1044,124 +1154,27 @@ let state = {
   current: '5',
   currentComponent: null,
   editing: false,
-  data: load() || seed(),
+  data: {},           // запоўніцца ў bootstrap()
   snapshot: null,
+  dataError: false,
 };
 
 /* =========================================================
-   ПАЧАТКОВЫЯ ДАНЫЯ
+   СТАТУС ЗАГРУЗКІ
    ========================================================= */
-function seed(){
-  return {
-    '5': [
-      G('НПБП. Паўтарэнне. Задачы на ўсе дзеянні з натуральнымі лікамі', 3, 'Стар. 9 № 26-31',
-        ['01.09','02.09','03.09']),
-      G('Як рашаць задачу. Тэматычная самастойная работа', 6, 'Раздзел 1, § 1, № 43-57',
-        ['04.09','07.09','08.09','09.09','10.09','11.09']),
-      G('Натуральныя лікі і нуль. Чытанне і запіс. Параўнанне', 4, '§ 2, № 67-72; § 3, № 84-87',
-        ['14.09','15.09','16.09','17.09']),
-    ],
-    '6': [
-      G('НПБП. Дзесятковы запіс дробаў. Разрады дзесятковых дробаў', 3, 'Раздзел 1, § 1, № 24-28',
-        ['01.09','02.09','03.09']),
-      G('Параўнанне дзесятковых дробаў', 3, '§ 2, № 54-58', ['04.09','07.09','08.09']),
-      G('Акругленне дзесятковых дробаў', 2, '§ 2, № 59', ['09.09','10.09']),
-    ],
-    '7/alg': [
-      G('НПБП. Ступень з натуральным паказчыкам і яе ўласцівасці', 4, '§ 1, № 1.60-1.94',
-        ['01.09','04.09','07.09','08.09']),
-      G('Ступень з цэлым паказчыкам і яе ўласцівасці', 6, '§ 2, № 1.137-1.162',
-        ['11.09','14.09','15.09','18.09','21.09','22.09']),
-      G('Стандартны выгляд ліку', 3, '§ 3, № 1.190-1.98', ['25.09','28.09','29.09']),
-    ],
-    '7/geo': [
-      G('Паўтарэнне. Наглядная геаметрыя', 1, 'Раздзел 1, § 1, № 4, 6', ['02.09']),
-      G('Прадмет геаметрыі. Азначэнне. Аксіёма. Тэарэма', 1, '§ 2, № 2, стар. 19', ['03.09']),
-      G('Прамая. Прамень. Адрэзак. Ломаная', 2, '§ 3, № 3 (б), 5 (б), 7 (в), 9 (б)',
-        ['09.09','10.09']),
-    ],
-    '8/alg': [
-      G('НПБП. Паўтарэнне. Ступень з натуральным і цэлым паказчыкамі', 1, '№ 1 (б), № 3 (б, в, г)', ['01.09']),
-      G('Паўтарэнне. Лінейныя ўраўненні і няроўнасці. Лінейная функцыя', 1, '№ 41 (б, г, е)', ['04.09']),
-      G('Квадратны корань з ліку. Арыфметычны квадратны корань', 3, '§ 1, № 1.35-1.50',
-        ['07.09','08.09','11.09']),
-      G('Мноства ірацыянальных лікаў', 2, '§ 2, № 1.79-1.88', ['14.09','15.09']),
-    ],
-    '8/geo': [
-      G('Паўтарэнне. Паралельнасць прамых. Прыметы роўнасці трохвугольнікаў', 1, 'Стар. 5-8', ['02.09']),
-      G('Многавугольнік', 2, '§ 1, № 1-16', ['03.09','09.09']),
-      G('Паралелаграм і яго ўласцівасці', 2, '§ 2, № 17-34', ['10.09','16.09']),
-    ],
-    '9/alg': [
-      G('Паўтарэнне. Выразы і іх пераўтварэнні', 1, '№ 10-12, 16', ['04.09']),
-      G('Паўтарэнне. Ступень з натуральным і цэлым паказчыкамі', 1, '№ 3', ['07.09']),
-      G('Паўтарэнне. Лінейныя ўраўненні і няроўнасці', 1, '№ 21, 29', ['11.09']),
-      G('Рацыянальны дроб', 2, '§ 1, № 1.18-1.25; § 2, № 1.62-1.79', ['14.09','18.09']),
-    ],
-    '9/geo': [
-      G('НПБП. Сінус, косінус, тангенс, катангенс вострага вугла', 1, '§ 1, № 1-9', ['01.09']),
-      G('Значэнні сінуса, косінуса, тангенса і катангенса вуглоў 30°, 45°, 60°', 1, '§ 1, № 10-21', ['02.09']),
-      G('Рашэнне прамавугольнага трохвугольніка', 2, '§ 2, № 22-33', ['03.09','04.09']),
-    ],
-    '9f': [
-      G('ОПБП. Натуральныя лікі. Дзеянні над цэлымі лікамі. Дзялімасць', 1, '', ['07.09']),
-      G('Звычайныя дробы. Складанне, адніманне, множанне, дзяленне', 1, '', ['14.09']),
-      G('Дзесятковыя дробы. Дзеянні з дзесятковымі дробамі', 1, '', ['21.09']),
-      G('Рацыянальныя лікі. Параўнанне і вылічэнні', 1, '', ['28.09']),
-    ],
-    '9h': [
-      G('Нумарацыя лікаў у межах 1000, 10 000, 100 000', 2, '', ['','']),
-      G('Лічэнне роўнымі лікавымі групамі. Акругленне лікаў', 1, '', ['']),
-      G('Паралелаграм (прамавугольнік, квадрат, ромб). Уласцівасці', 1, '', ['']),
-    ],
-  };
+function showDataError(show){
+  state.dataError = !!show;
+  const el = document.getElementById('dataError');
+  el.classList.toggle('show', !!show);
 }
 
 /* =========================================================
-   ЗАГРУЗКА
+   ЗАХАВАННЕ — НІКУДЫ НЕ ПІША (толькі візуальны водгук)
    ========================================================= */
-function load(){
-  try{
-    let d = null;
-    const raw = localStorage.getItem(STORE_KEY);
-    if(raw){
-      d = JSON.parse(raw);
-    } else {
-      const old = localStorage.getItem('ktp-math-bgd-v6')
-              || localStorage.getItem('ktp-math-bgd-v5')
-              || localStorage.getItem('ktp-math-bgd-v4')
-              || localStorage.getItem('ktp-math-bgd-v3')
-              || localStorage.getItem('ktp-math-bgd-v2');
-      if(old){ try { d = JSON.parse(old); } catch(e){ d = null; } }
-    }
-    if(!d || typeof d !== 'object') return null;
-    const migration = { '7':'alg', '8':'alg', '9':'alg' };
-    for(const k in migration){
-      if(Array.isArray(d[k])){
-        const nk = k + '/' + migration[k];
-        if(!d[nk]) d[nk] = d[k];
-        delete d[k];
-      }
-    }
-    for(const k in d){
-      if(!Array.isArray(d[k])) return null;
-      for(const g of d[k]){
-        if(typeof g !== 'object' || !('topic' in g) || !('dates' in g)) return null;
-      }
-    }
-    return d;
-  }catch(e){ return null; }
-}
-
 let saveTimer = null;
 function save(instant){
   clearTimeout(saveTimer);
-  const doIt = () => {
-    try{
-      localStorage.setItem(STORE_KEY, JSON.stringify(state.data));
-      flashSaved();
-    }catch(e){ console.warn('Не ўдалося захаваць', e); }
-  };
+  const doIt = () => { flashSaved(); };
   instant ? doIt() : (saveTimer = setTimeout(doIt, 400));
 }
 function flashSaved(){
@@ -1192,7 +1205,7 @@ function fmt(dt){
   const p = n => String(n).padStart(2,'0');
   return `${p(dt.getDate())}.${p(dt.getMonth()+1)}.${dt.getFullYear()}`;
 }
-function fmtShort(d, m){ 
+function fmtShort(d, m){
   return `${String(d).padStart(2,'0')}.${String(m+1).padStart(2,'0')}`;
 }
 
@@ -1369,12 +1382,26 @@ function renderTable(){
 
   if(rows.length === 0){
     const tr = document.createElement('tr');
-    const emptyTitle = comp ? `Няма тэм у кампаненце «${esc(comp.name)}»` : 'Няма тэм';
+    let emptyTitle, emptyText;
+    if(state.dataError){
+      emptyTitle = 'Дадзеныя не загружаны';
+      emptyText = 'Файл data.js не знойдзены ці мае памылку. Глядзіце паведамленне вышэй.';
+    } else if(comp){
+      emptyTitle = `Няма тэм у кампаненце «${esc(comp.name)}»`;
+      emptyText = state.editing
+        ? 'Націсніце «＋ Дадаць тэму», каб пачаць'
+        : 'Уключыце рэжым рэдагавання, каб дадаць тэмы';
+    } else {
+      emptyTitle = 'Няма тэм';
+      emptyText = state.editing
+        ? 'Націсніце «＋ Дадаць тэму», каб пачаць'
+        : 'Уключыце рэжым рэдагавання, каб дадаць тэмы';
+    }
     tr.innerHTML = `<td colspan="6" style="border:none">
       <div class="empty">
-        <div class="empty-icon">📚</div>
+        <div class="empty-icon">${state.dataError ? '⚠️' : '📚'}</div>
         <h3>${emptyTitle}</h3>
-        <p>${state.editing ? 'Націсніце «＋ Дадаць тэму», каб пачаць' : 'Уключыце рэжым рэдагавання, каб дадаць тэмы'}</p>
+        <p>${emptyText}</p>
       </div>
     </td>`;
     tbody.appendChild(tr);
@@ -1393,10 +1420,12 @@ function renderTable(){
     else if(r === nextRow) status = 'row-next';
     else if(diff !== null && diff < 0) status = 'row-past';
 
+    const hlClass = getTopicHighlight(r.group.topic);
+
     const tr = document.createElement('tr');
     tr.dataset.group = r.group.id;
     tr.dataset.lesson = r.lessonIdx;
-    tr.className = [status, r.isFirst ? 'group-start' : ''].filter(Boolean).join(' ');
+    tr.className = [status, r.isFirst ? 'group-start' : '', hlClass].filter(Boolean).join(' ');
 
     let badge = '';
     if(status === 'row-today') badge = '<span class="badge today">Сёння</span>';
@@ -1428,7 +1457,6 @@ function renderTable(){
       ? `<button class="cal-btn" data-act="calendar" type="button" title="Выбраць дату з календара" aria-label="Каляндар">📅</button>`
       : '';
 
-    // тэма і Д/З — з падтрымкай формул
     const topicHTML = state.editing
       ? esc(r.group.topic)
       : renderMixed(r.group.topic);
@@ -1521,7 +1549,6 @@ function saveAndExit(){
   closeCalendar();
   state.editing = false;
   state.snapshot = null;
-  save(true);
   renderTable();
 }
 async function cancelAndExit(){
@@ -1536,7 +1563,6 @@ async function cancelAndExit(){
     state.data = state.snapshot;
     state.snapshot = null;
     state.editing = false;
-    save(true);
     renderTable();
   }
 }
@@ -1544,6 +1570,32 @@ async function cancelAndExit(){
 document.getElementById('editBtn').onclick = enterEditMode;
 document.getElementById('saveBtn').onclick = saveAndExit;
 document.getElementById('cancelBtn').onclick = cancelAndExit;
+
+/* =========================================================
+   ⟳ ПЕРАЧЫТАЦЬ data.js
+   ========================================================= */
+document.getElementById('reloadBtn').onclick = async () => {
+  if(state.editing){
+    const ok = await confirmDialog(
+      'Скінуць змены?',
+      'Вы ў рэжыме рэдагавання. Усе незахаваныя праўкі будуць страчаны, а дадзеныя перачытаюцца з data.js. Працягнуць?',
+      'Скінуць', true
+    );
+    if(!ok) return;
+  }
+  const fromJs = loadFromDataJs();
+  if(!fromJs){
+    showDataError(true);
+    renderTable();
+    return;
+  }
+  showDataError(false);
+  state.data = fromJs;
+  state.editing = false;
+  state.snapshot = null;
+  renderAll();
+  flashSaved();
+};
 
 /* =========================================================
    ПАДЗЕІ Ў ТАБЛІЦЫ
@@ -1556,6 +1608,20 @@ function syncGroupField(groupId, field, value, sourceEl){
   cells.forEach(el => {
     if(el !== sourceEl && el.textContent !== value) el.textContent = value;
   });
+}
+function updateRowHighlight(groupId, topic){
+  const hl = getTopicHighlight(topic);
+  tbody.querySelectorAll(`tr[data-group="${groupId}"]`).forEach(tr => {
+    tr.classList.remove('hl-control', 'hl-test', 'hl-credit');
+    if(hl) tr.classList.add(hl);
+  });
+}
+function isEditingSomeField(){
+  const a = document.activeElement;
+  if(!a) return false;
+  if(a.isContentEditable) return true;
+  if(a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') return true;
+  return false;
 }
 
 tbody.addEventListener('input', e => {
@@ -1573,20 +1639,17 @@ tbody.addEventListener('input', e => {
   if(field === 'topic'){
     group.topic = val;
     syncGroupField(group.id, 'topic', val, el);
-    save();
+    updateRowHighlight(group.id, val);
   } else if(field === 'hw'){
     group.hw = val;
     syncGroupField(group.id, 'hw', val, el);
-    save();
   } else if(field === 'date'){
     const lessonIdx = +tr.dataset.lesson;
     if(!group.dates) group.dates = [];
     group.dates[lessonIdx] = val;
-    save();
     clearTimeout(el._t);
     el._t = setTimeout(() => {
-      const active = document.activeElement;
-      if(active && active.dataset && active.dataset.field === 'date') return;
+      if(isEditingSomeField()) return;
       renderTable();
     }, 1500);
   }
@@ -1597,8 +1660,7 @@ tbody.addEventListener('blur', e => {
   if(!el) return;
   clearTimeout(el._t);
   el._t = setTimeout(() => {
-    const active = document.activeElement;
-    if(active && active.dataset && active.dataset.field === 'date') return;
+    if(isEditingSomeField()) return;
     renderTable();
   }, 120);
 }, true);
@@ -1625,7 +1687,6 @@ tbody.addEventListener('change', e => {
       if(ok){
         group.hours = n;
         if(Array.isArray(group.dates)) group.dates = group.dates.slice(0, n);
-        save(true);
       }
       renderTable();
     });
@@ -1633,7 +1694,6 @@ tbody.addEventListener('change', e => {
     group.hours = n;
     if(!Array.isArray(group.dates)) group.dates = [];
     while(group.dates.length < n) group.dates.push('');
-    save(true);
     renderTable();
   }
 });
@@ -1660,7 +1720,6 @@ tbody.addEventListener('click', async e => {
     openCalendar(calBtn, currentVal, (newVal) => {
       if(!group.dates) group.dates = [];
       group.dates[lessonIdx] = newVal;
-      save();
       const span = tr.querySelector('[data-field="date"]');
       if(span){
         span.textContent = newVal || '—';
@@ -1680,10 +1739,10 @@ tbody.addEventListener('click', async e => {
     const act = actBtn.dataset.act;
     if(act === 'up' && i > 0){
       [arr[i-1], arr[i]] = [arr[i], arr[i-1]];
-      save(true); renderTable();
+      renderTable();
     } else if(act === 'down' && i < arr.length - 1){
       [arr[i+1], arr[i]] = [arr[i], arr[i+1]];
-      save(true); renderTable();
+      renderTable();
     } else if(act === 'del'){
       const comp = getCurrentComponent();
       const ctx = comp ? ` (${comp.name})` : '';
@@ -1694,7 +1753,7 @@ tbody.addEventListener('click', async e => {
       );
       if(ok){
         arr.splice(i, 1);
-        save(true); renderTable();
+        renderTable();
       }
     }
   }
@@ -1712,7 +1771,6 @@ tbody.addEventListener('dblclick', e => {
   openCalendar(el, currentVal, (newVal) => {
     if(!group.dates) group.dates = [];
     group.dates[lessonIdx] = newVal;
-    save();
     const span = tr.querySelector('[data-field="date"]');
     if(span){
       span.textContent = newVal || '—';
@@ -1908,7 +1966,6 @@ document.getElementById('addRow').onclick = () => {
   if(!state.editing) return;
   const arr = getCurrentData();
   arr.push({ id: uid(), topic: '', hours: 1, hw: '', dates: [''] });
-  save(true);
   renderTable();
   setTimeout(() => {
     const rows = tbody.querySelectorAll('tr');
@@ -1953,16 +2010,18 @@ document.getElementById('fileInput').onchange = e => {
     try{
       const d = JSON.parse(reader.result);
       if(typeof d !== 'object' || d === null) throw new Error('няправільны фармат');
-      state.data = d;
+      const normalized = normalizeData(d);
+      if(!normalized) throw new Error('структура не адпавядае фармату КТП');
+      showDataError(false);
+      state.data = normalized;
       state.editing = false;
       state.snapshot = null;
       const cls = CLASSES.find(c => c.id === state.current);
       if(cls.components && cls.components.length){
         state.currentComponent = cls.components[0].id;
       }
-      save(true);
       renderAll();
-      setTimeout(() => flashSaved(), 200);
+      flashSaved();
     }catch(err){
       alert('Не ўдалося прачытаць файл: ' + err.message);
     }
@@ -2070,17 +2129,30 @@ function renderAll(){
   renderTable();
 }
 
-(function initCurrentComponent(){
+function bootstrap(){
+  const fromJs = loadFromDataJs();
+  if(fromJs){
+    showDataError(false);
+    state.data = fromJs;
+    console.log('✓ Дадзеныя з data.js');
+  } else {
+    state.data = {};
+    showDataError(true);
+    console.error('✗ data.js не знойдзены ці мае памылку. Праверце файл побач з HTML.');
+  }
+
   const cls = CLASSES.find(c => c.id === state.current);
   if(cls.components && cls.components.length){
     state.currentComponent = cls.components[0].id;
   }
-})();
 
-applyThemeMode();
-applyThemeColor();
-handleScroll();
-renderAll();
+  applyThemeMode();
+  applyThemeColor();
+  handleScroll();
+  renderAll();
+}
+
+bootstrap();
 
 document.addEventListener('visibilitychange', () => {
   if(!document.hidden && !state.editing) renderTable();
@@ -2089,11 +2161,9 @@ document.addEventListener('keydown', e => {
   if((e.ctrlKey || e.metaKey) && e.key === 's'){
     e.preventDefault();
     if(state.editing) saveAndExit();
-    else save(true);
   }
 });
 
-/* калі KaTeX пагрузіўся пасля першага рэндэра — перамалёўваем */
 window.addEventListener('load', () => {
   if(!state.editing) renderTable();
 });
