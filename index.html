@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="be" data-theme="light" data-color="indigo">
+<html lang="be">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#6366f1">
 <title>КТП · Матэматыка · Багданаўская СШ</title>
+
+<!-- ▼ Усталёўваем тэму ДА загрузкі CSS, каб не было ўспышкі ▼ -->
+<script>
+(function(){
+  try{
+    var m = localStorage.getItem('ktp-math-theme-mode') || 'auto';
+    var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var resolved = (m === 'auto') ? (sysDark ? 'dark' : 'light') : m;
+    document.documentElement.dataset.theme = resolved;
+
+    var c = localStorage.getItem('ktp-math-theme-color') || 'indigo';
+    document.documentElement.dataset.color = c;
+  }catch(e){
+    document.documentElement.dataset.theme = 'light';
+    document.documentElement.dataset.color = 'indigo';
+  }
+})();
+</script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -12,6 +30,9 @@
 <script src="data.js"></script>
 
 <style>
+/* =========================================================
+   ЗМЕННЫЯ
+   ========================================================= */
 :root{
   --bg:#f4f5fa; --bg-deep:#eceefa;
   --card:#ffffff; --card-2:#fafbff;
@@ -27,14 +48,34 @@
   --shadow-lg:0 24px 48px -16px rgba(15,23,42,.16);
   --radius:18px;
 }
-html[data-color="indigo"]{ --accent:#6366f1; --accent-2:#8b5cf6; --accent-text:#4f46e5; --accent-soft:#eef0ff; }
-html[data-color="ocean"] { --accent:#0ea5e9; --accent-2:#06b6d4; --accent-text:#0284c7; --accent-soft:#e0f2fe; }
-html[data-color="violet"]{ --accent:#8b5cf6; --accent-2:#a855f7; --accent-text:#7c3aed; --accent-soft:#f3e8ff; }
-html[data-color="rose"]  { --accent:#f43f5e; --accent-2:#ec4899; --accent-text:#e11d48; --accent-soft:#ffe4e6; }
-html[data-color="amber"] { --accent:#f59e0b; --accent-2:#f97316; --accent-text:#d97706; --accent-soft:#fef3c7; }
-html[data-color="teal"]  { --accent:#14b8a6; --accent-2:#06b6d4; --accent-text:#0d9488; --accent-soft:#ccfbf1; }
-html[data-color="slate"] { --accent:#64748b; --accent-2:#475569; --accent-text:#475569; --accent-soft:#f1f5f9; }
 
+/* Базавы колер для ўсіх палітраў */
+html[data-color="indigo"]  { --c:#6366f1; }
+html[data-color="blue"]    { --c:#3b82f6; }
+html[data-color="sky"]     { --c:#0ea5e9; }
+html[data-color="cyan"]    { --c:#06b6d4; }
+html[data-color="teal"]    { --c:#14b8a6; }
+html[data-color="emerald"] { --c:#10b981; }
+html[data-color="green"]   { --c:#22c55e; }
+html[data-color="lime"]    { --c:#84cc16; }
+html[data-color="amber"]   { --c:#f59e0b; }
+html[data-color="orange"]  { --c:#f97316; }
+html[data-color="red"]     { --c:#ef4444; }
+html[data-color="rose"]    { --c:#f43f5e; }
+html[data-color="pink"]    { --c:#ec4899; }
+html[data-color="violet"]  { --c:#8b5cf6; }
+html[data-color="fuchsia"] { --c:#d946ef; }
+html[data-color="slate"]   { --c:#64748b; }
+html[data-color="gray"]    { --c:#6b7280; }
+
+/* Светлая тэма — вытворныя ад --c */
+html[data-theme="light"]{
+  --accent:      var(--c);
+  --accent-2:    color-mix(in srgb, var(--c) 70%, #a855f7);
+  --accent-text: color-mix(in srgb, var(--c) 85%, #000);
+  --accent-soft: color-mix(in srgb, var(--c) 10%, #fff);
+}
+/* Цёмная тэма — вытворныя ад --c */
 html[data-theme="dark"]{
   --bg:#0c0f16; --bg-deep:#070a10;
   --card:#151a24; --card-2:#1a1f2b;
@@ -48,43 +89,39 @@ html[data-theme="dark"]{
   --shadow-sm:0 1px 2px rgba(0,0,0,.3);
   --shadow:0 4px 14px -4px rgba(0,0,0,.5);
   --shadow-lg:0 24px 48px -16px rgba(0,0,0,.7);
+
+  --accent:      color-mix(in srgb, var(--c) 82%, #fff);
+  --accent-2:    color-mix(in srgb, var(--c) 75%, #c4b5fd);
+  --accent-text: color-mix(in srgb, var(--c) 65%, #fff);
+  --accent-soft: color-mix(in srgb, var(--c) 22%, #151a24);
 }
-html[data-theme="dark"][data-color="indigo"]{ --accent:#818cf8; --accent-2:#a78bfa; --accent-text:#a5b4fc; --accent-soft:#1e2440; }
-html[data-theme="dark"][data-color="ocean"] { --accent:#38bdf8; --accent-2:#22d3ee; --accent-text:#7dd3fc; --accent-soft:#0c2c3f; }
-html[data-theme="dark"][data-color="violet"]{ --accent:#a78bfa; --accent-2:#c084fc; --accent-text:#c4b5fd; --accent-soft:#2a1e40; }
-html[data-theme="dark"][data-color="rose"]  { --accent:#fb7185; --accent-2:#f472b6; --accent-text:#fda4af; --accent-soft:#3a1a25; }
-html[data-theme="dark"][data-color="amber"] { --accent:#fbbf24; --accent-2:#fb923c; --accent-text:#fcd34d; --accent-soft:#2a2110; }
-html[data-theme="dark"][data-color="teal"]  { --accent:#2dd4bf; --accent-2:#22d3ee; --accent-text:#5eead4; --accent-soft:#0d2a26; }
-html[data-theme="dark"][data-color="slate"] { --accent:#94a3b8; --accent-2:#64748b; --accent-text:#cbd5e1; --accent-soft:#1c222d; }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Inter","Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  background:
-    radial-gradient(1400px 700px at 15% -20%, var(--accent-soft), transparent 55%),
-    radial-gradient(1000px 500px at 100% 0%, color-mix(in srgb, var(--accent-2) 8%, transparent), transparent 50%),
-    var(--bg);
-  background-attachment:fixed;
+  background:var(--bg);
   color:var(--text);
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
   font-size:15px; line-height:1.5;
-  transition:background-color .3s ease,color .3s ease;
+  transition:background-color .2s ease,color .2s ease;
 }
 .app{max-width:1280px;margin:0 auto;padding:0 20px 80px;}
 
+/* =========================================================
+   ШАПКА
+   ========================================================= */
 .topbar{
   position:sticky;top:0;z-index:40;
   display:flex;align-items:center;justify-content:space-between;gap:16px;
   flex-wrap:wrap;
   padding:14px 0;margin-bottom:16px;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   background:linear-gradient(180deg,
-    color-mix(in srgb, var(--bg) 94%, transparent) 0%,
-    color-mix(in srgb, var(--bg) 85%, transparent) 75%,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 88%, transparent) 70%,
     transparent 100%);
-  transition:padding .25s ease,margin .25s ease;
+  transition:padding .2s ease,margin .2s ease;
 }
 .brand{display:flex;align-items:center;gap:14px;min-width:0;}
 .logo{
@@ -94,53 +131,50 @@ body{
   font-size:26px;font-weight:800;font-family:"Times New Roman",serif;
   box-shadow:0 10px 26px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.25);
   letter-spacing:-1px;
-  transition:all .25s ease;
+  transition:width .2s ease,height .2s ease,font-size .2s ease,border-radius .2s ease;
 }
 .brand h1{
   margin:0;font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15;
-  background:linear-gradient(135deg,var(--text) 20%,var(--accent) 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  transition:font-size .25s ease;
+  color:var(--accent-text);
+  transition:font-size .2s ease;
 }
-html[data-theme="dark"] .brand h1{
-  background:linear-gradient(135deg,#fff 20%,var(--accent-2) 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-}
-.brand p{margin:3px 0 0;font-size:12.5px;color:var(--muted);font-weight:500;transition:all .25s ease;}
+.brand p{margin:3px 0 0;font-size:12.5px;color:var(--muted);font-weight:500;}
 
-.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative;transition:gap .25s ease;}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative;}
 
 button{
   font:inherit;font-size:13.5px;font-weight:600;
   border:1px solid var(--border);background:var(--card);color:var(--text);
   padding:10px 16px;border-radius:12px;cursor:pointer;
-  transition:all .18s ease;white-space:nowrap;
+  transition:background-color .1s ease,border-color .1s ease,color .1s ease;
+  white-space:nowrap;
   display:inline-flex;align-items:center;gap:8px;
   min-height:42px;box-shadow:var(--shadow-sm);
 }
-button:hover{background:var(--hover);border-color:var(--accent);color:var(--accent-text);transform:translateY(-1px);box-shadow:var(--shadow);}
-button:active{transform:translateY(0);}
+button:hover{background:var(--hover);border-color:var(--accent);color:var(--accent-text);}
+button:active{transform:translateY(1px);}
 button.primary{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   border-color:transparent;color:#fff;
   box-shadow:0 8px 20px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
 }
-button.primary:hover{color:#fff;filter:brightness(1.08);}
+button.primary:hover{color:#fff;filter:brightness(1.06);}
 button.success{
   background:linear-gradient(135deg,var(--today),#059669);
   border-color:transparent;color:#fff;
-  box-shadow:0 8px 20px -8px var(--today), inset 0 1px 0 rgba(255,255,255,.2);
 }
-button.success:hover{color:#fff;filter:brightness(1.08);}
+button.success:hover{color:#fff;filter:brightness(1.06);}
 button.warn{
   background:linear-gradient(135deg,var(--next),#d97706);
   border-color:transparent;color:#fff;
-  box-shadow:0 8px 20px -8px var(--next), inset 0 1px 0 rgba(255,255,255,.2);
 }
-button.warn:hover{color:#fff;filter:brightness(1.08);}
+button.warn:hover{color:#fff;filter:brightness(1.06);}
 button.ghost{background:transparent;box-shadow:none;}
 button.ghost:hover{background:var(--card);}
 button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justify-content:center;}
+
+/* схаваныя кнопкі — пакідаем у DOM, але нябачныя */
+.actions .hidden-action{display:none !important;}
 
 .topbar.compact{padding:8px 0;margin-bottom:8px;}
 .topbar.compact .logo{width:36px;height:36px;font-size:18px;border-radius:10px;}
@@ -152,16 +186,18 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   border-radius:9px;
 }
 .topbar.compact button.icon{min-width:34px;padding:7px 8px;font-size:14px;}
-.topbar.compact .actions{gap:6px;}
 
+/* =========================================================
+   ПАНЕЛЬ ТЭМ
+   ========================================================= */
 .theme-panel{
   position:absolute;top:calc(100% + 10px);right:0;z-index:60;
-  width:290px;background:var(--card);
+  width:320px;background:var(--card);
   border:1px solid var(--border);border-radius:16px;
   padding:16px;box-shadow:var(--shadow-lg);
-  opacity:0;transform:translateY(-8px) scale(.97);
+  opacity:0;transform:translateY(-6px);
   pointer-events:none;
-  transition:all .2s cubic-bezier(.2,.8,.2,1);
+  transition:opacity .15s ease,transform .15s ease;
   transform-origin:top right;
 }
 .theme-panel.show{opacity:1;transform:none;pointer-events:auto;}
@@ -179,19 +215,18 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 .mode-btns button.active{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;border-color:transparent;
-  box-shadow:0 6px 14px -6px var(--accent);
 }
 .mode-btns button.active:hover{color:#fff;}
-.color-swatches{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.color-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;}
 .swatch{
   width:100%;aspect-ratio:1;border-radius:50%;
   border:2px solid transparent;
   padding:0;min-height:0;box-shadow:none;
   background:var(--sw);cursor:pointer;position:relative;
-  transition:all .18s ease;
+  transition:transform .1s ease;
 }
-.swatch:hover{transform:scale(1.12);box-shadow:0 4px 12px -3px var(--sw);}
-.swatch.active{border-color:var(--card);box-shadow:0 0 0 2px var(--sw), 0 4px 12px -3px var(--sw);}
+.swatch:hover{transform:scale(1.08);}
+.swatch.active{border-color:var(--card);box-shadow:0 0 0 2px var(--sw);}
 .swatch.active::after{
   content:"✓";position:absolute;inset:0;
   display:grid;place-items:center;
@@ -199,6 +234,9 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   text-shadow:0 1px 3px rgba(0,0,0,.35);
 }
 
+/* =========================================================
+   ПАНЕЛЬ РЭДАГАВАННЯ
+   ========================================================= */
 .editbar{
   display:none;align-items:center;gap:14px;flex-wrap:wrap;
   padding:12px 20px;margin-bottom:16px;
@@ -207,16 +245,12 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
     color-mix(in srgb, var(--edit) 12%, var(--card)),
     color-mix(in srgb, var(--edit) 6%, var(--card)));
   border:1.5px solid color-mix(in srgb, var(--edit) 40%, transparent);
-  box-shadow:0 8px 24px -10px color-mix(in srgb, var(--edit) 50%, transparent);
-  animation:slideDown .3s cubic-bezier(.2,.8,.2,1);
 }
 .editbar.show{display:flex;}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
 .editbar-icon{
   width:34px;height:34px;border-radius:10px;flex:none;
   background:var(--edit);color:#fff;
   display:grid;place-items:center;font-size:17px;
-  box-shadow:0 4px 12px -4px var(--edit);
 }
 .editbar-text{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.4;}
 .editbar-text b{color:var(--edit);}
@@ -229,6 +263,9 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 }
 .editbar-spacer{flex:1;min-width:8px;}
 
+/* =========================================================
+   ТАБЫ
+   ========================================================= */
 .tabs{
   display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;
   scrollbar-width:none;margin-bottom:4px;
@@ -238,23 +275,25 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   flex:none;padding:11px 18px;border-radius:14px;cursor:pointer;
   border:1px solid var(--border);background:var(--card);
   font-size:13.5px;font-weight:600;color:var(--text-2);
-  transition:all .2s ease;user-select:none;line-height:1.25;text-align:left;
+  transition:border-color .1s ease,color .1s ease,background-color .1s ease;
+  user-select:none;line-height:1.25;text-align:left;
   box-shadow:var(--shadow-sm);
   min-height:56px;display:flex;flex-direction:column;justify-content:center;
 }
 .tab small{display:block;font-weight:500;font-size:10.5px;opacity:.7;margin-top:3px;letter-spacing:.2px;}
-.tab:hover{color:var(--text);border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow);}
+.tab:hover{color:var(--text);border-color:var(--accent);}
 .tab.active{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;border-color:transparent;
   box-shadow:0 10px 24px -8px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
-  transform:translateY(-1px);
 }
 .tab.active small{opacity:.85;color:#fff;}
 
-.subtabs-wrap{display:none;margin-bottom:14px;animation:subIn .25s ease;}
+/* =========================================================
+   СУБ-ТАБЫ
+   ========================================================= */
+.subtabs-wrap{display:none;margin-bottom:14px;}
 .subtabs-wrap.show{display:block;}
-@keyframes subIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
 .subtabs-label{
   font-size:10px;font-weight:800;letter-spacing:.7px;
   text-transform:uppercase;color:var(--muted);
@@ -275,13 +314,13 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   font-size:13.5px;font-weight:700;
   color:var(--text-2);cursor:pointer;
   border:none;background:transparent;box-shadow:none;
-  transition:all .18s ease;
+  transition:background-color .1s ease,color .1s ease;
   display:flex;flex-direction:column;align-items:flex-start;
   min-height:0;flex:none;line-height:1.2;
   text-align:left;
 }
 .subtab small{font-size:10px;font-weight:500;opacity:.7;margin-top:3px;letter-spacing:.2px;}
-.subtab:hover{color:var(--text);background:var(--hover);transform:none;box-shadow:none;}
+.subtab:hover{color:var(--text);background:var(--hover);}
 .subtab.active{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;
@@ -289,14 +328,15 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
 }
 .subtab.active small{opacity:.85;color:#fff;}
 
+/* =========================================================
+   КАРТКА
+   ========================================================= */
 .card{
   background:var(--card);border:1px solid var(--border);
   border-radius:var(--radius);box-shadow:var(--shadow);
   overflow:hidden;
-  transition:box-shadow .3s ease,border-color .3s ease;
-  animation:rise .4s cubic-bezier(.2,.8,.2,1);
+  transition:box-shadow .2s ease,border-color .2s ease;
 }
-@keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 .card.editing{
   border-color:color-mix(in srgb, var(--edit) 45%, transparent);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--edit) 15%, transparent), var(--shadow-lg);
@@ -329,19 +369,16 @@ button.icon{padding:10px 12px;font-size:16px;line-height:1;min-width:42px;justif
   font-weight:600;line-height:1.5;max-width:440px;
   display:flex;align-items:center;gap:9px;
   border:1px solid color-mix(in srgb, var(--accent) 20%, transparent);
-  transition:all .3s ease;
+  transition:background-color .2s ease,color .2s ease;
 }
 .nextinfo::before{
   content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none;
   box-shadow:0 0 0 4px color-mix(in srgb, currentColor 20%, transparent);
-  animation:pulse 2s ease-in-out infinite;
-}
-.nextinfo.no-pulse::before{animation:none;}
-@keyframes pulse{
-  0%,100%{box-shadow:0 0 0 4px color-mix(in srgb, currentColor 20%, transparent);}
-  50%{box-shadow:0 0 0 7px color-mix(in srgb, currentColor 8%, transparent);}
 }
 
+/* =========================================================
+   ТАБЛІЦА
+   ========================================================= */
 .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 table{width:100%;border-collapse:collapse;min-width:760px;font-size:14px;}
 thead th{
@@ -354,7 +391,6 @@ tbody td{
   padding:14px 16px;border-bottom:1px solid var(--border-2);
   vertical-align:top;line-height:1.55;
 }
-tbody tr{transition:background .18s ease;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr.group-start{border-top:2px solid var(--border);}
 tbody tr.group-start:first-child{border-top:none;}
@@ -386,26 +422,22 @@ tbody tr.group-start:first-child{border-top:none;}
   font-size:13px;
   vertical-align:middle;
   box-shadow:none;
-  transition:all .15s ease;
+  transition:background-color .1s ease,color .1s ease,border-color .1s ease;
 }
 .cal-btn:hover{
   color:var(--accent-text);
   border-color:var(--accent);
   background:var(--accent-soft);
-  transform:none;box-shadow:none;
 }
-.cal-btn:active{transform:scale(.94);}
 
 .badge{
   display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.6px;
   padding:3px 8px;border-radius:7px;margin-left:7px;vertical-align:1px;
   text-transform:uppercase;
-  animation:badgeIn .3s ease;
 }
-@keyframes badgeIn{from{transform:scale(.7);opacity:0;}to{transform:scale(1);opacity:1;}}
-.badge.today{background:var(--today);color:#fff;box-shadow:0 3px 8px -2px var(--today);}
-.badge.next {background:var(--next); color:#fff;box-shadow:0 3px 8px -2px var(--next);}
-.badge.past {background:var(--past); color:#fff;box-shadow:0 3px 8px -2px var(--past);}
+.badge.today{background:var(--today);color:#fff;}
+.badge.next {background:var(--next); color:#fff;}
+.badge.past {background:var(--past); color:#fff;}
 
 tr.row-today{background:var(--today-soft)!important;}
 tr.row-today td{border-bottom-color:color-mix(in srgb,var(--today) 22%,transparent);}
@@ -427,7 +459,6 @@ tr.row-past .date-edit{color:var(--past);}
 tr.row-past .col-topic{color:var(--text-2);}
 tr.row-past .col-hw{color:var(--muted);}
 tr.row-past td:first-child{box-shadow:inset 4px 0 0 var(--past);color:var(--past);}
-tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!important;}
 
 .hours-val{
   display:inline-block;min-width:28px;
@@ -447,7 +478,7 @@ tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!im
 
 .ktp.editing [contenteditable="true"]{
   outline:none;border-radius:7px;padding:3px 7px;margin:-3px -7px;
-  transition:background .15s,box-shadow .15s;
+  transition:background-color .1s ease,box-shadow .1s ease;
   min-height:1.4em;cursor:text;
   background:color-mix(in srgb, var(--edit) 6%, transparent);
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--edit) 18%, transparent);
@@ -463,29 +494,16 @@ tr.row-past:hover{background:color-mix(in srgb, var(--past) 14%, var(--card))!im
   pointer-events:none;
 }
 
-.katex{
-  font-size:1.05em !important;
-  color:inherit;
-}
+.katex{ font-size:1.05em !important; color:inherit; }
 .katex-display{
   margin:.4em 0 !important;
   overflow-x:auto;
   overflow-y:hidden;
 }
-.math-raw{
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:.92em;
-  color:var(--accent-text);
-  background:var(--accent-soft);
-  padding:1px 5px;border-radius:5px;
-  white-space:pre-wrap;
-}
 
-tr.hl-control .col-topic,
-tr.hl-test    .col-topic,
-tr.hl-credit  .col-topic{
-  position:relative;
-}
+/* =========================================================
+   ПАДСВЕТКА СПЕЦЫЯЛЬНЫХ ТЭМ
+   ========================================================= */
 tr.hl-control .col-topic{
   background:color-mix(in srgb, var(--danger) 7%, transparent);
   box-shadow:inset 3px 0 0 var(--danger);
@@ -500,7 +518,6 @@ tr.hl-control .col-topic::after{
   margin-left:8px;vertical-align:2px;
   background:linear-gradient(135deg, var(--danger), #b91c1c);
   color:#fff;
-  box-shadow:0 3px 8px -3px var(--danger);
   white-space:nowrap;
 }
 tr.hl-test .col-topic{
@@ -517,7 +534,6 @@ tr.hl-test .col-topic::after{
   margin-left:8px;vertical-align:2px;
   background:linear-gradient(135deg, var(--next), #d97706);
   color:#fff;
-  box-shadow:0 3px 8px -3px var(--next);
   white-space:nowrap;
 }
 tr.hl-credit .col-topic{
@@ -534,7 +550,6 @@ tr.hl-credit .col-topic::after{
   margin-left:8px;vertical-align:2px;
   background:linear-gradient(135deg, var(--accent), var(--accent-2));
   color:#fff;
-  box-shadow:0 3px 8px -3px var(--accent);
   white-space:nowrap;
 }
 .ktp.editing tr.hl-control .col-topic::after,
@@ -544,8 +559,11 @@ tr.hl-credit .col-topic::after{
   pointer-events:none;
 }
 
+/* =========================================================
+   КНОПКІ РАДКА
+   ========================================================= */
 .rowbtns{
-  opacity:0;transition:opacity .18s ease;
+  opacity:0;transition:opacity .12s ease;
   display:flex;gap:5px;justify-content:flex-end;
 }
 tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
@@ -553,19 +571,20 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   border:1px solid var(--border);background:var(--card);color:var(--text-2);
   width:30px;height:30px;padding:0;border-radius:9px;font-size:12px;
   display:grid;place-items:center;cursor:pointer;
-  transition:all .15s ease;min-height:0;
+  transition:background-color .1s ease,color .1s ease,border-color .1s ease;
+  min-height:0;
 }
-.mini:hover{color:var(--accent-text);border-color:var(--accent);background:var(--card);transform:translateY(-1px);}
+.mini:hover{color:var(--accent-text);border-color:var(--accent);background:var(--card);}
 .mini.del:hover{color:var(--danger);border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--card));}
 
 .cardfoot{
   padding:16px 24px;border-top:1px solid var(--border-2);
   display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  background:linear-gradient(180deg,transparent,var(--bg-deep));
+  background:var(--card-2);
 }
 .saved{
   font-size:12.5px;color:var(--today);font-weight:600;
-  opacity:0;transition:opacity .3s ease;
+  opacity:0;transition:opacity .2s ease;
   display:inline-flex;align-items:center;gap:6px;
 }
 .saved.show{opacity:1;}
@@ -576,6 +595,9 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
 .empty-icon{font-size:42px;margin-bottom:14px;opacity:.35;}
 .empty h3{color:var(--text);margin:0 0 6px;font-size:16px;font-weight:700;}
 
+/* =========================================================
+   БАНЕР ПАМЫЛКІ
+   ========================================================= */
 .data-error{
   display:none;
   padding:20px 24px;
@@ -585,15 +607,12 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
     color-mix(in srgb, var(--danger) 12%, var(--card)),
     color-mix(in srgb, var(--danger) 5%, var(--card)));
   border:1.5px solid color-mix(in srgb, var(--danger) 45%, transparent);
-  box-shadow:0 8px 24px -10px color-mix(in srgb, var(--danger) 40%, transparent);
-  animation:slideDown .3s cubic-bezier(.2,.8,.2,1);
 }
 .data-error.show{display:flex;gap:14px;align-items:flex-start;}
 .data-error-icon{
   width:38px;height:38px;border-radius:11px;flex:none;
   background:var(--danger);color:#fff;
   display:grid;place-items:center;font-size:20px;font-weight:800;
-  box-shadow:0 4px 12px -4px var(--danger);
 }
 .data-error-text{font-size:13.5px;line-height:1.55;color:var(--text);}
 .data-error-text b{color:var(--danger);display:block;margin-bottom:4px;font-size:14.5px;}
@@ -604,12 +623,14 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   padding:1px 6px;border-radius:5px;font-size:12px;font-weight:600;
 }
 
+/* =========================================================
+   КАЛЯНДАР
+   ========================================================= */
 .cal-backdrop{
   position:fixed;inset:0;z-index:199;
-  background:rgba(10,14,25,.45);
-  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  background:rgba(10,14,25,.35);
   opacity:0;pointer-events:none;
-  transition:opacity .2s ease;
+  transition:opacity .15s ease;
 }
 .cal-backdrop.show{opacity:1;pointer-events:auto;}
 
@@ -622,14 +643,14 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   padding:14px;
   box-shadow:var(--shadow-lg);
   opacity:0;
-  transform:translateY(-8px) scale(.97);
+  transform:translateY(-6px);
   pointer-events:none;
-  transition:opacity .18s ease, transform .18s cubic-bezier(.2,.8,.2,1);
+  transition:opacity .15s ease,transform .15s ease;
   transform-origin:top center;
   user-select:none;
 }
 .cal-popup.show{
-  opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+  opacity:1;transform:translateY(0);pointer-events:auto;
 }
 
 .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
@@ -639,11 +660,12 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   background:var(--card);display:grid;place-items:center;
   cursor:pointer;color:var(--text-2);
   font-size:16px;font-weight:800;
-  transition:all .15s ease;box-shadow:none;
+  transition:background-color .1s ease,color .1s ease,border-color .1s ease;
+  box-shadow:none;
 }
 .cal-nav:hover{
   color:var(--accent-text);border-color:var(--accent);
-  background:var(--accent-soft);transform:none;box-shadow:none;
+  background:var(--accent-soft);
 }
 .cal-title{
   flex:1;text-align:center;
@@ -670,11 +692,10 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
   color:var(--text);cursor:pointer;
   display:grid;place-items:center;
   padding:0;min-height:0;box-shadow:none;
-  transition:background .12s ease,color .12s ease,transform .1s ease;
+  transition:background-color .1s ease,color .1s ease;
   font-variant-numeric:tabular-nums;
 }
-.cal-day:hover{background:var(--accent-soft);color:var(--accent-text);transform:none;box-shadow:none;}
-.cal-day:active{transform:scale(.94);}
+.cal-day:hover{background:var(--accent-soft);color:var(--accent-text);}
 .cal-day.other{color:var(--muted);opacity:.42;}
 .cal-day.other:hover{opacity:.75;}
 .cal-day.weekend:not(.selected){color:color-mix(in srgb,var(--danger) 70%,var(--text));}
@@ -686,9 +707,8 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
 .cal-day.selected{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   color:#fff;font-weight:800;
-  box-shadow:0 6px 14px -5px var(--accent), inset 0 1px 0 rgba(255,255,255,.2);
 }
-.cal-day.selected:hover{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+.cal-day.selected:hover{color:#fff;}
 .cal-foot{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2);}
 .cal-foot button{
   flex:1;padding:9px 12px;font-size:12.5px;font-weight:700;
@@ -702,35 +722,34 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
     left:12px !important;right:12px !important;
     top:auto !important;bottom:12px;
     transform-origin:bottom center;
-    transform:translateY(20px) scale(.96);
+    transform:translateY(16px);
   }
-  .cal-popup.show{transform:translateY(0) scale(1);}
+  .cal-popup.show{transform:translateY(0);}
   .cal-day{font-size:14px;}
 }
 
+/* =========================================================
+   МАДАЛЬ
+   ========================================================= */
 .modal-back{
   position:fixed;inset:0;z-index:100;
-  background:rgba(10,14,25,.55);
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  background:rgba(10,14,25,.5);
   display:none;align-items:center;justify-content:center;
-  padding:20px;animation:fadeIn .18s ease;
+  padding:20px;
 }
 .modal-back.show{display:flex;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 .modal{
   background:var(--card);border-radius:20px;
   padding:26px 26px 22px;max-width:420px;width:100%;
   box-shadow:var(--shadow-lg);border:1px solid var(--border);
-  animation:pop .25s cubic-bezier(.2,.8,.2,1);
 }
-@keyframes pop{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
 .modal h3{margin:0 0 10px;font-size:17px;font-weight:800;letter-spacing:-.2px;}
 .modal p{margin:0 0 20px;font-size:14px;color:var(--text-2);line-height:1.55;}
 .modal .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
 .modal .btns button{flex:none;}
 
 /* =========================================================
-   ПЛАВАЮЧЫЯ КНОПКІ (FAB)
+   ПЛАВАЮЧЫЯ КНОПКІ
    ========================================================= */
 .fab-group{
   position:fixed;
@@ -755,7 +774,7 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   font-size:20px;line-height:1;
   cursor:pointer;
   box-shadow:0 8px 24px -6px rgba(15,23,42,.25), 0 2px 6px -2px rgba(15,23,42,.12);
-  transition:all .2s cubic-bezier(.2,.8,.2,1);
+  transition:opacity .2s ease,transform .2s ease;
   opacity:0;
   transform:translateY(10px) scale(.9);
   pointer-events:none;
@@ -766,25 +785,19 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   pointer-events:auto;
 }
 .fab:hover{
-  transform:translateY(-2px) scale(1.06);
-  box-shadow:0 14px 32px -8px rgba(15,23,42,.32), 0 4px 8px -2px rgba(15,23,42,.1);
   border-color:var(--accent);
   color:var(--accent-text);
-}
-.fab:active{
-  transform:scale(.94);
 }
 
 .fab.fab-next{
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   border-color:transparent;
   color:#fff;
-  box-shadow:0 10px 26px -6px var(--accent), 0 2px 6px -2px rgba(15,23,42,.12);
+  box-shadow:0 10px 26px -6px var(--accent);
 }
 .fab.fab-next:hover{
   color:#fff;
-  filter:brightness(1.08);
-  box-shadow:0 16px 34px -8px var(--accent), 0 4px 10px -2px rgba(15,23,42,.15);
+  filter:brightness(1.06);
 }
 
 .fab-label{
@@ -801,8 +814,7 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   white-space:nowrap;
   opacity:0;
   pointer-events:none;
-  transition:opacity .15s ease, transform .15s ease;
-  box-shadow:var(--shadow);
+  transition:opacity .12s ease, transform .12s ease;
 }
 .fab:hover .fab-label{
   opacity:1;
@@ -815,17 +827,10 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   .fab-label{display:none;}
 }
 
-/* Падсветка мэтавага радка пры скролу */
-@keyframes flashRing{
-  0%   { outline-color: color-mix(in srgb, var(--accent) 0%, transparent); }
-  20%  { outline-color: var(--accent); }
-  60%  { outline-color: var(--accent); }
-  100% { outline-color: color-mix(in srgb, var(--accent) 0%, transparent); }
-}
+/* статычная падсветка мэтавага радка */
 tr.flash-target{
   outline:3px solid var(--accent);
   outline-offset:-3px;
-  animation:flashRing 1.6s ease-out;
   position:relative;
   z-index:2;
 }
@@ -835,7 +840,7 @@ tr.flash-target{
   position:fixed;
   left:50%;
   bottom:96px;
-  transform:translateX(-50%) translateY(10px);
+  transform:translateX(-50%);
   background:var(--text);
   color:var(--card);
   padding:12px 20px;
@@ -846,17 +851,16 @@ tr.flash-target{
   z-index:300;
   opacity:0;
   pointer-events:none;
-  transition:opacity .22s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+  transition:opacity .18s ease;
   max-width:calc(100vw - 40px);
   text-align:center;
 }
 .toast.show{
   opacity:1;
-  transform:translateX(-50%) translateY(0);
 }
 
 /* =========================================================
-   МОБІЛЬНЫЯ — ПЕРАПРАЦАВАНЫЯ КАРТКІ
+   МОБІЛЬНЫЯ
    ========================================================= */
 @media (max-width:760px){
   .app{padding:0 12px 100px;}
@@ -871,7 +875,8 @@ tr.flash-target{
   .actions button.success span,
   .actions button.warn span{display:inline;}
 
-  .theme-panel{width:270px;right:-8px;}
+  .theme-panel{width:290px;right:-8px;}
+  .color-swatches{grid-template-columns:repeat(5,1fr);gap:8px;}
 
   .editbar{padding:11px 14px;gap:10px;}
   .editbar-icon{width:30px;height:30px;font-size:15px;}
@@ -891,7 +896,6 @@ tr.flash-target{
   thead{display:none;}
   table{border-collapse:separate;}
 
-  /* ====== КАРТКА РАДКА ====== */
   tbody tr{
     display:grid;
     grid-template-columns:36px 1fr auto;
@@ -908,9 +912,7 @@ tr.flash-target{
     background:var(--card);
     box-shadow:var(--shadow-sm);
     position:relative;
-    transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease;
   }
-  tbody tr:active{transform:scale(.995);}
   tbody tr.group-start{margin-top:18px;}
   tbody tr.group-start:first-child{margin-top:0;}
 
@@ -923,7 +925,6 @@ tr.flash-target{
   }
   tbody td::before{display:none;}
 
-  /* № у кружочку */
   .col-n{
     grid-area:n;
     width:34px;height:34px;
@@ -940,7 +941,6 @@ tr.flash-target{
     flex:none;
   }
 
-  /* Дата + каляндар + бейдж */
   .col-date{
     grid-area:date;
     display:flex;
@@ -952,40 +952,14 @@ tr.flash-target{
     min-width:0;
     padding:0!important;
   }
-  .col-date .date-edit{
-    font-size:14.5px;
-    font-weight:800;
-    padding:0;
-    margin:0;
-  }
-  .col-date .badge{
-    margin-left:0;
-    font-size:9px;
-    padding:3px 7px;
-  }
-  .col-date .cal-btn{
-    margin-left:0;
-    width:30px;height:30px;
-    font-size:14px;
-  }
+  .col-date .date-edit{font-size:14.5px;font-weight:800;padding:0;margin:0;}
+  .col-date .badge{margin-left:0;font-size:9px;padding:3px 7px;}
+  .col-date .cal-btn{margin-left:0;width:30px;height:30px;font-size:14px;}
 
-  /* Дзеянні */
-  .col-act{
-    grid-area:act;
-    align-self:center;
-    justify-self:end;
-  }
-  .rowbtns{
-    opacity:1;
-    gap:4px;
-  }
-  .mini{
-    width:32px;height:32px;
-    font-size:13px;
-    border-radius:9px;
-  }
+  .col-act{grid-area:act;align-self:center;justify-self:end;}
+  .rowbtns{opacity:1;gap:4px;}
+  .mini{width:32px;height:32px;font-size:13px;border-radius:9px;}
 
-  /* Тэма */
   .col-topic{
     grid-area:topic;
     font-size:15px;
@@ -999,7 +973,6 @@ tr.flash-target{
     overflow-wrap:anywhere;
   }
 
-  /* Д/З у асобным блоку */
   .col-hw{
     grid-area:hw;
     font-size:13.5px;
@@ -1024,7 +997,6 @@ tr.flash-target{
     margin-bottom:4px;
   }
 
-  /* Гадзіны */
   .col-h{
     grid-area:hrs;
     display:flex;
@@ -1037,47 +1009,24 @@ tr.flash-target{
     border-top:1px dashed var(--border-2);
     margin-top:4px;
   }
-  .col-h::before{
-    margin:0!important;
-    font-size:10px!important;
-    letter-spacing:.5px;
-  }
-  .col-h .hours-val{
-    font-size:15px;
-    color:var(--text);
-    min-width:0;
-  }
-  .hours-input{
-    width:56px;
-    font-size:15px;
-  }
-  /* Калі гэты радок без гадзін (працяг групы) — схаваць падзельнік */
-  .col-h:empty{
-    display:none!important;
-  }
+  .col-h::before{margin:0!important;font-size:10px!important;letter-spacing:.5px;}
+  .col-h .hours-val{font-size:15px;color:var(--text);min-width:0;}
+  .hours-input{width:56px;font-size:15px;}
+  .col-h:empty{display:none!important;}
 
-  /* ====== СТАТУСЫ ====== */
   tbody tr.row-today{
     background:var(--today-soft)!important;
     border-color:color-mix(in srgb,var(--today) 40%,transparent);
     box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 22%,transparent),var(--shadow-sm);
   }
-  tbody tr.row-today .col-n{
-    background:var(--today);
-    color:#fff;
-    box-shadow:0 4px 10px -3px var(--today);
-  }
+  tbody tr.row-today .col-n{background:var(--today);color:#fff;}
 
   tbody tr.row-next{
     background:var(--next-soft)!important;
     border-color:color-mix(in srgb,var(--next) 40%,transparent);
     box-shadow:0 0 0 2px color-mix(in srgb,var(--next) 22%,transparent),var(--shadow-sm);
   }
-  tbody tr.row-next .col-n{
-    background:var(--next);
-    color:#fff;
-    box-shadow:0 4px 10px -3px var(--next);
-  }
+  tbody tr.row-next .col-n{background:var(--next);color:#fff;}
 
   tbody tr.row-past{
     background:var(--past-soft)!important;
@@ -1090,7 +1039,6 @@ tr.flash-target{
   }
   tbody tr.row-past .col-topic{color:var(--text-2);}
 
-  /* ====== СПЕЦЫЯЛЬНЫЯ ТЭМЫ ====== */
   tr.hl-control .col-topic{
     background:color-mix(in srgb, var(--danger) 12%, var(--card))!important;
     box-shadow:inset 3px 0 0 var(--danger)!important;
@@ -1099,11 +1047,7 @@ tr.flash-target{
     border-top:none!important;
     margin-top:6px;
   }
-  tr.hl-control .col-topic::after{
-    font-size:8.5px;
-    padding:2px 6px;
-    margin-left:6px;
-  }
+  tr.hl-control .col-topic::after{font-size:8.5px;padding:2px 6px;margin-left:6px;}
 
   tr.hl-test .col-topic{
     background:color-mix(in srgb, var(--next) 14%, var(--card))!important;
@@ -1113,11 +1057,7 @@ tr.flash-target{
     border-top:none!important;
     margin-top:6px;
   }
-  tr.hl-test .col-topic::after{
-    font-size:8.5px;
-    padding:2px 6px;
-    margin-left:6px;
-  }
+  tr.hl-test .col-topic::after{font-size:8.5px;padding:2px 6px;margin-left:6px;}
 
   tr.hl-credit .col-topic{
     background:color-mix(in srgb, var(--accent) 14%, var(--card))!important;
@@ -1127,11 +1067,7 @@ tr.flash-target{
     border-top:none!important;
     margin-top:6px;
   }
-  tr.hl-credit .col-topic::after{
-    font-size:8.5px;
-    padding:2px 6px;
-    margin-left:6px;
-  }
+  tr.hl-credit .col-topic::after{font-size:8.5px;padding:2px 6px;margin-left:6px;}
 
   .cardfoot{padding:14px 16px;}
 
@@ -1145,12 +1081,9 @@ tr.flash-target{
   .tab{padding:10px 14px;font-size:12.5px;}
   .tab small{font-size:10px;}
   .theme-panel{width:calc(100vw - 32px);right:-10px;}
+  .color-swatches{grid-template-columns:repeat(5,1fr);gap:7px;}
 
-  tbody tr{
-    grid-template-columns:32px 1fr auto;
-    padding:12px 12px 10px;
-    gap:7px 8px;
-  }
+  tbody tr{grid-template-columns:32px 1fr auto;padding:12px 12px 10px;gap:7px 8px;}
   .col-n{width:30px;height:30px;font-size:12px;}
   .col-topic{font-size:14.5px;}
   .col-hw{font-size:13px;padding:8px 10px 9px!important;}
@@ -1203,10 +1136,11 @@ tr.flash-target{
           <div class="color-swatches" id="colorSwatches"></div>
         </div>
       </div>
-      <button id="reloadBtn" class="ghost" title="Перачытаць data.js">⟳<span> Перачытаць</span></button>
-      <button id="exportBtn" class="ghost" title="Спампаваць копію">⤓<span> Экспарт</span></button>
-      <button id="importBtn" class="ghost" title="Загрузіць копію">⤒<span> Імпарт</span></button>
-      <button id="editBtn" class="primary">✎<span> Рэдагаваць</span></button>
+
+      <!-- ▼ Схаваныя кнопкі (пакінуты для сумяшчальнасці з хоткеямі) ▼ -->
+      <button id="reloadBtn" class="ghost hidden-action">⟳ Перачытаць</button>
+      <button id="exportBtn" class="ghost hidden-action">⤓ Экспарт</button>
+      <button id="editBtn" class="primary hidden-action">✎ Рэдагаваць</button>
     </div>
   </header>
 
@@ -1215,16 +1149,15 @@ tr.flash-target{
     <div class="data-error-text">
       <b>data.js не знойдзены ці мае памылку</b>
       Праверце, што файл <code>data.js</code> ляжыць побач з гэтым HTML і ўтрымлівае радок
-      <code>window.KTP_DATA = { ... };</code>. Пасля выпраўлення націсніце
-      <code>⟳ Перачытаць</code> або перазагрузіце старонку.
+      <code>window.KTP_DATA = { ... };</code>. Пасля выпраўлення перазагрузіце старонку.
     </div>
   </div>
 
   <div class="editbar" id="editbar">
     <div class="editbar-icon">✎</div>
     <div class="editbar-text">
-      <b>Рэжым рэдагавання ўключаны</b>
-      <small>Формулы пішыце паміж знакамі <code>$...$</code> — напрыклад <code>$\frac{a}{b}$</code> ці <code>$x^2+\sqrt{y}$</code>.</small>
+      <b>Рэжым рэдагавання ўключаны (Ctrl+E — выйсці)</b>
+      <small>Формулы пішыце паміж знакамі <code>$...$</code> — напрыклад <code>$\frac{a}{b}$</code>.</small>
     </div>
     <div class="editbar-spacer"></div>
     <button id="cancelBtn" class="ghost">↶ Адмяніць</button>
@@ -1273,7 +1206,6 @@ tr.flash-target{
 
 </div>
 
-<!-- ▼▼▼ ПЛАВАЮЧЫЯ КНОПКІ ▼▼▼ -->
 <div class="fab-group" id="fabGroup">
   <button id="fabNext" class="fab fab-next" type="button" aria-label="Да найбліжэйшага ўрока" title="Да найбліжэйшага ўрока">
     <span>🎯</span>
@@ -1299,8 +1231,6 @@ tr.flash-target{
 <div class="cal-backdrop" id="calBackdrop"></div>
 <div class="cal-popup" id="calPopup" role="dialog" aria-label="Выбар даты"></div>
 
-<input type="file" id="fileInput" accept=".json" hidden>
-
 <script>
 /* =========================================================
    КАНСТАНТЫ
@@ -1309,14 +1239,25 @@ const SCHOOL_YEAR = { start: 2026, end: 2027 };
 const THEME_KEY   = 'ktp-math-theme-mode';
 const COLOR_KEY   = 'ktp-math-theme-color';
 
+/* 17 колераў */
 const COLORS = [
-  { id:'indigo', hex:'#6366f1', name:'Індыга' },
-  { id:'ocean',  hex:'#0ea5e9', name:'Акіян' },
-  { id:'violet', hex:'#8b5cf6', name:'Фіялет' },
-  { id:'rose',   hex:'#f43f5e', name:'Ружа' },
-  { id:'amber',  hex:'#f59e0b', name:'Бурштын' },
-  { id:'teal',   hex:'#14b8a6', name:'Біруза' },
-  { id:'slate',  hex:'#64748b', name:'Шэры' },
+  { id:'indigo',  hex:'#6366f1', name:'Індыга' },
+  { id:'blue',    hex:'#3b82f6', name:'Сіні' },
+  { id:'sky',     hex:'#0ea5e9', name:'Блакітны' },
+  { id:'cyan',    hex:'#06b6d4', name:'Цыян' },
+  { id:'teal',    hex:'#14b8a6', name:'Біруза' },
+  { id:'emerald', hex:'#10b981', name:'Ізумруд' },
+  { id:'green',   hex:'#22c55e', name:'Зялёны' },
+  { id:'lime',    hex:'#84cc16', name:'Лайм' },
+  { id:'amber',   hex:'#f59e0b', name:'Бурштын' },
+  { id:'orange',  hex:'#f97316', name:'Аранжавы' },
+  { id:'red',     hex:'#ef4444', name:'Чырвоны' },
+  { id:'rose',    hex:'#f43f5e', name:'Ружа' },
+  { id:'pink',    hex:'#ec4899', name:'Ружовы' },
+  { id:'violet',  hex:'#8b5cf6', name:'Фіялет' },
+  { id:'fuchsia', hex:'#d946ef', name:'Фуксія' },
+  { id:'slate',   hex:'#64748b', name:'Шэры-сіні' },
+  { id:'gray',    hex:'#6b7280', name:'Шэры' },
 ];
 
 const ALG = { id:'alg', name:'Алгебра',   short:'Алг.' };
@@ -1429,7 +1370,7 @@ function renderMixed(text){
 }
 
 /* =========================================================
-   ▼▼▼ ЗАГРУЗКА — ТОЛЬКО data.js ▼▼▼
+   ЗАГРУЗКА — ТОЛЬКО data.js
    ========================================================= */
 function normalizeData(d){
   if(!d || typeof d !== 'object') return null;
@@ -1469,9 +1410,6 @@ let state = {
   dataError: false,
 };
 
-/* =========================================================
-   СТАТУС ЗАГРУЗКІ
-   ========================================================= */
 function showDataError(show){
   state.dataError = !!show;
   const el = document.getElementById('dataError');
@@ -1479,7 +1417,7 @@ function showDataError(show){
 }
 
 /* =========================================================
-   ЗАХАВАННЕ
+   ЗАХАВАННЕ (у браўзеры не піша — толькі водгук)
    ========================================================= */
 let saveTimer = null;
 function save(instant){
@@ -1715,14 +1653,10 @@ function renderTable(){
       emptyText = 'Файл data.js не знойдзены ці мае памылку. Глядзіце паведамленне вышэй.';
     } else if(comp){
       emptyTitle = `Няма тэм у кампаненце «${esc(comp.name)}»`;
-      emptyText = state.editing
-        ? 'Націсніце «＋ Дадаць тэму», каб пачаць'
-        : 'Уключыце рэжым рэдагавання, каб дадаць тэмы';
+      emptyText = 'Дадайце тэмы ў файл data.js';
     } else {
       emptyTitle = 'Няма тэм';
-      emptyText = state.editing
-        ? 'Націсніце «＋ Дадаць тэму», каб пачаць'
-        : 'Уключыце рэжым рэдагавання, каб дадаць тэмы';
+      emptyText = 'Дадайце тэмы ў файл data.js';
     }
     tr.innerHTML = `<td colspan="6" style="border:none">
       <div class="empty">
@@ -1738,6 +1672,8 @@ function renderTable(){
     updateFabNextState(!!todayRow || !!nextRow);
     return;
   }
+
+  const frag = document.createDocumentFragment();
 
   rows.forEach((r, idx) => {
     const d = parseDate(r.date);
@@ -1800,8 +1736,10 @@ function renderTable(){
       <td class="col-hw" data-label="Д/З" data-field="hw" data-ph="—" contenteditable="false">${hwHTML}</td>
       <td class="col-act">${actCell}</td>`;
 
-    tbody.appendChild(tr);
+    frag.appendChild(tr);
   });
+
+  tbody.appendChild(frag);
 
   updateNextInfo(todayRow, nextRow, nextDate);
   updateCounter(rows);
@@ -1811,7 +1749,6 @@ function renderTable(){
 
 function updateNextInfo(todayRow, nextRow, nextDate){
   const info = document.getElementById('nextInfo');
-  info.classList.remove('no-pulse');
   const topicToday = todayRow ? (todayRow.group.topic || 'урок') : '';
   const topicNext  = nextRow  ? (nextRow.group.topic  || '—')   : '';
   if(todayRow){
@@ -1829,7 +1766,6 @@ function updateNextInfo(todayRow, nextRow, nextDate){
     info.style.background = 'var(--accent-soft)';
     info.style.color = 'var(--accent-text)';
     info.style.borderColor = 'color-mix(in srgb, var(--accent) 20%, transparent)';
-    info.classList.add('no-pulse');
   }
 }
 
@@ -1855,21 +1791,13 @@ function applyEditMode(){
     if(el.tagName === 'INPUT') return;
     el.setAttribute('contenteditable', state.editing ? 'true' : 'false');
   });
-
-  const btn = document.getElementById('editBtn');
-  if(state.editing){
-    btn.style.display = 'none';
-  } else {
-    btn.style.display = 'inline-flex';
-    btn.innerHTML = '✎<span> Рэдагаваць</span>';
-    btn.className = 'primary';
-  }
 }
 
 /* =========================================================
    УВАХОД / ВЫХАД
    ========================================================= */
 function enterEditMode(){
+  if(state.editing) return;
   state.snapshot = clone(state.data);
   state.editing = true;
   renderTable();
@@ -1896,22 +1824,28 @@ async function cancelAndExit(){
   }
 }
 
-document.getElementById('editBtn').onclick = enterEditMode;
 document.getElementById('saveBtn').onclick = saveAndExit;
 document.getElementById('cancelBtn').onclick = cancelAndExit;
 
 /* =========================================================
-   ⟳ ПЕРАЧЫТАЦЬ data.js
+   ЭКСПАРТ — даступны праз Ctrl+S
    ========================================================= */
-document.getElementById('reloadBtn').onclick = async () => {
-  if(state.editing){
-    const ok = await confirmDialog(
-      'Скінуць змены?',
-      'Вы ў рэжыме рэдагавання. Усе незахаваныя праўкі будуць страчаны, а дадзеныя перачытаюцца з data.js. Працягнуць?',
-      'Скінуць', true
-    );
-    if(!ok) return;
-  }
+function exportJson(){
+  const blob = new Blob([JSON.stringify(state.data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'КТП_Матэматыка_2026-2027.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  showToast('Файл экспартаваны');
+}
+document.getElementById('exportBtn').onclick = exportJson;
+
+/* =========================================================
+   ПЕРАЧЫТАЦЬ — даступна праз Ctrl+R (натыўнае перазагружанне)
+   ці скрытую кнопку
+   ========================================================= */
+document.getElementById('reloadBtn').onclick = () => {
   const fromJs = loadFromDataJs();
   if(!fromJs){
     showDataError(true);
@@ -1924,43 +1858,68 @@ document.getElementById('reloadBtn').onclick = async () => {
   state.snapshot = null;
   renderAll();
   flashSaved();
+  showToast('Дадзеныя перачытаны з data.js');
 };
 
 /* =========================================================
-   ▼▼▼ ПЛАВАЮЧЫЯ КНОПКІ ▼▼▼
+   ГЛАБАЛЬНЫЯ ХОТКЕІ
+   ========================================================= */
+document.addEventListener('keydown', e => {
+  // Ctrl+E — рэдагаванне / выхад
+  if((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'e' || e.key === 'E')){
+    e.preventDefault();
+    if(state.editing) saveAndExit();
+    else enterEditMode();
+    return;
+  }
+  // Ctrl+S — экспарт JSON
+  if((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 's' || e.key === 'S')){
+    e.preventDefault();
+    if(state.editing) saveAndExit();
+    else exportJson();
+    return;
+  }
+  // Escape
+  if(e.key === 'Escape'){
+    if(calPopup.classList.contains('show')) closeCalendar();
+    else if(modalBack.classList.contains('show')) closeModal(false);
+  }
+});
+
+/* =========================================================
+   ПЛАВАЮЧЫЯ КНОПКІ
    ========================================================= */
 const fabTop  = document.getElementById('fabTop');
 const fabNext = document.getElementById('fabNext');
 
-/* Паказваць кнопку «Наверх» пасля прокруткі */
 function updateFabVisibility(){
   const sy = window.scrollY || document.documentElement.scrollTop || 0;
   fabTop.classList.toggle('show', sy > 300);
 }
 
-/* Паказваць кнопку «Да найбліжэйшага ўрока» толькі калі ёсць
-   бягучы ці будучы ўрок у бягучай укладцы */
 function updateFabNextState(has){
   fabNext.classList.toggle('show', !!has);
 }
 
+let scrollRaf = 0;
 window.addEventListener('scroll', () => {
-  const sy = window.scrollY || document.documentElement.scrollTop || 0;
-  fabTop.classList.toggle('show', sy > 300);
+  if(scrollRaf) return;
+  scrollRaf = requestAnimationFrame(() => {
+    scrollRaf = 0;
+    const sy = window.scrollY || document.documentElement.scrollTop || 0;
+    fabTop.classList.toggle('show', sy > 300);
+  });
 }, { passive: true });
 
-/* Кнопка «Наверх» */
 fabTop.onclick = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-/* Кнопка «Да найбліжэйшага ўрока» */
 fabNext.onclick = () => {
   let target = tbody.querySelector('tr.row-today');
   if(!target) target = tbody.querySelector('tr.row-next');
 
   if(!target){
-    // няма бягучага/будучага радка з класам — шукаем па даце
     const now = todayMidnight().getTime();
     let bestTime = Infinity;
     tbody.querySelectorAll('tr[data-group]').forEach(tr => {
@@ -1981,10 +1940,8 @@ fabNext.onclick = () => {
     return;
   }
 
-  // Прыбіраем папярэднюю падсветку
   tbody.querySelectorAll('tr.flash-target').forEach(tr => tr.classList.remove('flash-target'));
 
-  // Разлічваем пазіцыю з улікам sticky-шапкі
   const topbar = document.getElementById('topbar');
   const topbarH = topbar ? topbar.offsetHeight : 0;
   const rect = target.getBoundingClientRect();
@@ -1992,7 +1949,6 @@ fabNext.onclick = () => {
 
   window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
 
-  // Падсветка
   target.classList.add('flash-target');
   setTimeout(() => target.classList.remove('flash-target'), 1700);
 };
@@ -2346,12 +2302,6 @@ document.addEventListener('click', e => {
   if(e.target.closest('[data-field="date"]')) return;
   closeCalendar();
 });
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){
-    if(calPopup.classList.contains('show')) closeCalendar();
-    else if(modalBack.classList.contains('show')) closeModal(false);
-  }
-});
 window.addEventListener('resize', () => {
   if(calPopup.classList.contains('show')) positionCalendar();
 });
@@ -2379,69 +2329,17 @@ document.getElementById('addRow').onclick = () => {
 };
 
 /* =========================================================
-   ЭКСПАРТ / ІМПАРТ
-   ========================================================= */
-document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(state.data, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'КТП_Матэматыка_2026-2027.json';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-};
-
-document.getElementById('importBtn').onclick = async () => {
-  if(state.editing){
-    const ok = await confirmDialog(
-      'Імпарт падчас рэдагавання',
-      'Вы ў рэжыме рэдагавання. Імпарт заменіць усе дадзеныя. Працягнуць?',
-      'Імпартаваць', true
-    );
-    if(!ok) return;
-  }
-  document.getElementById('fileInput').click();
-};
-
-document.getElementById('fileInput').onchange = e => {
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const d = JSON.parse(reader.result);
-      if(typeof d !== 'object' || d === null) throw new Error('няправільны фармат');
-      const normalized = normalizeData(d);
-      if(!normalized) throw new Error('структура не адпавядае фармату КТП');
-      showDataError(false);
-      state.data = normalized;
-      state.editing = false;
-      state.snapshot = null;
-      const cls = CLASSES.find(c => c.id === state.current);
-      if(cls.components && cls.components.length){
-        state.currentComponent = cls.components[0].id;
-      }
-      renderAll();
-      flashSaved();
-    }catch(err){
-      alert('Не ўдалося прачытаць файл: ' + err.message);
-    }
-  };
-  reader.readAsText(f);
-  e.target.value = '';
-};
-
-/* =========================================================
    ТЭМА
    ========================================================= */
 function getThemeMode(){ return localStorage.getItem(THEME_KEY) || 'auto'; }
-function setThemeMode(m){ localStorage.setItem(THEME_KEY, m); applyThemeMode(); }
+function setThemeMode(m){ try{ localStorage.setItem(THEME_KEY, m); }catch(e){} applyThemeMode(); }
 function getThemeColor(){ return localStorage.getItem(COLOR_KEY) || 'indigo'; }
-function setThemeColor(c){ localStorage.setItem(COLOR_KEY, c); applyThemeColor(); }
+function setThemeColor(c){ try{ localStorage.setItem(COLOR_KEY, c); }catch(e){} applyThemeColor(); }
 
 function applyThemeMode(){
   const mode = getThemeMode();
-  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const resolved = mode === 'auto' ? (sysDark ? 'dark' : 'light') : mode;
+  const sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const resolved = (mode === 'auto') ? (sysDark ? 'dark' : 'light') : mode;
   document.documentElement.dataset.theme = resolved;
   document.querySelectorAll('.mode-btns button').forEach(b => {
     b.classList.toggle('active', b.dataset.mode === mode);
@@ -2485,15 +2383,17 @@ document.addEventListener('click', e => {
   if(themeBtn.contains(e.target)) return;
   themePanel.classList.remove('show');
 });
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  if(getThemeMode() === 'auto') applyThemeMode();
-});
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if(getThemeMode() === 'auto') applyThemeMode();
+  });
+}
 
 /* =========================================================
-   КАМПАКТНАЯ ШАПКА ПРЫ СКРОЛЕ (мабільны)
+   КАМПАКТНАЯ ШАПКА ПРЫ СКРОЛЕ
    ========================================================= */
 const topbarEl = document.getElementById('topbar');
-let scrollTicking = false;
+let compactRaf = 0;
 
 function handleScroll(){
   const isMobile = window.innerWidth <= 760;
@@ -2509,13 +2409,11 @@ function handleScroll(){
 }
 
 window.addEventListener('scroll', () => {
-  if(!scrollTicking){
-    scrollTicking = true;
-    requestAnimationFrame(() => {
-      handleScroll();
-      scrollTicking = false;
-    });
-  }
+  if(compactRaf) return;
+  compactRaf = requestAnimationFrame(() => {
+    compactRaf = 0;
+    handleScroll();
+  });
 }, { passive:true });
 
 window.addEventListener('resize', handleScroll);
@@ -2538,7 +2436,7 @@ function bootstrap(){
   } else {
     state.data = {};
     showDataError(true);
-    console.error('✗ data.js не знойдзены ці мае памылку. Праверце файл побач з HTML.');
+    console.error('✗ data.js не знойдзены ці мае памылку.');
   }
 
   const cls = CLASSES.find(c => c.id === state.current);
@@ -2557,12 +2455,6 @@ bootstrap();
 
 document.addEventListener('visibilitychange', () => {
   if(!document.hidden && !state.editing) renderTable();
-});
-document.addEventListener('keydown', e => {
-  if((e.ctrlKey || e.metaKey) && e.key === 's'){
-    e.preventDefault();
-    if(state.editing) saveAndExit();
-  }
 });
 
 window.addEventListener('load', () => {
