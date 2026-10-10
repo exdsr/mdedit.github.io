@@ -576,7 +576,6 @@ tr:hover .rowbtns,tr:focus-within .rowbtns{opacity:1;}
 .empty-icon{font-size:42px;margin-bottom:14px;opacity:.35;}
 .empty h3{color:var(--text);margin:0 0 6px;font-size:16px;font-weight:700;}
 
-/* банер памылкі, калі data.js не знойдзены */
 .data-error{
   display:none;
   padding:20px 24px;
@@ -730,8 +729,137 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
 .modal .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
 .modal .btns button{flex:none;}
 
+/* =========================================================
+   ПЛАВАЮЧЫЯ КНОПКІ (FAB)
+   ========================================================= */
+.fab-group{
+  position:fixed;
+  right:20px;
+  bottom:24px;
+  z-index:95;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.fab{
+  position:relative;
+  width:52px;height:52px;
+  padding:0;min-height:0;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  display:grid;place-items:center;
+  font-size:20px;line-height:1;
+  cursor:pointer;
+  box-shadow:0 8px 24px -6px rgba(15,23,42,.25), 0 2px 6px -2px rgba(15,23,42,.12);
+  transition:all .2s cubic-bezier(.2,.8,.2,1);
+  opacity:0;
+  transform:translateY(10px) scale(.9);
+  pointer-events:none;
+}
+.fab.show{
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
+}
+.fab:hover{
+  transform:translateY(-2px) scale(1.06);
+  box-shadow:0 14px 32px -8px rgba(15,23,42,.32), 0 4px 8px -2px rgba(15,23,42,.1);
+  border-color:var(--accent);
+  color:var(--accent-text);
+}
+.fab:active{
+  transform:scale(.94);
+}
+
+.fab.fab-next{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 10px 26px -6px var(--accent), 0 2px 6px -2px rgba(15,23,42,.12);
+}
+.fab.fab-next:hover{
+  color:#fff;
+  filter:brightness(1.08);
+  box-shadow:0 16px 34px -8px var(--accent), 0 4px 10px -2px rgba(15,23,42,.15);
+}
+
+.fab-label{
+  position:absolute;
+  right:calc(100% + 10px);
+  top:50%;
+  transform:translateY(-50%) translateX(6px);
+  background:var(--text);
+  color:var(--card);
+  font-size:11.5px;
+  font-weight:700;
+  padding:6px 11px;
+  border-radius:9px;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease;
+  box-shadow:var(--shadow);
+}
+.fab:hover .fab-label{
+  opacity:1;
+  transform:translateY(-50%) translateX(0);
+}
+
 @media (max-width:760px){
-  .app{padding:0 12px 60px;}
+  .fab-group{right:14px;bottom:16px;gap:8px;}
+  .fab{width:48px;height:48px;font-size:18px;}
+  .fab-label{display:none;}
+}
+
+/* Падсветка мэтавага радка пры скролу */
+@keyframes flashRing{
+  0%   { outline-color: color-mix(in srgb, var(--accent) 0%, transparent); }
+  20%  { outline-color: var(--accent); }
+  60%  { outline-color: var(--accent); }
+  100% { outline-color: color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+tr.flash-target{
+  outline:3px solid var(--accent);
+  outline-offset:-3px;
+  animation:flashRing 1.6s ease-out;
+  position:relative;
+  z-index:2;
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:96px;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--text);
+  color:var(--card);
+  padding:12px 20px;
+  border-radius:12px;
+  font-size:13.5px;
+  font-weight:600;
+  box-shadow:var(--shadow-lg);
+  z-index:300;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .22s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+  max-width:calc(100vw - 40px);
+  text-align:center;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* =========================================================
+   МОБІЛЬНЫЯ — ПЕРАПРАЦАВАНЫЯ КАРТКІ
+   ========================================================= */
+@media (max-width:760px){
+  .app{padding:0 12px 100px;}
   body{font-size:14.5px;}
   .topbar{padding:10px 0;gap:10px;}
   .brand h1{font-size:17px;}
@@ -757,110 +885,281 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
   .cardhead h2{font-size:16px;}
   .nextinfo{font-size:12.5px;padding:10px 13px;max-width:100%;}
 
-  .tablewrap{overflow:visible;padding:4px 0 0;}
+  .tablewrap{overflow:visible;padding:6px 0 0;}
 
   table,thead,tbody,tr,td,th{display:block;min-width:0;}
   thead{display:none;}
   table{border-collapse:separate;}
 
+  /* ====== КАРТКА РАДКА ====== */
   tbody tr{
     display:grid;
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:36px 1fr auto;
     grid-template-areas:
-      "n    date    act"
+      "n    date  act"
       "topic topic topic"
       "hw    hw    hw"
       "hrs   hrs   hrs";
     gap:8px 10px;
-    margin:0 0 10px;
-    padding:14px 16px;
+    margin:0 0 12px;
+    padding:14px 14px 12px;
     border:1px solid var(--border);
-    border-radius:16px;
+    border-radius:18px;
     background:var(--card);
     box-shadow:var(--shadow-sm);
+    position:relative;
+    transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease;
   }
-  tbody tr.group-start{margin-top:16px;}
+  tbody tr:active{transform:scale(.995);}
+  tbody tr.group-start{margin-top:18px;}
   tbody tr.group-start:first-child{margin-top:0;}
-  tbody tr:hover{transform:none;}
 
+  tbody td{
+    padding:0;
+    border:none;
+    background:transparent!important;
+    box-shadow:none!important;
+    vertical-align:top;
+  }
+  tbody td::before{display:none;}
+
+  /* № у кружочку */
+  .col-n{
+    grid-area:n;
+    width:34px;height:34px;
+    border-radius:50%;
+    background:var(--accent-soft);
+    color:var(--accent-text);
+    display:grid;place-items:center;
+    font-size:13px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+    align-self:center;
+    justify-self:start;
+    padding:0!important;
+    flex:none;
+  }
+
+  /* Дата + каляндар + бейдж */
+  .col-date{
+    grid-area:date;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:5px;
+    align-self:center;
+    font-size:14.5px;
+    min-width:0;
+    padding:0!important;
+  }
+  .col-date .date-edit{
+    font-size:14.5px;
+    font-weight:800;
+    padding:0;
+    margin:0;
+  }
+  .col-date .badge{
+    margin-left:0;
+    font-size:9px;
+    padding:3px 7px;
+  }
+  .col-date .cal-btn{
+    margin-left:0;
+    width:30px;height:30px;
+    font-size:14px;
+  }
+
+  /* Дзеянні */
+  .col-act{
+    grid-area:act;
+    align-self:center;
+    justify-self:end;
+  }
+  .rowbtns{
+    opacity:1;
+    gap:4px;
+  }
+  .mini{
+    width:32px;height:32px;
+    font-size:13px;
+    border-radius:9px;
+  }
+
+  /* Тэма */
+  .col-topic{
+    grid-area:topic;
+    font-size:15px;
+    line-height:1.45;
+    font-weight:600;
+    padding:9px 0 0!important;
+    margin-top:4px;
+    border-top:1px dashed var(--border-2);
+    color:var(--text);
+    word-break:break-word;
+    overflow-wrap:anywhere;
+  }
+
+  /* Д/З у асобным блоку */
+  .col-hw{
+    grid-area:hw;
+    font-size:13.5px;
+    line-height:1.5;
+    padding:9px 12px 10px!important;
+    background:var(--card-2);
+    border:1px solid var(--border-2);
+    border-radius:12px;
+    color:var(--text-2);
+    position:relative;
+    word-break:break-word;
+    overflow-wrap:anywhere;
+  }
+  .col-hw::before{
+    content:"📝 Д / З";
+    display:block!important;
+    font-size:9.5px;
+    font-weight:800;
+    letter-spacing:.6px;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+
+  /* Гадзіны */
+  .col-h{
+    grid-area:hrs;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    font-size:12px;
+    color:var(--muted);
+    padding-top:8px!important;
+    border-top:1px dashed var(--border-2);
+    margin-top:4px;
+  }
+  .col-h::before{
+    margin:0!important;
+    font-size:10px!important;
+    letter-spacing:.5px;
+  }
+  .col-h .hours-val{
+    font-size:15px;
+    color:var(--text);
+    min-width:0;
+  }
+  .hours-input{
+    width:56px;
+    font-size:15px;
+  }
+  /* Калі гэты радок без гадзін (працяг групы) — схаваць падзельнік */
+  .col-h:empty{
+    display:none!important;
+  }
+
+  /* ====== СТАТУСЫ ====== */
   tbody tr.row-today{
     background:var(--today-soft)!important;
-    border-color:color-mix(in srgb,var(--today) 35%,transparent);
-    box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 25%,transparent),var(--shadow-sm);
+    border-color:color-mix(in srgb,var(--today) 40%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 22%,transparent),var(--shadow-sm);
   }
-  tbody tr.row-today td:first-child{box-shadow:none;}
+  tbody tr.row-today .col-n{
+    background:var(--today);
+    color:#fff;
+    box-shadow:0 4px 10px -3px var(--today);
+  }
+
   tbody tr.row-next{
     background:var(--next-soft)!important;
-    border-color:color-mix(in srgb,var(--next) 35%,transparent);
-    box-shadow:0 0 0 2px color-mix(in srgb,var(--next) 25%,transparent),var(--shadow-sm);
+    border-color:color-mix(in srgb,var(--next) 40%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--next) 22%,transparent),var(--shadow-sm);
   }
-  tbody tr.row-next td:first-child{box-shadow:none;}
+  tbody tr.row-next .col-n{
+    background:var(--next);
+    color:#fff;
+    box-shadow:0 4px 10px -3px var(--next);
+  }
+
   tbody tr.row-past{
     background:var(--past-soft)!important;
-    border-color:color-mix(in srgb,var(--past) 28%,transparent);
+    border-color:color-mix(in srgb,var(--past) 25%,transparent);
+    opacity:.92;
   }
-  tbody tr.row-past td:first-child{box-shadow:none;}
-
-  tbody td{padding:0;border:none;background:transparent!important;box-shadow:none!important;}
-  tbody td::before{
-    content:attr(data-label);display:block;
-    font-size:9.5px;font-weight:800;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;
+  tbody tr.row-past .col-n{
+    background:color-mix(in srgb, var(--past) 20%, var(--card));
+    color:var(--past);
   }
+  tbody tr.row-past .col-topic{color:var(--text-2);}
 
-  .col-n{grid-area:n;font-size:12px;font-weight:700;color:var(--muted);align-self:center;padding-top:2px!important;}
-  .col-n::before{display:none!important;}
-  .col-date{grid-area:date;align-self:center;}
-  .col-date::before{display:none!important;}
-  .col-topic{grid-area:topic;font-size:14.5px;padding-top:4px!important;}
-  .col-topic::before{display:none!important;}
-  .col-h{grid-area:hrs;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
-  .col-h::before{margin:0!important;}
-  .col-hw{grid-area:hw;font-size:13px;line-height:1.5;}
-  .col-act{grid-area:act;text-align:right;align-self:center;}
-  .col-act::before{display:none!important;}
-
+  /* ====== СПЕЦЫЯЛЬНЫЯ ТЭМЫ ====== */
   tr.hl-control .col-topic{
-    background:color-mix(in srgb, var(--danger) 10%, var(--card)) !important;
-    box-shadow:inset 3px 0 0 var(--danger) !important;
-    padding-left:12px !important;
+    background:color-mix(in srgb, var(--danger) 12%, var(--card))!important;
+    box-shadow:inset 3px 0 0 var(--danger)!important;
+    padding:10px 12px 10px 14px!important;
     border-radius:10px;
+    border-top:none!important;
+    margin-top:6px;
   }
-  tr.hl-test .col-topic{
-    background:color-mix(in srgb, var(--next) 12%, var(--card)) !important;
-    box-shadow:inset 3px 0 0 var(--next) !important;
-    padding-left:12px !important;
-    border-radius:10px;
-  }
-  tr.hl-credit .col-topic{
-    background:color-mix(in srgb, var(--accent) 12%, var(--card)) !important;
-    box-shadow:inset 3px 0 0 var(--accent) !important;
-    padding-left:12px !important;
-    border-radius:10px;
-  }
-  tr.hl-control .col-topic::after,
-  tr.hl-test    .col-topic::after,
-  tr.hl-credit  .col-topic::after{
+  tr.hl-control .col-topic::after{
     font-size:8.5px;
-    padding:1px 6px;
+    padding:2px 6px;
     margin-left:6px;
   }
 
-  .rowbtns{opacity:1;}
-  .mini{width:34px;height:34px;font-size:13px;}
-  .cal-btn{width:32px;height:32px;font-size:14px;}
-  .hours-input{width:48px;}
+  tr.hl-test .col-topic{
+    background:color-mix(in srgb, var(--next) 14%, var(--card))!important;
+    box-shadow:inset 3px 0 0 var(--next)!important;
+    padding:10px 12px 10px 14px!important;
+    border-radius:10px;
+    border-top:none!important;
+    margin-top:6px;
+  }
+  tr.hl-test .col-topic::after{
+    font-size:8.5px;
+    padding:2px 6px;
+    margin-left:6px;
+  }
+
+  tr.hl-credit .col-topic{
+    background:color-mix(in srgb, var(--accent) 14%, var(--card))!important;
+    box-shadow:inset 3px 0 0 var(--accent)!important;
+    padding:10px 12px 10px 14px!important;
+    border-radius:10px;
+    border-top:none!important;
+    margin-top:6px;
+  }
+  tr.hl-credit .col-topic::after{
+    font-size:8.5px;
+    padding:2px 6px;
+    margin-left:6px;
+  }
+
   .cardfoot{padding:14px 16px;}
+
+  .data-error{padding:16px 18px;}
+  .data-error-icon{width:34px;height:34px;font-size:18px;}
+  .data-error-text{font-size:13px;}
 }
+
 @media (max-width:420px){
   .brand p{display:none;}
   .tab{padding:10px 14px;font-size:12.5px;}
   .tab small{font-size:10px;}
   .theme-panel{width:calc(100vw - 32px);right:-10px;}
+
+  tbody tr{
+    grid-template-columns:32px 1fr auto;
+    padding:12px 12px 10px;
+    gap:7px 8px;
+  }
+  .col-n{width:30px;height:30px;font-size:12px;}
+  .col-topic{font-size:14.5px;}
+  .col-hw{font-size:13px;padding:8px 10px 9px!important;}
+  .col-date{font-size:13.5px;}
+  .col-date .date-edit{font-size:13.5px;}
 }
 
 @media print{
-  .topbar,.tabs,.subtabs-wrap,.cardfoot,.col-act,.rowbtns,.nextinfo,.editbar,.actions,.theme-panel,.cal-popup,.cal-backdrop,.cal-btn,.data-error{display:none!important;}
+  .topbar,.tabs,.subtabs-wrap,.cardfoot,.col-act,.rowbtns,.nextinfo,.editbar,.actions,.theme-panel,.cal-popup,.cal-backdrop,.cal-btn,.data-error,.fab-group,.toast{display:none!important;}
   body{background:#fff;padding:0;}
   .app{padding:0;max-width:100%;}
   .card{box-shadow:none;border:none;border-radius:0;}
@@ -972,6 +1271,18 @@ html[data-theme="dark"] .cal-day.weekend:not(.selected){color:color-mix(in srgb,
     </div>
   </main>
 
+</div>
+
+<!-- ▼▼▼ ПЛАВАЮЧЫЯ КНОПКІ ▼▼▼ -->
+<div class="fab-group" id="fabGroup">
+  <button id="fabNext" class="fab fab-next" type="button" aria-label="Да найбліжэйшага ўрока" title="Да найбліжэйшага ўрока">
+    <span>🎯</span>
+    <span class="fab-label">Да найбліжэйшага ўрока</span>
+  </button>
+  <button id="fabTop" class="fab" type="button" aria-label="Наверх" title="Наверх">
+    <span>↑</span>
+    <span class="fab-label">Наверх</span>
+  </button>
 </div>
 
 <div class="modal-back" id="modalBack">
@@ -1139,7 +1450,6 @@ function normalizeData(d){
   return d;
 }
 
-/* чытанне з data.js (глабальная зменная KTP_DATA) */
 function loadFromDataJs(){
   if(typeof window.KTP_DATA === 'object' && window.KTP_DATA){
     return normalizeData(clone(window.KTP_DATA));
@@ -1154,7 +1464,7 @@ let state = {
   current: '5',
   currentComponent: null,
   editing: false,
-  data: {},           // запоўніцца ў bootstrap()
+  data: {},
   snapshot: null,
   dataError: false,
 };
@@ -1169,7 +1479,7 @@ function showDataError(show){
 }
 
 /* =========================================================
-   ЗАХАВАННЕ — НІКУДЫ НЕ ПІША (толькі візуальны водгук)
+   ЗАХАВАННЕ
    ========================================================= */
 let saveTimer = null;
 function save(instant){
@@ -1182,6 +1492,23 @@ function flashSaved(){
   m.classList.add('show');
   clearTimeout(m._t);
   m._t = setTimeout(() => m.classList.remove('show'), 1200);
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 /* =========================================================
@@ -1408,6 +1735,7 @@ function renderTable(){
     updateNextInfo(todayRow, nextRow, nextDate);
     updateCounter(rows);
     applyEditMode();
+    updateFabNextState(!!todayRow || !!nextRow);
     return;
   }
 
@@ -1478,6 +1806,7 @@ function renderTable(){
   updateNextInfo(todayRow, nextRow, nextDate);
   updateCounter(rows);
   applyEditMode();
+  updateFabNextState(!!todayRow || !!nextRow);
 }
 
 function updateNextInfo(todayRow, nextRow, nextDate){
@@ -1595,6 +1924,77 @@ document.getElementById('reloadBtn').onclick = async () => {
   state.snapshot = null;
   renderAll();
   flashSaved();
+};
+
+/* =========================================================
+   ▼▼▼ ПЛАВАЮЧЫЯ КНОПКІ ▼▼▼
+   ========================================================= */
+const fabTop  = document.getElementById('fabTop');
+const fabNext = document.getElementById('fabNext');
+
+/* Паказваць кнопку «Наверх» пасля прокруткі */
+function updateFabVisibility(){
+  const sy = window.scrollY || document.documentElement.scrollTop || 0;
+  fabTop.classList.toggle('show', sy > 300);
+}
+
+/* Паказваць кнопку «Да найбліжэйшага ўрока» толькі калі ёсць
+   бягучы ці будучы ўрок у бягучай укладцы */
+function updateFabNextState(has){
+  fabNext.classList.toggle('show', !!has);
+}
+
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY || document.documentElement.scrollTop || 0;
+  fabTop.classList.toggle('show', sy > 300);
+}, { passive: true });
+
+/* Кнопка «Наверх» */
+fabTop.onclick = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+/* Кнопка «Да найбліжэйшага ўрока» */
+fabNext.onclick = () => {
+  let target = tbody.querySelector('tr.row-today');
+  if(!target) target = tbody.querySelector('tr.row-next');
+
+  if(!target){
+    // няма бягучага/будучага радка з класам — шукаем па даце
+    const now = todayMidnight().getTime();
+    let bestTime = Infinity;
+    tbody.querySelectorAll('tr[data-group]').forEach(tr => {
+      const dateEl = tr.querySelector('[data-field="date"]');
+      if(!dateEl) return;
+      const dt = parseDate(dateEl.textContent.trim());
+      if(!dt) return;
+      const t = dt.getTime();
+      if(t >= now && t < bestTime){
+        bestTime = t;
+        target = tr;
+      }
+    });
+  }
+
+  if(!target){
+    showToast('Няма бліжэйшых урокаў у гэтай укладцы');
+    return;
+  }
+
+  // Прыбіраем папярэднюю падсветку
+  tbody.querySelectorAll('tr.flash-target').forEach(tr => tr.classList.remove('flash-target'));
+
+  // Разлічваем пазіцыю з улікам sticky-шапкі
+  const topbar = document.getElementById('topbar');
+  const topbarH = topbar ? topbar.offsetHeight : 0;
+  const rect = target.getBoundingClientRect();
+  const y = window.scrollY + rect.top - topbarH - 16;
+
+  window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+
+  // Падсветка
+  target.classList.add('flash-target');
+  setTimeout(() => target.classList.remove('flash-target'), 1700);
 };
 
 /* =========================================================
@@ -2149,6 +2549,7 @@ function bootstrap(){
   applyThemeMode();
   applyThemeColor();
   handleScroll();
+  updateFabVisibility();
   renderAll();
 }
 
@@ -2166,6 +2567,7 @@ document.addEventListener('keydown', e => {
 
 window.addEventListener('load', () => {
   if(!state.editing) renderTable();
+  updateFabVisibility();
 });
 </script>
 </body>
